@@ -17,7 +17,6 @@ class CRUDModel{
   Future<List<ExpenceClass>> fetchExpences(DateTime start, DateTime end) async {
     var result = await _dao.getDataCollection(start, end);
 
-    print('XXXXXXXXXXXXXXXXXXXXXXXXXXXX');
     expencesList = result.docs
         .map((doc) => ExpenceClass.fromMap(doc.data(), doc.id))
         .toList();

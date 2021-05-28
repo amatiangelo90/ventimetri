@@ -21,7 +21,6 @@ class VentiMetriQuadriDashboard extends StatefulWidget {
 
 class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
 
-  double _width;
   double _height;
   DateTimeRange _currentDateTimeRange;
   DateTime _currentDateForDateRangePicker;
@@ -32,7 +31,6 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
 
   bool _buttonSpese = false;
   bool _buttonIntroiti = false;
-
 
   TextEditingController _casualeController = TextEditingController();
   TextEditingController _amountController = TextEditingController();
@@ -108,8 +106,8 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
 
     _currentDateForDateRangePicker = DateTime.now();
     _currentDateTimeRange = DateTimeRange(
-      start: DateTime.utc(_currentDateForDateRangePicker.year , _currentDateForDateRangePicker.month , 1 ,0 ,0 ,0 ,0 ,0),
-      end: DateTime.utc(_currentDateForDateRangePicker.year , _currentDateForDateRangePicker.month +1).subtract(Duration(days: 1)),
+      start: _currentDateForDateRangePicker.subtract(Duration(days: _currentDateForDateRangePicker.weekday - 1)),
+      end: _currentDateForDateRangePicker.add(Duration(days: DateTime.daysPerWeek - _currentDateForDateRangePicker.weekday)),
     );
     super.initState();
   }
@@ -117,12 +115,11 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
   @override
   Widget build(BuildContext context) {
 
-    _width = MediaQuery.of(context).size.width;
     _height = MediaQuery.of(context).size.height;
 
     return SafeArea(
       child: Container(
-        color: VENTI_METRI_GREY,
+        color: VENTI_METRI_BLUE,
         child: Scaffold(
           body: DefaultTabController(
             length: 5,
@@ -166,7 +163,7 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
                   ],
                 ),
                 centerTitle: true,
-                backgroundColor: VENTI_METRI_GREY,
+                backgroundColor: VENTI_METRI_BLUE,
                 bottom: TabBar(
                   tabs: [
                     Tab(icon: Icon(Icons.euro_symbol),),
@@ -324,7 +321,7 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
 
 
     CRUDModel crudModel = CRUDModel(schema);
-    var expenceList = await crudModel.fetchExpences(_currentDateTimeRange.start, _currentDateTimeRange.end);
+    var expenceList = await crudModel.fetchExpences(_currentDateTimeRange.start.subtract(Duration(days: 1)), _currentDateTimeRange.end);
 
     double sum = 0.0;
 
@@ -367,7 +364,7 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
               ),
               color: Colors.red.shade900),
           child: Card(
-            color: VENTI_METRI_GREY,
+            color: VENTI_METRI_BLUE,
             child: ListTile(
                 title: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -457,7 +454,7 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
                     ),
                     Column(
                         children: [
-                          Text(_sumProfits.toString(), style: TextStyle(fontSize: 20, color: VENTI_METRI_GREY),),
+                          Text(_sumProfits.toString(), style: TextStyle(fontSize: 20, color: VENTI_METRI_BLUE),),
                         ]
                     ),
                   ],
@@ -543,7 +540,7 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
                       ],
                     ),
                     DatePicker(
-                      DateTime.now(),
+                      DateTime.now().subtract(Duration(days: DateTime.now().weekday - 1),),
                       initialSelectedDate: DateTime.now(),
                       dateTextStyle: TextStyle(color: Colors.black, fontSize: 16.0, fontFamily: 'LoraFont'),
                       dayTextStyle: TextStyle(color: Colors.black, fontSize: 14.0, fontFamily: 'LoraFont'),
@@ -551,7 +548,7 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
                       selectionColor: VENTI_METRI_PINK,
                       deactivatedColor: Colors.grey,
                       selectedTextColor: Colors.white,
-                      daysCount: 50,
+                      daysCount: 7,
                       locale: 'it',
                       controller: _dateController,
                       onDateChange: (date) {
@@ -565,7 +562,6 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
                       padding: const EdgeInsets.all(8.0),
                       child: TextField(
                         controller: _daylyProfitCash,
-                        keyboardType: TextInputType.number,
                         decoration: InputDecoration(
                           border: OutlineInputBorder(),
                           icon: Icon(Icons.euro_symbol),
@@ -577,7 +573,6 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
                       padding: const EdgeInsets.all(8.0),
                       child: TextField(
                         controller: _daylyProfitDaniele,
-                        keyboardType: TextInputType.number,
                         decoration: InputDecoration(
                           border: OutlineInputBorder(),
                           icon: Icon(Icons.person),
@@ -589,7 +584,6 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
                       padding: const EdgeInsets.all(8.0),
                       child: TextField(
                         controller: _daylyProfitMattia,
-                        keyboardType: TextInputType.number,
                         decoration: InputDecoration(
                           border: OutlineInputBorder(),
                           icon: Icon(Icons.person),
@@ -601,7 +595,6 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
                       padding: const EdgeInsets.all(8.0),
                       child: TextField(
                         controller: _daylyProfitPos,
-                        keyboardType: TextInputType.number,
                         decoration: InputDecoration(
                           border: OutlineInputBorder(),
                           icon: Icon(Icons.credit_card),
@@ -613,7 +606,6 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
                       padding: const EdgeInsets.all(8.0),
                       child: TextField(
                         controller: _daylyProfitTotal,
-                        keyboardType: TextInputType.number,
                         decoration: InputDecoration(
                           border: OutlineInputBorder(),
                           icon: Icon(Icons.line_style),
@@ -628,9 +620,37 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
                           textColor: Colors.green,
 
                           onPressed: () async {
+                            if(double.tryParse(_daylyProfitPos.text.replaceAll(",", ".")) == null){
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                  backgroundColor: Colors.redAccent,
+                                  content: Text('Importo Pos non valido. Inserire un numero valido')));
 
+                            }else if(double.tryParse(_daylyProfitTotal.text.replaceAll(",", ".")) == null){
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                  backgroundColor: Colors.redAccent,
+                                  content: Text('Importo Totale non valido. Inserire un numero valido')));
 
-                            if(double.parse(_daylyProfitPos.text) > double.parse(_daylyProfitDaniele.text)){
+                            }else if(double.tryParse(_daylyProfitDaniele.text.replaceAll(",", ".")) == null){
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                  backgroundColor: Colors.redAccent,
+                                  content: Text('Importo Daniele non valido. Inserire un numero valido')));
+
+                            }else if(double.tryParse(_daylyProfitMattia.text.replaceAll(",", ".")) == null){
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                  backgroundColor: Colors.redAccent,
+                                  content: Text('Importo Mattia non valido. Inserire un numero valido')));
+
+                            }else if(double.tryParse(_daylyProfitPos.text.replaceAll(",", ".")) == null){
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                  backgroundColor: Colors.redAccent,
+                                  content: Text('Importo pos non valido')));
+
+                            }if(double.parse(_daylyProfitPos.text.replaceAll(",", ".")) > double.parse(_daylyProfitDaniele.text.replaceAll(",", "."))){
                               ScaffoldMessenger.of(context)
                                   .showSnackBar(SnackBar(
                                   backgroundColor: Colors.redAccent,
@@ -638,14 +658,14 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
 
                             }else{
                               setState(() {
-                                _daylyProfitTotal.text = (double.parse(_daylyProfitPos.text) + double.parse(_daylyProfitCash.text)).toString();
-                                _daylyProfitMattia.text = (double.parse(_daylyProfitTotal.text) - double.parse(_daylyProfitDaniele.text)).toString();
+                                _daylyProfitTotal.text = (double.parse(_daylyProfitPos.text.replaceAll(",", ".")) + double.parse(_daylyProfitCash.text.replaceAll(",", "."))).toString();
+                                _daylyProfitMattia.text = (double.parse(_daylyProfitTotal.text.replaceAll(",", ".")) - double.parse(_daylyProfitDaniele.text.replaceAll(",", "."))).toString();
                               });
                               CRUDModel crudModel = CRUDModel(_currentSchemaMattiaIn);
                               ExpenceClass expenceClass = ExpenceClass(
                                   id: uuid.v1(),
                                   casuale: 'Introiti Mattia',
-                                  amount: (double.parse(_daylyProfitTotal.text) - double.parse(_daylyProfitDaniele.text)).toString(),
+                                  amount: (double.parse(_daylyProfitTotal.text.replaceAll(",", ".")) - double.parse(_daylyProfitDaniele.text.replaceAll(",", "."))).toString(),
                                   date: Timestamp.fromDate(dateTimeSelected),
                                   month: dateTimeSelected.month.toString(),
                                   hour: '',
@@ -659,7 +679,7 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
                               ExpenceClass expenceClassDaniele = ExpenceClass(
                                   id: uuid.v1(),
                                   casuale: 'Introiti Daniele',
-                                  amount: _daylyProfitDaniele.text,
+                                  amount: _daylyProfitDaniele.text.replaceAll(",", "."),
                                   date: Timestamp.fromDate(dateTimeSelected),
                                   month: dateTimeSelected.month.toString(),
                                   hour: '',
@@ -674,7 +694,7 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
                               ExpenceClass expenceClassPos = ExpenceClass(
                                   id: uuid.v1(),
                                   casuale: 'Introiti Pos',
-                                  amount: _daylyProfitPos.text,
+                                  amount: _daylyProfitPos.text.replaceAll(",", "."),
                                   date: Timestamp.fromDate(dateTimeSelected),
                                   month: dateTimeSelected.month.toString(),
                                   hour: '',
@@ -702,16 +722,47 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
                         FlatButton(
                           textColor: Colors.deepOrange.shade500,
                           onPressed: () async {
+                            if(double.tryParse(_daylyProfitCash.text.replaceAll(",", ".")) == null){
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                  backgroundColor: Colors.redAccent,
+                                  content: Text('Importo Cash non valido. Inserire un numero valido')));
 
-                            setState(() {
-                              _daylyProfitTotal.text = (double.parse(_daylyProfitPos.text) + double.parse(_daylyProfitCash.text)).toString();
-                              _daylyProfitMattia.text = (double.parse(_daylyProfitTotal.text) - double.parse(_daylyProfitDaniele.text)).toString();
-                            });
+                            }else if(double.tryParse(_daylyProfitTotal.text.replaceAll(",", ".")) == null){
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                  backgroundColor: Colors.redAccent,
+                                  content: Text('Importo Totale non valido. Inserire un numero valido')));
+
+                            }else if(double.tryParse(_daylyProfitDaniele.text.replaceAll(",", ".")) == null){
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                  backgroundColor: Colors.redAccent,
+                                  content: Text('Importo Daniele non valido. Inserire un numero valido')));
+
+                            }else if(double.tryParse(_daylyProfitMattia.text.replaceAll(",", ".")) == null){
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                  backgroundColor: Colors.redAccent,
+                                  content: Text('Importo Mattia non valido. Inserire un numero valido')));
+
+                            }else if(double.tryParse(_daylyProfitPos.text.replaceAll(",", ".")) == null){
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                  backgroundColor: Colors.redAccent,
+                                  content: Text('Importo pos non valido')));
+
+                            }else{
+                              setState(() {
+                                _daylyProfitTotal.text = (double.parse(_daylyProfitPos.text.replaceAll(",", ".")) + double.parse(_daylyProfitCash.text.replaceAll(",", "."))).toString();
+                                _daylyProfitMattia.text = (double.parse(_daylyProfitTotal.text.replaceAll(",", ".")) - double.parse(_daylyProfitDaniele.text.replaceAll(",", "."))).toString();
+                              });
+                            }
                           },
                           child: Text('Calcola'),
                         ),
                         FlatButton(
-                          textColor: VENTI_METRI_GREY,
+                          textColor: VENTI_METRI_BLUE,
                           onPressed: () async {
                             setState(() {
                               _daylyProfitTotal.clear();
@@ -760,7 +811,7 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
                     ],
                   ),
                   DatePicker(
-                    DateTime.now(),
+                    DateTime.now().subtract(Duration(days: DateTime.now().weekday - 1),),
                     initialSelectedDate: DateTime.now(),
                     dateTextStyle: TextStyle(color: Colors.black, fontSize: 16.0, fontFamily: 'LoraFont'),
                     dayTextStyle: TextStyle(color: Colors.black, fontSize: 14.0, fontFamily: 'LoraFont'),
@@ -768,7 +819,7 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
                     selectionColor: VENTI_METRI_PINK,
                     deactivatedColor: Colors.grey,
                     selectedTextColor: Colors.white,
-                    daysCount: 50,
+                    daysCount: 7,
                     locale: 'it',
                     controller: _dateController,
                     onDateChange: (date) {
@@ -783,7 +834,7 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
                       FloatingActionButton.extended(
                         label: Text('Mattia', style: TextStyle(color: Colors.white),),
                         elevation: 5.0,
-                        backgroundColor: _buttonMattiaPressed ? VENTI_METRI_GREY : Colors.grey,
+                        backgroundColor: _buttonMattiaPressed ? VENTI_METRI_BLUE : Colors.grey,
                         onPressed: () {
                           setState(() {
                             _buttonMattiaPressed = true;
@@ -796,7 +847,7 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
                       FloatingActionButton.extended(
                         label: Text('Daniele', style: TextStyle(color: Colors.white),),
                         elevation: 5.0,
-                        backgroundColor: _buttonDanielePressed ? VENTI_METRI_GREY : Colors.grey,
+                        backgroundColor: _buttonDanielePressed ? VENTI_METRI_BLUE : Colors.grey,
                         onPressed: () {
                           setState(() {
                             _buttonMattiaPressed = false;
@@ -808,13 +859,12 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
                       ),
                     ],
                   ),
-                  
+
                   const SizedBox(height: 3,),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: TextField(
                       controller: _amountController,
-                      keyboardType: TextInputType.number,
                       decoration: InputDecoration(
                         border: OutlineInputBorder(),
                         icon: Icon(Icons.euro),
@@ -835,7 +885,7 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
                       ),
                     ),
                   ),
-                  
+
                   ButtonBar(
                     alignment: MainAxisAlignment.spaceEvenly,
                     children: [
@@ -847,12 +897,17 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
                                 .showSnackBar(SnackBar(
                                 backgroundColor: Colors.redAccent,
                                 content: Text('Selezionare uno fra Daniele e Mattia')));
+                          }else if(double.tryParse(_amountController.text.replaceAll(",", ".")) == null){
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(SnackBar(
+                                backgroundColor: Colors.redAccent,
+                                content: Text('Importo non valido - Immettere un numero valido')));
                           }else if(_casualeController.text == ''){
                             ScaffoldMessenger.of(context)
                                 .showSnackBar(SnackBar(
                                 backgroundColor: Colors.redAccent,
                                 content: Text('Immettere la casuale spesa')));
-                          }else if(_amountController.text == '' || double.parse(_amountController.text) == 0){
+                          }else if(_amountController.text.replaceAll(",", ".") == '' || double.parse(_amountController.text.replaceAll(",", ".")) == 0){
                             ScaffoldMessenger.of(context)
                                 .showSnackBar(SnackBar(
                                 backgroundColor: Colors.redAccent,
@@ -865,7 +920,7 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
                             ExpenceClass expenceClass = ExpenceClass(
                                 id: uuid.v1(),
                                 casuale: _casualeController.text,
-                                amount: _amountController.text,
+                                amount: _amountController.text.replaceAll(",", "."),
                                 date: Timestamp.fromDate(dateTimeSelected),
                                 month: dateTime.month.toString(),
                                 hour: dateTime.hour.toString()+ ":" +  dateTime.minute.toString() + ":" + dateTime.second.toString(),
@@ -902,7 +957,7 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
 
                       ),
                       FlatButton(
-                        textColor: VENTI_METRI_GREY,
+                        textColor: VENTI_METRI_BLUE,
                         onPressed: () {
                           setState(() {
                             _buttonMattiaPressed = false;
@@ -1137,14 +1192,14 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
     List<ExpenceClass> _expenceListMattiaOut = await crudModelMattiaOut.fetchExpences(_currentDateTimeRange.start, _currentDateTimeRange.end);
 
     _expenceListMattiaOut.forEach((element) {
-      _mattiaOutAmount = _mattiaOutAmount + double.parse(element.amount);
+      _mattiaOutAmount = _mattiaOutAmount + double.parse(element.amount.replaceAll(",", "."));
     });
 
     CRUDModel crudModelPosIn = CRUDModel(_currentSchemaPosIn);
     List<ExpenceClass> _expenceListPosIn = await crudModelPosIn.fetchExpences(_currentDateTimeRange.start, _currentDateTimeRange.end);
 
     _expenceListPosIn.forEach((element) {
-      _posInAmount = _posInAmount + double.parse(element.amount);
+      _posInAmount = _posInAmount + double.parse(element.amount.replaceAll(",", "."));
     });
 
     List<Widget> listOut = <Widget>[];
@@ -1322,4 +1377,5 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
     }
     return listOut;
   }
+
 }
