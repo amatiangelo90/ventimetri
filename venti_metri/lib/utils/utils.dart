@@ -58,7 +58,11 @@ const String POS = 'POS';
 final Color VENTI_METRI_RED = Colors.red.shade900;
 final Color VENTI_METRI_GREEN = const Color(0xff53fdd7);
 final Color VENTI_METRI_PINK = const Color(0xffff5182);
+final Color VENTI_METRI_BLUE = Colors.blueGrey.shade900;
 final Color VENTI_METRI_GREY = Colors.blueGrey.shade900;
+final Color VENTI_METRI_CISTERNINO = Colors.tealAccent;
+final Color VENTI_METRI_MONOPOLI = Colors.redAccent.shade100;
+final Color VENTI_METRI_LOCOROTONDO = Colors.orangeAccent.shade100;
 
 const kTableColumns = <DataColumn>[
   DataColumn(

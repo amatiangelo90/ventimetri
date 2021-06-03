@@ -32,6 +32,14 @@ class CRUDModel{
         .map((doc) => ExpenceClass.fromMap(doc.data(), doc.id))
         .toList();
 
+    print('ASDASDASDASDASD');
+    print('ASDASDASDASDASD');
+    print('ASDASDASDASDASD');
+    print(expencesList);
+    print('ASDASDASDASDASD');
+    print('ASDASDASDASDASD');
+    print('ASDASDASDASDASD');
+
     return expencesList;
   }
 

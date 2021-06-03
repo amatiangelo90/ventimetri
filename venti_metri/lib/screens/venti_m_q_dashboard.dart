@@ -341,7 +341,7 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
 
 
     CRUDModel crudModel = CRUDModel(schema);
-    var expenceList = await crudModel.fetchExpences(_currentDateTimeRange.start, _currentDateTimeRange.end);
+    var expenceList = await crudModel.fetchExpences(_currentDateTimeRange.start.subtract(Duration(days: 1)), _currentDateTimeRange.end);
 
     double sum = 0.0;
 

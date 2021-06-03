@@ -18,10 +18,10 @@ class _BranchChooseScreenState extends State<BranchChooseScreen> {
 
     return SafeArea(
       child: Scaffold(
-        backgroundColor: VENTI_METRI_GREY,
+        backgroundColor: VENTI_METRI_BLUE,
         appBar: AppBar(
           automaticallyImplyLeading: false,
-          backgroundColor: VENTI_METRI_GREY,
+          backgroundColor: VENTI_METRI_BLUE,
           title: Center(child: Text('20m² - Drink & Enjoy')),
           centerTitle: true,
           actions: [

@@ -42,7 +42,7 @@ class _ExpenceProfitDetailsState extends State<ExpenceProfitDetails> {
         BarChartGroupData(
           x: entry.key.toInt(),
           barRods: [
-            BarChartRodData(y: entry.value, colors: [VENTI_METRI_GREY]),
+            BarChartRodData(y: entry.value, colors: [VENTI_METRI_BLUE]),
             BarChartRodData(y: _expences[entry.key], colors: [VENTI_METRI_PINK]),
           ],
         ),
