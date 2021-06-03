@@ -28,6 +28,7 @@ dependencies:
   expansion_card:
   dio:
   flutter_date_pickers: ^0.2.4
+  fl_chart: ^0.36.1
 
 # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

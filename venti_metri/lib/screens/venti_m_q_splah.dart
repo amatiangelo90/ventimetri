@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:venti_metri/component/chart_class.dart';
 import 'package:venti_metri/screens/branch_choose.dart';
-import 'package:venti_metri/screens/venti_m_q_dashboard.dart';
 
 class VentiMetriQuadriSplash extends StatefulWidget {
   static String id = 'splash';
@@ -25,6 +25,7 @@ class _VentiMetriQuadriSplashState extends State<VentiMetriQuadriSplash> {
   @override
   void initState() {
     super.initState();
+
     Timer(Duration(milliseconds: 1500), ()=> Navigator.pushNamed(context, BranchChooseScreen.id));
   }
 }

@@ -184,46 +184,6 @@ class _BranchChooseScreenState extends State<BranchChooseScreen> {
                           padding: const EdgeInsets.all(4.0),
                           child: Container(
                             decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.topRight,
-                                end: Alignment.bottomLeft,
-                                colors: [
-                                  VENTI_METRI_RED,
-                                  VENTI_METRI_GREY,
-                                ],
-                              ),
-                            ),
-                            child: Center(
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text('Totale', style: TextStyle(color: Colors.white, fontSize: 30),),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            Expanded(
-              flex: 2,
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Container(
-                  color: Colors.white,
-                  child: GestureDetector(
-                    onTap: () => {},
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(4.0),
-                          child: Container(
-                            decoration: BoxDecoration(
                               image: DecorationImage(
                                 image: AssetImage('images/discoteche.jpg'),
                                 fit: BoxFit.cover,

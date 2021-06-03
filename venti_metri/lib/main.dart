@@ -4,6 +4,8 @@ import 'package:venti_metri/screens/branch_choose.dart';
 import 'package:venti_metri/screens/venti_m_q_dashboard.dart';
 import 'package:venti_metri/screens/venti_m_q_splah.dart';
 
+import 'component/chart_class.dart';
+
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,6 +26,7 @@ class MyApp extends StatelessWidget {
           VentiMetriQuadriSplash.id : (context) => VentiMetriQuadriSplash(),
           VentiMetriQuadriDashboard.id : (context) => VentiMetriQuadriDashboard(),
           BranchChooseScreen.id : (context) => BranchChooseScreen(),
+          ExpenceProfitDetails.id : (context) => ExpenceProfitDetails(),
         }
     );
 

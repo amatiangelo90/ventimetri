@@ -17,6 +17,12 @@ class Dao{
         .get();
   }
 
+  Future<QuerySnapshot> getDataCollectionById(String id){
+    return _collectionReference
+        .where('id', isEqualTo: id)
+        .get();
+  }
+
   Future<QuerySnapshot> getDataCollectionByDateRange() {
     return _collectionReference.get();
   }

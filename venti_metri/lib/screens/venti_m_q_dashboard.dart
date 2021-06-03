@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:uuid/uuid.dart';
+import 'package:venti_metri/component/chart_class.dart';
 import 'package:venti_metri/dao/crud_model.dart';
 import 'package:venti_metri/model/expence_class.dart';
 import 'package:venti_metri/utils/utils.dart';
@@ -21,7 +22,6 @@ class VentiMetriQuadriDashboard extends StatefulWidget {
 
 class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
 
-  double _width;
   double _height;
   DateTimeRange _currentDateTimeRange;
   DateTime _currentDateForDateRangePicker;
@@ -33,6 +33,7 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
   bool _buttonSpese = false;
   bool _buttonIntroiti = false;
 
+  Map<String, ExpenceClass> _retrieveListDataAssociatedByIdList;
 
   TextEditingController _casualeController = TextEditingController();
   TextEditingController _amountController = TextEditingController();
@@ -108,8 +109,8 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
 
     _currentDateForDateRangePicker = DateTime.now();
     _currentDateTimeRange = DateTimeRange(
-      start: DateTime.utc(_currentDateForDateRangePicker.year , _currentDateForDateRangePicker.month , 1 ,0 ,0 ,0 ,0 ,0),
-      end: DateTime.utc(_currentDateForDateRangePicker.year , _currentDateForDateRangePicker.month +1).subtract(Duration(days: 1)),
+      start: _currentDateForDateRangePicker.subtract(Duration(days: _currentDateForDateRangePicker.weekday - 1)),
+      end: _currentDateForDateRangePicker.add(Duration(days: DateTime.daysPerWeek - _currentDateForDateRangePicker.weekday)),
     );
     super.initState();
   }
@@ -117,7 +118,6 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
   @override
   Widget build(BuildContext context) {
 
-    _width = MediaQuery.of(context).size.width;
     _height = MediaQuery.of(context).size.height;
 
     return SafeArea(
@@ -128,16 +128,6 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
             length: 5,
             child: Scaffold(
               key: this._scaffoldKey,
-              /*floatingActionButton: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: FloatingActionButton(
-                  backgroundColor: VENTI_METRI_PINK,
-                  onPressed: () {
-                    Navigator.pushNamed(context, AddItemScreen.id);
-                  },
-                  child: Icon(Icons.add),
-                ),
-              ),*/
               appBar: AppBar(
                 actions: [
                   IconButton(icon: Icon(Icons.calendar_today,
@@ -195,11 +185,6 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
 
   Widget buildExpencesManagment(String object) {
 
-    if(object == POS){
-      setState(() {
-        listType = INTROITI;
-      });
-    }
     return SingleChildScrollView(
       controller: scrollViewColtroller,
       child: Column(
@@ -231,9 +216,11 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
                 FlatButton(
                   textColor: listType == SPESE ? Colors.red.shade900 : Colors.grey,
                   onPressed: () {
+                    print(listType);
                     setState(() {
                       listType = SPESE;
                     });
+                    print(listType);
                   },
                   child: Text(SPESE),
                 ),
@@ -318,6 +305,36 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
     }
   }
 
+  Future<Map<String,ExpenceClass>> retrieveListDataAssociatedById(String id) async {
+    print('#######################################');
+    print('ID : ' + id);
+    print('schema : ' + _currentSchemaMattiaIn);
+    print('schema : ' + _currentSchemaDanieleIn);
+    print('schema : ' + _currentSchemaPosIn);
+    print('#######################################');
+    Map<String, ExpenceClass> mapExpencesById = Map<String,ExpenceClass>();
+
+    CRUDModel crudModelMattiaIn = CRUDModel(_currentSchemaMattiaIn);
+    CRUDModel crudModelDanieleIn = CRUDModel(_currentSchemaDanieleIn);
+    CRUDModel crudModelPosIn = CRUDModel(_currentSchemaPosIn);
+
+    var expenceObjectMattiaById = await crudModelMattiaIn.fetchExpencesById(id);
+    var expenceObjectPosById = await crudModelPosIn.fetchExpencesById(id);
+    var expenceObjectDanieleById = await crudModelDanieleIn.fetchExpencesById(id);
+
+    if(expenceObjectDanieleById != null && expenceObjectDanieleById.length > 0){
+      mapExpencesById[_currentSchemaDanieleIn] = expenceObjectDanieleById[0];
+    }
+    if(expenceObjectPosById != null && expenceObjectPosById.length > 0){
+      mapExpencesById[_currentSchemaPosIn] = expenceObjectPosById[0];
+    }
+    if(expenceObjectMattiaById != null && expenceObjectMattiaById.length > 0){
+      mapExpencesById[_currentSchemaMattiaIn] = expenceObjectMattiaById[0];
+    }
+
+    return mapExpencesById;
+  }
+
   buildWidgetListExpences(String schema) async {
 
     List<Widget> listOut = <Widget>[];
@@ -346,14 +363,209 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
           direction: DismissDirection.endToStart,
           key: Key(element.id),
           onDismissed: (direction) {
-            crudModel.removeProduct(element.documentId);
+            if(listType == INTROITI){
+
+              CRUDModel crudModelMattiaIn = CRUDModel(_currentSchemaMattiaIn);
+              CRUDModel crudModelDanieleIn = CRUDModel(_currentSchemaDanieleIn);
+              CRUDModel crudModelPosIn = CRUDModel(_currentSchemaPosIn);
+
+
+              if(_retrieveListDataAssociatedByIdList != null && _retrieveListDataAssociatedByIdList.length > 0 && _retrieveListDataAssociatedByIdList.containsKey(_currentSchemaMattiaIn)){
+                crudModelMattiaIn.removeProduct(_retrieveListDataAssociatedByIdList[_currentSchemaMattiaIn].documentId);
+              }
+              if(_retrieveListDataAssociatedByIdList != null && _retrieveListDataAssociatedByIdList.length > 0 && _retrieveListDataAssociatedByIdList.containsKey(_currentSchemaDanieleIn)){
+                crudModelDanieleIn.removeProduct(_retrieveListDataAssociatedByIdList[_currentSchemaDanieleIn].documentId);
+              }
+              if(_retrieveListDataAssociatedByIdList != null && _retrieveListDataAssociatedByIdList.length > 0 && _retrieveListDataAssociatedByIdList.containsKey(_currentSchemaPosIn)){
+                crudModelPosIn.removeProduct(_retrieveListDataAssociatedByIdList[_currentSchemaPosIn].documentId);
+              }
+
+            }else{
+              crudModel.removeProduct(element.documentId);
+            }
             setState(() {
             });
             ScaffoldMessenger.of(context)
                 .showSnackBar(SnackBar(
                 backgroundColor: VENTI_METRI_RED,
-                content: Text("${element.casuale} in data ${element.date} eliminato")
+                content: Text("${element.casuale} per data ${element.date.toDate().day}/${element.date.toDate().month}/${element.date.toDate().year} eliminato")
             ));
+          },
+
+          confirmDismiss: (DismissDirection direction) async {
+
+            print(listType);
+            if(listType == INTROITI){
+              _retrieveListDataAssociatedByIdList = await retrieveListDataAssociatedById(element.id);
+              return await showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Text("Attenzione"),
+                    content: Column(
+                      children: [
+                        Text("Elimindo la voce ${element.casuale} per data ${element.date.toDate().day}/${element.date.toDate().month}/${element.date.toDate().year} verranno eliminati tutti i dati ad essa associati."),
+                        SizedBox(height: 5,),
+                        Text("", style: TextStyle(fontSize: 12),),
+                        Table(
+                          border: TableBorder(horizontalInside: BorderSide(width: 1, color: Colors.orangeAccent, style: BorderStyle.solid)),
+                          children:[
+                            TableRow(
+                              children: [
+                                Column(
+                                    children:[
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Text('Casuale'),
+                                      )
+                                    ]),
+                                Column(
+                                    children:[
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Text('Importo'),
+                                      )
+                                    ]),
+                              ],
+                            ),
+                            _retrieveListDataAssociatedByIdList != null
+                                && _retrieveListDataAssociatedByIdList.length > 0
+                                && _retrieveListDataAssociatedByIdList.containsKey(_currentSchemaMattiaIn) ? TableRow(
+                              children: [
+                                Column(children:[
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(_retrieveListDataAssociatedByIdList[_currentSchemaMattiaIn].casuale),
+                                  )
+                                ]),
+                                Column(children:[
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(_retrieveListDataAssociatedByIdList[_currentSchemaMattiaIn].amount),
+                                  )
+                                ]),
+                              ],
+                            ) : TableRow(
+                              children: [
+                                Column(children:[
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text('Introiti Mattia'),
+                                  )
+                                ]),
+                                Column(children:[
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text('-'),
+                                  )
+                                ]),
+                              ],
+                            ),
+                            _retrieveListDataAssociatedByIdList != null
+                                && _retrieveListDataAssociatedByIdList.length > 0
+                                && _retrieveListDataAssociatedByIdList.containsKey(_currentSchemaDanieleIn) ? TableRow(
+                              children: [
+                                Column(children:[
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(_retrieveListDataAssociatedByIdList[_currentSchemaDanieleIn].casuale),
+                                  )
+                                ]),
+                                Column(children:[
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(_retrieveListDataAssociatedByIdList[_currentSchemaDanieleIn].amount),
+                                  )
+                                ]),
+                              ],
+                            ) : TableRow(children: [
+                              Column(children:[
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text('Introiti Daniele'),
+                                )
+                              ]),
+                              Column(children:[
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text('-'),
+                                )
+                              ]),
+                            ],),
+                            _retrieveListDataAssociatedByIdList != null
+                                && _retrieveListDataAssociatedByIdList.length > 0
+                                && _retrieveListDataAssociatedByIdList.containsKey(_currentSchemaPosIn) ? TableRow(
+                              children: [
+                                Column(children:[
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(_retrieveListDataAssociatedByIdList[_currentSchemaPosIn].casuale),
+                                  )
+                                ]),
+                                Column(children:[
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(_retrieveListDataAssociatedByIdList[_currentSchemaPosIn].amount),
+                                  )
+                                ]),
+                              ],
+                            ) : TableRow(
+                              children: [
+                                Column(children:[
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text('Introiti Pos'),
+                                  )
+                                ]),
+                                Column(children:[
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text('-'),
+                                  )
+                                ]),
+                              ],
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 10,),
+                        Text("${element.id}", style: TextStyle(fontSize: 12),),
+
+                      ],
+                    ),
+                    actions: <Widget>[
+                      FlatButton(
+                          onPressed: () => Navigator.of(context).pop(true),
+                          child: const Text("Conferma")
+                      ),
+                      FlatButton(
+                        onPressed: () => Navigator.of(context).pop(false),
+                        child: const Text("Indietro"),
+                      ),
+                    ],
+                  );
+                },
+              );
+            }else{
+              return await showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Text("Attenzione"),
+                    content: Text("Eliminare ${element.casuale} per data ${element.date.toDate().day}/${element.date.toDate().month}/${element.date.toDate().year} ?"),
+                    actions: <Widget>[
+                      FlatButton(
+                          onPressed: () => Navigator.of(context).pop(true),
+                          child: const Text("Conferma")
+                      ),
+                      FlatButton(
+                        onPressed: () => Navigator.of(context).pop(false),
+                        child: const Text("Indietro"),
+                      ),
+                    ],
+                  );
+                },
+              );
+            }
           },
           background: Container(
               child: Row(
@@ -414,33 +626,35 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
         ),
       );
     });
-
-    print('ListSize: ' + listOut.length.toString());
     return listOut;
   }
 
-
-  Future buildChart(String schema_in, String schema_out) async {
+  Future buildChart(
+      String schema_in,
+      String schema_out) async {
 
     double _sumProfits = 0.0;
     double _sumExpences = 0.0;
 
     CRUDModel profitCrudModel = CRUDModel(schema_in);
-    var profitList = await profitCrudModel.fetchExpences(_currentDateTimeRange.start, _currentDateTimeRange.end);
+    var profitList = await profitCrudModel.fetchExpences(_currentDateTimeRange.start.subtract(Duration(days: 1)), _currentDateTimeRange.end);
 
     CRUDModel expenceCrudModel = CRUDModel(schema_out);
     var expenceList = await expenceCrudModel.fetchExpences(_currentDateTimeRange.start, _currentDateTimeRange.end);
 
     profitList.forEach((element) {
+      print(element.amount);
+      print(element.date);
       _sumProfits = _sumProfits + double.parse(element.amount);
     });
 
     expenceList.forEach((element) {
+      print(element.amount);
+      print(DateTime.fromMillisecondsSinceEpoch(element.date.millisecondsSinceEpoch).month);
       _sumExpences = _sumExpences + double.parse(element.amount);
     });
 
     List<Widget> expenceListWidget = <Widget>[];
-
     expenceListWidget.add(
       Card(
         child: Column(
@@ -502,7 +716,22 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
         ),
       ),
     );
-
+    expenceListWidget.add(
+      RaisedButton.icon(
+        icon: Icon(Icons.insert_chart),
+        label: Text('Mostra Dettaglio'),
+        color: Colors.green,
+        textColor: Colors.white,
+        onPressed: ()=> Navigator.push(context,
+          MaterialPageRoute(builder: (context) => ExpenceProfitDetails(
+            dateTimeRange: _currentDateTimeRange,
+            expenceList: expenceList,
+            profitsList: profitList,
+            ),
+          ),
+        ),
+      ),
+    );
     return expenceListWidget;
   }
 
@@ -543,7 +772,7 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
                       ],
                     ),
                     DatePicker(
-                      DateTime.now(),
+                      DateTime.now().subtract(Duration(days: _currentDateForDateRangePicker.weekday - 1),),
                       initialSelectedDate: DateTime.now(),
                       dateTextStyle: TextStyle(color: Colors.black, fontSize: 16.0, fontFamily: 'LoraFont'),
                       dayTextStyle: TextStyle(color: Colors.black, fontSize: 14.0, fontFamily: 'LoraFont'),
@@ -551,7 +780,7 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
                       selectionColor: VENTI_METRI_PINK,
                       deactivatedColor: Colors.grey,
                       selectedTextColor: Colors.white,
-                      daysCount: 50,
+                      daysCount: 7,
                       locale: 'it',
                       controller: _dateController,
                       onDateChange: (date) {
@@ -565,7 +794,7 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
                       padding: const EdgeInsets.all(8.0),
                       child: TextField(
                         controller: _daylyProfitCash,
-                        keyboardType: TextInputType.number,
+                        keyboardType: TextInputType.numberWithOptions(decimal: true, signed: true),
                         decoration: InputDecoration(
                           border: OutlineInputBorder(),
                           icon: Icon(Icons.euro_symbol),
@@ -577,7 +806,7 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
                       padding: const EdgeInsets.all(8.0),
                       child: TextField(
                         controller: _daylyProfitDaniele,
-                        keyboardType: TextInputType.number,
+                        keyboardType: TextInputType.numberWithOptions(decimal: true, signed: true),
                         decoration: InputDecoration(
                           border: OutlineInputBorder(),
                           icon: Icon(Icons.person),
@@ -589,7 +818,7 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
                       padding: const EdgeInsets.all(8.0),
                       child: TextField(
                         controller: _daylyProfitMattia,
-                        keyboardType: TextInputType.number,
+                        keyboardType: TextInputType.numberWithOptions(decimal: true, signed: true),
                         decoration: InputDecoration(
                           border: OutlineInputBorder(),
                           icon: Icon(Icons.person),
@@ -601,7 +830,7 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
                       padding: const EdgeInsets.all(8.0),
                       child: TextField(
                         controller: _daylyProfitPos,
-                        keyboardType: TextInputType.number,
+                        keyboardType: TextInputType.numberWithOptions(decimal: true, signed: true),
                         decoration: InputDecoration(
                           border: OutlineInputBorder(),
                           icon: Icon(Icons.credit_card),
@@ -613,7 +842,7 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
                       padding: const EdgeInsets.all(8.0),
                       child: TextField(
                         controller: _daylyProfitTotal,
-                        keyboardType: TextInputType.number,
+                        keyboardType: TextInputType.numberWithOptions(decimal: true, signed: true),
                         decoration: InputDecoration(
                           border: OutlineInputBorder(),
                           icon: Icon(Icons.line_style),
@@ -630,22 +859,42 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
                           onPressed: () async {
 
 
-                            if(double.parse(_daylyProfitPos.text) > double.parse(_daylyProfitDaniele.text)){
+                            if(_daylyProfitMattia.text != '' && double.tryParse(_daylyProfitMattia.text.replaceAll(",", ".")) == null){
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                  backgroundColor: Colors.redAccent,
+                                  content: Text('Importo Mattia non formattato correttamente. Inserire un numero valido')));
+                            }else if(_daylyProfitDaniele.text != '' && double.tryParse(_daylyProfitDaniele.text.replaceAll(",", ".")) == null){
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                  backgroundColor: Colors.redAccent,
+                                  content: Text('Importo Daniele non formattato correttamente. Inserire un numero valido')));
+                            }else if(_daylyProfitPos.text != '' && double.tryParse(_daylyProfitPos.text.replaceAll(",", ".")) == null){
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                  backgroundColor: Colors.redAccent,
+                                  content: Text('Importo Pos non formattato correttamente. Inserire un numero valido')));
+                            }else if(_daylyProfitCash.text != '' && double.tryParse(_daylyProfitCash.text.replaceAll(",", ".")) == null){
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                  backgroundColor: Colors.redAccent,
+                                  content: Text('Importo Cash non formattato correttamente. Inserire un numero valido')));
+                            }else if(double.parse(_daylyProfitPos.text.replaceAll(",", ".")) > double.parse(_daylyProfitDaniele.text.replaceAll(",", "."))){
                               ScaffoldMessenger.of(context)
                                   .showSnackBar(SnackBar(
                                   backgroundColor: Colors.redAccent,
                                   content: Text('Importo Pos > Importo Daniele')));
-
-                            }else{
+                            }{
                               setState(() {
-                                _daylyProfitTotal.text = (double.parse(_daylyProfitPos.text) + double.parse(_daylyProfitCash.text)).toString();
-                                _daylyProfitMattia.text = (double.parse(_daylyProfitTotal.text) - double.parse(_daylyProfitDaniele.text)).toString();
+                                _daylyProfitTotal.text = (double.parse(_daylyProfitPos.text.replaceAll(",", ".")) + double.parse(_daylyProfitCash.text.replaceAll(",", "."))).toString();
+                                _daylyProfitMattia.text = (double.parse(_daylyProfitTotal.text.replaceAll(",", ".")) - double.parse(_daylyProfitDaniele.text.replaceAll(",", "."))).toString();
                               });
+                              var currentId = uuid.v1();
                               CRUDModel crudModel = CRUDModel(_currentSchemaMattiaIn);
                               ExpenceClass expenceClass = ExpenceClass(
-                                  id: uuid.v1(),
+                                  id: currentId,
                                   casuale: 'Introiti Mattia',
-                                  amount: (double.parse(_daylyProfitTotal.text) - double.parse(_daylyProfitDaniele.text)).toString(),
+                                  amount: (double.parse(_daylyProfitTotal.text.replaceAll(",", ".")) - double.parse(_daylyProfitDaniele.text.replaceAll(",", "."))).toString(),
                                   date: Timestamp.fromDate(dateTimeSelected),
                                   month: dateTimeSelected.month.toString(),
                                   hour: '',
@@ -657,9 +906,9 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
                               await crudModel.addExpenceObject(expenceClass);
                               CRUDModel crudModelDaniele = CRUDModel(_currentSchemaDanieleIn);
                               ExpenceClass expenceClassDaniele = ExpenceClass(
-                                  id: uuid.v1(),
+                                  id: currentId,
                                   casuale: 'Introiti Daniele',
-                                  amount: _daylyProfitDaniele.text,
+                                  amount: _daylyProfitDaniele.text.replaceAll(",", "."),
                                   date: Timestamp.fromDate(dateTimeSelected),
                                   month: dateTimeSelected.month.toString(),
                                   hour: '',
@@ -672,9 +921,9 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
 
                               CRUDModel crudModelPos = CRUDModel(_currentSchemaPosIn);
                               ExpenceClass expenceClassPos = ExpenceClass(
-                                  id: uuid.v1(),
+                                  id: currentId,
                                   casuale: 'Introiti Pos',
-                                  amount: _daylyProfitPos.text,
+                                  amount: _daylyProfitPos.text.replaceAll(",", "."),
                                   date: Timestamp.fromDate(dateTimeSelected),
                                   month: dateTimeSelected.month.toString(),
                                   hour: '',
@@ -692,9 +941,8 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
                               ScaffoldMessenger.of(context)
                                   .showSnackBar(SnackBar(
                                   backgroundColor: Colors.green,
-                                  content: Text('Dati Salvati')));
+                                  content: Text('Incassi salvati correttamente')));
                               setState(() {});
-
                             }
                           },
                           child: Text('Salva'),
@@ -702,11 +950,37 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
                         FlatButton(
                           textColor: Colors.deepOrange.shade500,
                           onPressed: () async {
-
-                            setState(() {
-                              _daylyProfitTotal.text = (double.parse(_daylyProfitPos.text) + double.parse(_daylyProfitCash.text)).toString();
-                              _daylyProfitMattia.text = (double.parse(_daylyProfitTotal.text) - double.parse(_daylyProfitDaniele.text)).toString();
-                            });
+                            if(_daylyProfitMattia.text != '' && double.tryParse(_daylyProfitMattia.text.replaceAll(",", ".")) == null){
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                  backgroundColor: Colors.redAccent,
+                                  content: Text('Importo Mattia non formattato correttamente. Inserire un numero valido')));
+                            }else if(_daylyProfitDaniele.text != '' && double.tryParse(_daylyProfitDaniele.text.replaceAll(",", ".")) == null){
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                  backgroundColor: Colors.redAccent,
+                                  content: Text('Importo Daniele non formattato correttamente. Inserire un numero valido')));
+                            }else if(_daylyProfitPos.text != '' && double.tryParse(_daylyProfitPos.text.replaceAll(",", ".")) == null){
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                  backgroundColor: Colors.redAccent,
+                                  content: Text('Importo Pos non formattato correttamente. Inserire un numero valido')));
+                            }else if(_daylyProfitCash.text != '' && double.tryParse(_daylyProfitCash.text.replaceAll(",", ".")) == null){
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                  backgroundColor: Colors.redAccent,
+                                  content: Text('Importo Cash non formattato correttamente. Inserire un numero valido')));
+                            }else if(double.parse(_daylyProfitPos.text.replaceAll(",", ".")) > double.parse(_daylyProfitDaniele.text.replaceAll(",", "."))){
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                  backgroundColor: Colors.redAccent,
+                                  content: Text('Importo Pos > Importo Daniele')));
+                            }else{
+                              setState(() {
+                                _daylyProfitTotal.text = (double.parse(_daylyProfitPos.text.replaceAll(",", ".")) + double.parse(_daylyProfitCash.text.replaceAll(",", "."))).toString();
+                                _daylyProfitMattia.text = (double.parse(_daylyProfitTotal.text.replaceAll(",", ".")) - double.parse(_daylyProfitDaniele.text.replaceAll(",", "."))).toString();
+                              });
+                            }
                           },
                           child: Text('Calcola'),
                         ),
@@ -760,7 +1034,7 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
                     ],
                   ),
                   DatePicker(
-                    DateTime.now(),
+                    DateTime.now().subtract(Duration(days: _currentDateForDateRangePicker.weekday - 1),),
                     initialSelectedDate: DateTime.now(),
                     dateTextStyle: TextStyle(color: Colors.black, fontSize: 16.0, fontFamily: 'LoraFont'),
                     dayTextStyle: TextStyle(color: Colors.black, fontSize: 14.0, fontFamily: 'LoraFont'),
@@ -768,7 +1042,7 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
                     selectionColor: VENTI_METRI_PINK,
                     deactivatedColor: Colors.grey,
                     selectedTextColor: Colors.white,
-                    daysCount: 50,
+                    daysCount: 7,
                     locale: 'it',
                     controller: _dateController,
                     onDateChange: (date) {
@@ -808,13 +1082,13 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
                       ),
                     ],
                   ),
-                  
+
                   const SizedBox(height: 3,),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: TextField(
                       controller: _amountController,
-                      keyboardType: TextInputType.number,
+                      keyboardType: TextInputType.numberWithOptions(decimal: true, signed: true),
                       decoration: InputDecoration(
                         border: OutlineInputBorder(),
                         icon: Icon(Icons.euro),
@@ -835,7 +1109,7 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
                       ),
                     ),
                   ),
-                  
+
                   ButtonBar(
                     alignment: MainAxisAlignment.spaceEvenly,
                     children: [
@@ -852,7 +1126,12 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
                                 .showSnackBar(SnackBar(
                                 backgroundColor: Colors.redAccent,
                                 content: Text('Immettere la casuale spesa')));
-                          }else if(_amountController.text == '' || double.parse(_amountController.text) == 0){
+                          }else if(double.tryParse(_amountController.text.replaceAll(",", ".")) == null){
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(SnackBar(
+                                backgroundColor: Colors.redAccent,
+                                content: Text('Formato del numero non valido.')));
+                          }else if(_amountController.text == '' || double.parse(_amountController.text.replaceAll(",", ".")) == 0){
                             ScaffoldMessenger.of(context)
                                 .showSnackBar(SnackBar(
                                 backgroundColor: Colors.redAccent,
@@ -865,7 +1144,7 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
                             ExpenceClass expenceClass = ExpenceClass(
                                 id: uuid.v1(),
                                 casuale: _casualeController.text,
-                                amount: _amountController.text,
+                                amount: _amountController.text.replaceAll(",", "."),
                                 date: Timestamp.fromDate(dateTimeSelected),
                                 month: dateTime.month.toString(),
                                 hour: dateTime.hour.toString()+ ":" +  dateTime.minute.toString() + ":" + dateTime.second.toString(),
@@ -885,7 +1164,10 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
                             ));
 
                             await crudModel.addExpenceObject(expenceClass);
-
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(SnackBar(
+                                backgroundColor: Colors.green,
+                                content: Text('Voce spesa salvata correttamente')));
                             setState(() {
                               _buttonMattiaPressed = false;
                               _buttonDanielePressed = false;
@@ -968,9 +1250,9 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
       case 'Locorotondo':
         if(buttonSpese){
           if(buttonMattiaPressed){
-            return CIST_MATTIA_OUT;
+            return LOC_MATTIA_OUT;
           }else if(buttonDanielePressed){
-            return CIST_DANIELE_OUT;
+            return LOC_DANIELE_OUT;
           }else{
 
           }
@@ -1116,6 +1398,7 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
     List<ExpenceClass> _expenceListDanieleIn = await crudModelDanieleIn.fetchExpences(_currentDateTimeRange.start, _currentDateTimeRange.end);
 
     _expenceListDanieleIn.forEach((element) {
+      print(element.amount);
       _danieleInAmount = _danieleInAmount + double.parse(element.amount);
     });
 
