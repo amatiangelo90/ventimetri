@@ -50,9 +50,12 @@ const String MON_DANIELE_IN = 'mon_daniele_in';
 const String MON_DANIELE_OUT = 'mon_daniele_out';
 const String MON_POS_IN = 'mon_pos_in';
 
+const String EVENTS_SCHEMA = 'events_schema';
+
 const String MATTIA = 'MATTIA';
 const String DANIELE = 'DANIELE';
 const String POS = 'POS';
+const String CURRENT_PASSWORD = '1234';
 
 
 final Color VENTI_METRI_RED = Colors.red.shade900;

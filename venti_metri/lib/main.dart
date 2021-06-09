@@ -1,6 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:venti_metri/screens/branch_choose.dart';
+import 'package:venti_metri/screens/party/add_event_screen.dart';
+import 'package:venti_metri/screens/party/event_manager_screen.dart';
 import 'package:venti_metri/screens/venti_m_q_dashboard.dart';
 import 'package:venti_metri/screens/venti_m_q_splah.dart';
 
@@ -27,6 +29,8 @@ class MyApp extends StatelessWidget {
           VentiMetriQuadriDashboard.id : (context) => VentiMetriQuadriDashboard(),
           BranchChooseScreen.id : (context) => BranchChooseScreen(),
           ExpenceProfitDetails.id : (context) => ExpenceProfitDetails(),
+          PartyScreenManager.id : (context) => PartyScreenManager(),
+          AddEventScreen.id : (context) => AddEventScreen(),
         }
     );
 

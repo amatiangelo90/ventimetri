@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:venti_metri/model/event_class.dart';
 import 'package:venti_metri/model/expence_class.dart';
 
 import 'dao.dart';
@@ -67,5 +68,11 @@ class CRUDModel{
 
     await _dao.addDocument(data.toJson());
     return ;
+  }
+
+  Future addEventObject(EventClass eventClass) async{
+    await _dao.addDocument(eventClass.toJson());
+    return ;
+
   }
 }

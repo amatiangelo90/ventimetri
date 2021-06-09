@@ -306,12 +306,7 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
   }
 
   Future<Map<String,ExpenceClass>> retrieveListDataAssociatedById(String id) async {
-    print('#######################################');
-    print('ID : ' + id);
-    print('schema : ' + _currentSchemaMattiaIn);
-    print('schema : ' + _currentSchemaDanieleIn);
-    print('schema : ' + _currentSchemaPosIn);
-    print('#######################################');
+
     Map<String, ExpenceClass> mapExpencesById = Map<String,ExpenceClass>();
 
     CRUDModel crudModelMattiaIn = CRUDModel(_currentSchemaMattiaIn);
@@ -772,7 +767,7 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
                       ],
                     ),
                     DatePicker(
-                      DateTime.now().subtract(Duration(days: _currentDateForDateRangePicker.weekday - 1),),
+                      DateTime.now().subtract(Duration(days: _currentDateForDateRangePicker.weekday + 2),),
                       initialSelectedDate: DateTime.now(),
                       dateTextStyle: TextStyle(color: Colors.black, fontSize: 16.0, fontFamily: 'LoraFont'),
                       dayTextStyle: TextStyle(color: Colors.black, fontSize: 14.0, fontFamily: 'LoraFont'),
@@ -890,6 +885,7 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
                                 _daylyProfitMattia.text = (double.parse(_daylyProfitTotal.text.replaceAll(",", ".")) - double.parse(_daylyProfitDaniele.text.replaceAll(",", "."))).toString();
                               });
                               var currentId = uuid.v1();
+
                               CRUDModel crudModel = CRUDModel(_currentSchemaMattiaIn);
                               ExpenceClass expenceClass = ExpenceClass(
                                   id: currentId,
@@ -1034,7 +1030,7 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
                     ],
                   ),
                   DatePicker(
-                    DateTime.now().subtract(Duration(days: _currentDateForDateRangePicker.weekday - 1),),
+                    DateTime.now().subtract(Duration(days: _currentDateForDateRangePicker.weekday + 2),),
                     initialSelectedDate: DateTime.now(),
                     dateTextStyle: TextStyle(color: Colors.black, fontSize: 16.0, fontFamily: 'LoraFont'),
                     dayTextStyle: TextStyle(color: Colors.black, fontSize: 14.0, fontFamily: 'LoraFont'),
@@ -1042,7 +1038,7 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
                     selectionColor: VENTI_METRI_PINK,
                     deactivatedColor: Colors.grey,
                     selectedTextColor: Colors.white,
-                    daysCount: 7,
+                    daysCount: 10,
                     locale: 'it',
                     controller: _dateController,
                     onDateChange: (date) {
