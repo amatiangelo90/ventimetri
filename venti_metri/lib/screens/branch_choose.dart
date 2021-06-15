@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
-import 'package:venti_metri/screens/party/event_manager_screen.dart';
+import 'package:venti_metri/screens/event/event_manager_screen.dart';
 import 'package:venti_metri/screens/venti_m_q_dashboard.dart';
 import 'package:venti_metri/utils/utils.dart';
 
@@ -236,7 +236,7 @@ class _BranchChooseScreenState extends State<BranchChooseScreen> {
                                 ScaffoldMessenger.of(context)
                                     .showSnackBar(SnackBar(backgroundColor: Colors.green.shade500,
                                     content: Text('Accesso al calendario eventi in corso..')));
-                                Timer(Duration(milliseconds: 1000), ()=> Navigator.pushNamed(context, PartyScreenManager.id));
+                                Navigator.pushNamed(context, PartyScreenManager.id);
                               },
                             ),
                           ),

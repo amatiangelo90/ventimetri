@@ -122,7 +122,7 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
 
     return SafeArea(
       child: Container(
-        color: VENTI_METRI_GREY,
+        color: VENTI_METRI_BLUE,
         child: Scaffold(
           body: DefaultTabController(
             length: 5,
@@ -156,7 +156,7 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
                   ],
                 ),
                 centerTitle: true,
-                backgroundColor: VENTI_METRI_GREY,
+                backgroundColor: VENTI_METRI_BLUE,
                 bottom: TabBar(
                   tabs: [
                     Tab(icon: Icon(Icons.euro_symbol),),
@@ -366,17 +366,17 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
 
 
               if(_retrieveListDataAssociatedByIdList != null && _retrieveListDataAssociatedByIdList.length > 0 && _retrieveListDataAssociatedByIdList.containsKey(_currentSchemaMattiaIn)){
-                crudModelMattiaIn.removeProduct(_retrieveListDataAssociatedByIdList[_currentSchemaMattiaIn].documentId);
+                crudModelMattiaIn.removeDocumentById(_retrieveListDataAssociatedByIdList[_currentSchemaMattiaIn].documentId);
               }
               if(_retrieveListDataAssociatedByIdList != null && _retrieveListDataAssociatedByIdList.length > 0 && _retrieveListDataAssociatedByIdList.containsKey(_currentSchemaDanieleIn)){
-                crudModelDanieleIn.removeProduct(_retrieveListDataAssociatedByIdList[_currentSchemaDanieleIn].documentId);
+                crudModelDanieleIn.removeDocumentById(_retrieveListDataAssociatedByIdList[_currentSchemaDanieleIn].documentId);
               }
               if(_retrieveListDataAssociatedByIdList != null && _retrieveListDataAssociatedByIdList.length > 0 && _retrieveListDataAssociatedByIdList.containsKey(_currentSchemaPosIn)){
-                crudModelPosIn.removeProduct(_retrieveListDataAssociatedByIdList[_currentSchemaPosIn].documentId);
+                crudModelPosIn.removeDocumentById(_retrieveListDataAssociatedByIdList[_currentSchemaPosIn].documentId);
               }
 
             }else{
-              crudModel.removeProduct(element.documentId);
+              crudModel.removeDocumentById(element.documentId);
             }
             setState(() {
             });
@@ -574,7 +574,7 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
               ),
               color: Colors.red.shade900),
           child: Card(
-            color: VENTI_METRI_GREY,
+            color: VENTI_METRI_BLUE,
             child: ListTile(
                 title: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -666,7 +666,7 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
                     ),
                     Column(
                         children: [
-                          Text(_sumProfits.toString(), style: TextStyle(fontSize: 20, color: VENTI_METRI_GREY),),
+                          Text(_sumProfits.toString(), style: TextStyle(fontSize: 20, color: VENTI_METRI_BLUE),),
                         ]
                     ),
                   ],
@@ -981,7 +981,7 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
                           child: Text('Calcola'),
                         ),
                         FlatButton(
-                          textColor: VENTI_METRI_GREY,
+                          textColor: VENTI_METRI_BLUE,
                           onPressed: () async {
                             setState(() {
                               _daylyProfitTotal.clear();
@@ -1053,7 +1053,7 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
                       FloatingActionButton.extended(
                         label: Text('Mattia', style: TextStyle(color: Colors.white),),
                         elevation: 5.0,
-                        backgroundColor: _buttonMattiaPressed ? VENTI_METRI_GREY : Colors.grey,
+                        backgroundColor: _buttonMattiaPressed ? VENTI_METRI_BLUE : Colors.grey,
                         onPressed: () {
                           setState(() {
                             _buttonMattiaPressed = true;
@@ -1066,7 +1066,7 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
                       FloatingActionButton.extended(
                         label: Text('Daniele', style: TextStyle(color: Colors.white),),
                         elevation: 5.0,
-                        backgroundColor: _buttonDanielePressed ? VENTI_METRI_GREY : Colors.grey,
+                        backgroundColor: _buttonDanielePressed ? VENTI_METRI_BLUE : Colors.grey,
                         onPressed: () {
                           setState(() {
                             _buttonMattiaPressed = false;
@@ -1180,7 +1180,7 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
 
                       ),
                       FlatButton(
-                        textColor: VENTI_METRI_GREY,
+                        textColor: VENTI_METRI_BLUE,
                         onPressed: () {
                           setState(() {
                             _buttonMattiaPressed = false;

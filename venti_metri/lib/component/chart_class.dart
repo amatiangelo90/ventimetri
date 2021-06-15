@@ -81,7 +81,7 @@ class _ExpenceProfitDetailsState extends State<ExpenceProfitDetails> {
         child: Scaffold(
           appBar: AppBar(
             centerTitle: true,
-            backgroundColor: VENTI_METRI_GREY,
+            backgroundColor: VENTI_METRI_BLUE,
             title: Text('Dettaglio Costi/Ricavi ' + this.widget.dateTimeRange.start.day.toString()+'/'+this.widget.dateTimeRange.start.month.toString()
                 + ' - ' + this.widget.dateTimeRange.end.day.toString()+'/'+this.widget.dateTimeRange.end.month.toString() , style: TextStyle(fontSize: 15,color: Colors.white)),
           ),
