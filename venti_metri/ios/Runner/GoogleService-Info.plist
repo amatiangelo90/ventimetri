@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>1034741062753-1jbe1lnqr1dinj7lg7q9u45ulj0tto3m.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.1034741062753-1jbe1lnqr1dinj7lg7q9u45ulj0tto3m</string>
+	<key>API_KEY</key>
+	<string>AIzaSyAH4ru0Hq6zfvxS6QxoV8TYRs49qlxvpXY</string>
+	<key>GCM_SENDER_ID</key>
+	<string>1034741062753</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.ventimetriquadri.app</string>
+	<key>PROJECT_ID</key>
+	<string>ventimetri-a8dea</string>
+	<key>STORAGE_BUCKET</key>
+	<string>ventimetri-a8dea.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:1034741062753:ios:8fa8b757a042c884981e20</string>
+	<key>DATABASE_URL</key>
+	<string>https://ventimetri-a8dea-default-rtdb.europe-west1.firebasedatabase.app</string>
+</dict>
+</plist>
