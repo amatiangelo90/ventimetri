@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1034741062753",
+    "firebase_url": "https://ventimetri-a8dea-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "ventimetri-a8dea",
+    "storage_bucket": "ventimetri-a8dea.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1034741062753:android:a08c7f99513f4d01981e20",
+        "android_client_info": {
+          "package_name": "com.ventimetriquadri.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1034741062753-1tp7re8j1g1lqnee07ka5j40ah0hfq7b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCS94AenGDw76CQnS7zfDSB9lzYWIXY48w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1034741062753-1tp7re8j1g1lqnee07ka5j40ah0hfq7b.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1034741062753-1jbe1lnqr1dinj7lg7q9u45ulj0tto3m.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.ventimetriquadri.app"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
