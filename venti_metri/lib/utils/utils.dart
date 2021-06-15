@@ -50,21 +50,43 @@ const String MON_DANIELE_IN = 'mon_daniele_in';
 const String MON_DANIELE_OUT = 'mon_daniele_out';
 const String MON_POS_IN = 'mon_pos_in';
 
+const String EVENTS_SCHEMA = 'events_schema';
+const String BAR_POSITION_SCHEMA = 'bar_position_schema';
+const String CHAMPAGNERIE_SCHEMA = 'champagnerie_schema';
+const String BAR_LIST_PRODUCT_SCHEMA = 'bar_product_schema';
+const String CHAMPAGNERIE_LIST_PRODUCT_SCHEMA = 'champagnerie_product_schema';
+
+const String PRODUCT_LIST_SCHEMA = 'product_list_schema';
+
 const String MATTIA = 'MATTIA';
 const String DANIELE = 'DANIELE';
 const String POS = 'POS';
+const String CURRENT_PASSWORD = '1234';
 
 
 final Color VENTI_METRI_RED = Colors.red.shade900;
 final Color VENTI_METRI_GREEN = const Color(0xff53fdd7);
 final Color VENTI_METRI_PINK = const Color(0xffff5182);
 final Color VENTI_METRI_BLUE = Colors.blueGrey.shade900;
-final Color VENTI_METRI_GREY = Colors.blueGrey.shade900;
-final Color VENTI_METRI_CISTERNINO = Colors.tealAccent;
+final Color VENTI_METRI_CISTERNINO = Colors.teal.shade50;
 final Color VENTI_METRI_MONOPOLI = Colors.redAccent.shade100;
 final Color VENTI_METRI_LOCOROTONDO = Colors.orangeAccent.shade100;
 
 const kTableColumns = <DataColumn>[
+  DataColumn(
+    label: Text('Prodotto'),
+  ),
+  DataColumn(
+    label: Text('Misura'),
+    numeric: true,
+  ),
+  DataColumn(
+    label: Text('Prezzo'),
+    numeric: true,
+  ),
+];
+
+const kTableColumns2 = <DataColumn>[
   DataColumn(
     label: Text('Fornitore'),
   ),

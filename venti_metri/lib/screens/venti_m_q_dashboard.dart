@@ -122,7 +122,7 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
 
     return SafeArea(
       child: Container(
-        color: VENTI_METRI_GREY,
+        color: VENTI_METRI_BLUE,
         child: Scaffold(
           body: DefaultTabController(
             length: 5,
@@ -156,7 +156,7 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
                   ],
                 ),
                 centerTitle: true,
-                backgroundColor: VENTI_METRI_GREY,
+                backgroundColor: VENTI_METRI_BLUE,
                 bottom: TabBar(
                   tabs: [
                     Tab(icon: Icon(Icons.euro_symbol),),
@@ -306,12 +306,7 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
   }
 
   Future<Map<String,ExpenceClass>> retrieveListDataAssociatedById(String id) async {
-    print('#######################################');
-    print('ID : ' + id);
-    print('schema : ' + _currentSchemaMattiaIn);
-    print('schema : ' + _currentSchemaDanieleIn);
-    print('schema : ' + _currentSchemaPosIn);
-    print('#######################################');
+
     Map<String, ExpenceClass> mapExpencesById = Map<String,ExpenceClass>();
 
     CRUDModel crudModelMattiaIn = CRUDModel(_currentSchemaMattiaIn);
@@ -371,17 +366,17 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
 
 
               if(_retrieveListDataAssociatedByIdList != null && _retrieveListDataAssociatedByIdList.length > 0 && _retrieveListDataAssociatedByIdList.containsKey(_currentSchemaMattiaIn)){
-                crudModelMattiaIn.removeProduct(_retrieveListDataAssociatedByIdList[_currentSchemaMattiaIn].documentId);
+                crudModelMattiaIn.removeDocumentById(_retrieveListDataAssociatedByIdList[_currentSchemaMattiaIn].documentId);
               }
               if(_retrieveListDataAssociatedByIdList != null && _retrieveListDataAssociatedByIdList.length > 0 && _retrieveListDataAssociatedByIdList.containsKey(_currentSchemaDanieleIn)){
-                crudModelDanieleIn.removeProduct(_retrieveListDataAssociatedByIdList[_currentSchemaDanieleIn].documentId);
+                crudModelDanieleIn.removeDocumentById(_retrieveListDataAssociatedByIdList[_currentSchemaDanieleIn].documentId);
               }
               if(_retrieveListDataAssociatedByIdList != null && _retrieveListDataAssociatedByIdList.length > 0 && _retrieveListDataAssociatedByIdList.containsKey(_currentSchemaPosIn)){
-                crudModelPosIn.removeProduct(_retrieveListDataAssociatedByIdList[_currentSchemaPosIn].documentId);
+                crudModelPosIn.removeDocumentById(_retrieveListDataAssociatedByIdList[_currentSchemaPosIn].documentId);
               }
 
             }else{
-              crudModel.removeProduct(element.documentId);
+              crudModel.removeDocumentById(element.documentId);
             }
             setState(() {
             });
@@ -579,7 +574,7 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
               ),
               color: Colors.red.shade900),
           child: Card(
-            color: VENTI_METRI_GREY,
+            color: VENTI_METRI_BLUE,
             child: ListTile(
                 title: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -671,7 +666,7 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
                     ),
                     Column(
                         children: [
-                          Text(_sumProfits.toString(), style: TextStyle(fontSize: 20, color: VENTI_METRI_GREY),),
+                          Text(_sumProfits.toString(), style: TextStyle(fontSize: 20, color: VENTI_METRI_BLUE),),
                         ]
                     ),
                   ],
@@ -772,7 +767,7 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
                       ],
                     ),
                     DatePicker(
-                      DateTime.now().subtract(Duration(days: _currentDateForDateRangePicker.weekday - 1),),
+                      DateTime.now().subtract(Duration(days: _currentDateForDateRangePicker.weekday + 2),),
                       initialSelectedDate: DateTime.now(),
                       dateTextStyle: TextStyle(color: Colors.black, fontSize: 16.0, fontFamily: 'LoraFont'),
                       dayTextStyle: TextStyle(color: Colors.black, fontSize: 14.0, fontFamily: 'LoraFont'),
@@ -890,6 +885,7 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
                                 _daylyProfitMattia.text = (double.parse(_daylyProfitTotal.text.replaceAll(",", ".")) - double.parse(_daylyProfitDaniele.text.replaceAll(",", "."))).toString();
                               });
                               var currentId = uuid.v1();
+
                               CRUDModel crudModel = CRUDModel(_currentSchemaMattiaIn);
                               ExpenceClass expenceClass = ExpenceClass(
                                   id: currentId,
@@ -985,7 +981,7 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
                           child: Text('Calcola'),
                         ),
                         FlatButton(
-                          textColor: VENTI_METRI_GREY,
+                          textColor: VENTI_METRI_BLUE,
                           onPressed: () async {
                             setState(() {
                               _daylyProfitTotal.clear();
@@ -1034,7 +1030,7 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
                     ],
                   ),
                   DatePicker(
-                    DateTime.now().subtract(Duration(days: _currentDateForDateRangePicker.weekday - 1),),
+                    DateTime.now().subtract(Duration(days: _currentDateForDateRangePicker.weekday + 2),),
                     initialSelectedDate: DateTime.now(),
                     dateTextStyle: TextStyle(color: Colors.black, fontSize: 16.0, fontFamily: 'LoraFont'),
                     dayTextStyle: TextStyle(color: Colors.black, fontSize: 14.0, fontFamily: 'LoraFont'),
@@ -1042,7 +1038,7 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
                     selectionColor: VENTI_METRI_PINK,
                     deactivatedColor: Colors.grey,
                     selectedTextColor: Colors.white,
-                    daysCount: 7,
+                    daysCount: 10,
                     locale: 'it',
                     controller: _dateController,
                     onDateChange: (date) {
@@ -1057,7 +1053,7 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
                       FloatingActionButton.extended(
                         label: Text('Mattia', style: TextStyle(color: Colors.white),),
                         elevation: 5.0,
-                        backgroundColor: _buttonMattiaPressed ? VENTI_METRI_GREY : Colors.grey,
+                        backgroundColor: _buttonMattiaPressed ? VENTI_METRI_BLUE : Colors.grey,
                         onPressed: () {
                           setState(() {
                             _buttonMattiaPressed = true;
@@ -1070,7 +1066,7 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
                       FloatingActionButton.extended(
                         label: Text('Daniele', style: TextStyle(color: Colors.white),),
                         elevation: 5.0,
-                        backgroundColor: _buttonDanielePressed ? VENTI_METRI_GREY : Colors.grey,
+                        backgroundColor: _buttonDanielePressed ? VENTI_METRI_BLUE : Colors.grey,
                         onPressed: () {
                           setState(() {
                             _buttonMattiaPressed = false;
@@ -1184,7 +1180,7 @@ class _VentiMetriQuadriDashboardState extends State<VentiMetriQuadriDashboard> {
 
                       ),
                       FlatButton(
-                        textColor: VENTI_METRI_GREY,
+                        textColor: VENTI_METRI_BLUE,
                         onPressed: () {
                           setState(() {
                             _buttonMattiaPressed = false;

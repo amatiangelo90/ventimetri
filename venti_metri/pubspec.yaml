@@ -29,10 +29,13 @@ dependencies:
   dio:
   flutter_date_pickers: ^0.2.4
   fl_chart: ^0.36.1
-
+  animations: ^2.0.0
+  table_calendar: ^3.0.0
+  chips_choice: ^2.0.1
 # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
+  flip_card: ^0.5.0
 
 dev_dependencies:
   flutter_test:
@@ -81,3 +84,8 @@ flutter:
   # see https://flutter.dev/custom-fonts/#from-packages
   assets:
     - images/
+
+  fonts:
+    - family: LoraFont
+      fonts:
+        - asset: fonts/NanumGothic-Regular.ttf

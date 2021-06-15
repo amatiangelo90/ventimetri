@@ -17,9 +17,23 @@ class Dao{
         .get();
   }
 
+  Future<QuerySnapshot> getAllData(){
+    return _collectionReference.get();
+  }
+
+  Future<QuerySnapshot> getAllProductOrderByName(){
+    return _collectionReference.orderBy('name',descending: false).get();
+  }
+
   Future<QuerySnapshot> getDataCollectionById(String id){
     return _collectionReference
         .where('id', isEqualTo: id)
+        .get();
+  }
+
+  Future<QuerySnapshot> getBarPositionCollectionByEventId(String eventId){
+    return _collectionReference.orderBy('name')
+        .where('idEvent', isEqualTo: eventId)
         .get();
   }
 
