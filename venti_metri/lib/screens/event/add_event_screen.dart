@@ -10,6 +10,7 @@ import 'package:venti_metri/model/events_models/bar_position_class.dart';
 import 'package:venti_metri/model/events_models/event_class.dart';
 import 'package:venti_metri/model/events_models/product_class.dart';
 import 'package:venti_metri/model/events_models/product_datasource.dart';
+import 'package:venti_metri/screens/event/utils_event/utils_event.dart';
 import 'package:venti_metri/utils/utils.dart';
 
 import 'event_manager_screen.dart';
@@ -54,8 +55,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
     _productsBarList = <Product>[];
     _productsChampagnerieList = <Product>[];
     _crudModelEventSchema = CRUDModel(PRODUCT_LIST_SCHEMA);
-    _crudBarProdEventSchema = CRUDModel(BAR_LIST_PRODUCT_SCHEMA);
-    _crudChampProdEventSchema = CRUDModel(CHAMPAGNERIE_LIST_PRODUCT_SCHEMA);
+
     initProductsList();
   }
 
@@ -357,6 +357,8 @@ class _AddEventScreenState extends State<AddEventScreen> {
                                   String addChampagnerieObject = await crudModelChampagnerieSchema.addBarPositionObject(barPosClass);
                                   champagnerieList.add(addChampagnerieObject);
                                 }
+                                _crudBarProdEventSchema = CRUDModel(BAR_LIST_PRODUCT_SCHEMA + getAppIxFromNameEvent(_eventNameController.text));
+                                _crudChampProdEventSchema = CRUDModel(CHAMPAGNERIE_LIST_PRODUCT_SCHEMA + getAppIxFromNameEvent(_eventNameController.text));
 
                                 List<String> barProdIdsList = <String>[];
                                 for(int i = 0; i < _productsBarList.length; i++){
@@ -455,6 +457,8 @@ class _AddEventScreenState extends State<AddEventScreen> {
 
     return list;
   }
+
+
 
 
 }

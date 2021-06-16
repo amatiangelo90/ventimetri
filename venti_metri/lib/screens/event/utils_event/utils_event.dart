@@ -55,6 +55,10 @@ List<DateTime> daysInRange(DateTime first, DateTime last) {
   );
 }
 
+String getAppIxFromNameEvent(String text) {
+  return text.replaceAll(' ', '').toLowerCase();
+}
+
 final kNow = DateTime.now();
 final kFirstDay = DateTime(kNow.year, kNow.month - 3, kNow.day);
 final kLastDay = DateTime(kNow.year, kNow.month + 3, kNow.day);

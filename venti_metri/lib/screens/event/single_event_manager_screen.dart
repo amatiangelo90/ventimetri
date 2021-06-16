@@ -10,6 +10,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:venti_metri/dao/crud_model.dart';
 import 'package:venti_metri/model/events_models/bar_position_class.dart';
 import 'package:venti_metri/model/events_models/event_class.dart';
+import 'package:venti_metri/screens/event/utils_event/utils_event.dart';
 import 'package:venti_metri/utils/utils.dart';
 
 import 'event_manager_screen.dart';
@@ -44,8 +45,8 @@ class _SingleEventManagerScreenState extends State<SingleEventManagerScreen> {
     crudModelBarPosition = CRUDModel(BAR_POSITION_SCHEMA);
     crudModelChampagnerie = CRUDModel(CHAMPAGNERIE_SCHEMA);
 
-    crudModelBarProducts = CRUDModel(BAR_LIST_PRODUCT_SCHEMA);
-    crudModelChampagnerieProducts = CRUDModel(CHAMPAGNERIE_LIST_PRODUCT_SCHEMA);
+    crudModelBarProducts = CRUDModel(BAR_LIST_PRODUCT_SCHEMA + getAppIxFromNameEvent(_eventClass.title));
+    crudModelChampagnerieProducts = CRUDModel(CHAMPAGNERIE_LIST_PRODUCT_SCHEMA + getAppIxFromNameEvent(_eventClass.title));
   }
 
   @override
@@ -123,7 +124,8 @@ class _SingleEventManagerScreenState extends State<SingleEventManagerScreen> {
                           fontFamily: 'LoraFont'),
                     ),),
                   ],
-                )],
+                ),
+                ],
                 future: createBody(),
                 builder: (context, snapshot){
                   if(snapshot.hasData){
@@ -165,6 +167,7 @@ class _SingleEventManagerScreenState extends State<SingleEventManagerScreen> {
           ),
         ),
         SizedBox(height: 5,),
+
         Column(
           children: [
             Center(
@@ -200,7 +203,7 @@ class _SingleEventManagerScreenState extends State<SingleEventManagerScreen> {
           ),
         ),
         StreamBuilder(
-          stream: FirebaseFirestore.instance.collection(BAR_LIST_PRODUCT_SCHEMA).orderBy('name', descending: false).snapshots(),
+          stream: FirebaseFirestore.instance.collection(BAR_LIST_PRODUCT_SCHEMA + getAppIxFromNameEvent(_eventClass.title)).orderBy('name', descending: false).snapshots(),
           builder: (context, snapshot){
             if(!snapshot.hasData)
               return const Text('Loading data..');
@@ -225,7 +228,7 @@ class _SingleEventManagerScreenState extends State<SingleEventManagerScreen> {
           ),
         ),
         StreamBuilder(
-          stream: FirebaseFirestore.instance.collection(CHAMPAGNERIE_LIST_PRODUCT_SCHEMA).orderBy('name', descending: false).snapshots(),
+          stream: FirebaseFirestore.instance.collection(CHAMPAGNERIE_LIST_PRODUCT_SCHEMA + getAppIxFromNameEvent(_eventClass.title)).orderBy('name', descending: false).snapshots(),
           builder: (context, snapshot){
             if(!snapshot.hasData)
               return const Text('Loading data..');
@@ -358,6 +361,7 @@ class _SingleEventManagerScreenState extends State<SingleEventManagerScreen> {
                         ),
                       ),
                       SizedBox(height: 3,),
+                      SizedBox(),
                       TextField(
                         controller: _ownerPositionController,
                         style: TextStyle(height:1),
@@ -445,68 +449,61 @@ class _SingleEventManagerScreenState extends State<SingleEventManagerScreen> {
       List<dynamic> productBarList) {
 
     List<TableRow> rList = <TableRow>[];
-    if(productBarList.contains(doc.id)){
-      print('true');
-    }else{
-      print('false');
-    }
+
     rList.add(
-
-        TableRow(
-            children: [
-              Text(doc['name'].toString(), style: TextStyle(color: Colors.white, fontSize: 15.0, fontFamily: 'LoraFont')),
-
-              RaisedButton(
-                elevation: 0.5,
-                color: VENTI_METRI_BLUE,
-                child: Text('-', style: TextStyle(color: Colors.white, fontSize: 28.0, fontFamily: 'LoraFont')),
-                onLongPress: (){
-                  if(doc['stock'] > 10){
-                    FirebaseFirestore.instance.runTransaction((transaction) async{
-                      DocumentSnapshot freshSnap = await transaction.get(doc.reference);
-                      await transaction.update(freshSnap.reference, {
-                        'stock' : doc['stock'] - 10,
-                      });
-                    });
-                  }
-                },
-                onPressed: (){
-                  if(doc['stock'] > 1){
-                    FirebaseFirestore.instance.runTransaction((transaction) async{
-                      DocumentSnapshot freshSnap = await transaction.get(doc.reference);
-                      await transaction.update(freshSnap.reference, {
-                        'stock' : doc['stock'] - 1,
-                      });
-                    });
-                  }
-                },
-              ),
-              Center(child: Text(doc['stock'].toString(), style: TextStyle(color: Colors.white, fontSize: 15.0, fontFamily: 'LoraFont'))),
-              RaisedButton(
-                elevation: 0.5,
-                color: VENTI_METRI_BLUE,
-                child: Text('+', style: TextStyle(color: Colors.white, fontSize: 22.0, fontFamily: 'LoraFont')),
-                onLongPress: (){
+      TableRow(
+          children: [
+            Text(doc['name'].toString(), style: TextStyle(color: Colors.white, fontSize: 15.0, fontFamily: 'LoraFont')),
+            RaisedButton(
+              elevation: 0.5,
+              color: VENTI_METRI_BLUE,
+              child: Text('-', style: TextStyle(color: Colors.white, fontSize: 28.0, fontFamily: 'LoraFont')),
+              onLongPress: (){
+                if(doc['stock'] > 10){
                   FirebaseFirestore.instance.runTransaction((transaction) async{
                     DocumentSnapshot freshSnap = await transaction.get(doc.reference);
                     await transaction.update(freshSnap.reference, {
-                      'stock' : doc['stock'] + 10,
+                      'stock' : doc['stock'] - 10,
                     });
                   });
-                },
-                onPressed: (){
+                }
+              },
+              onPressed: (){
+                if(doc['stock'] > 1){
                   FirebaseFirestore.instance.runTransaction((transaction) async{
                     DocumentSnapshot freshSnap = await transaction.get(doc.reference);
                     await transaction.update(freshSnap.reference, {
-                      'stock' : doc['stock'] + 1,
+                      'stock' : doc['stock'] - 1,
                     });
                   });
-                },
-              ),
-            ]
-        ),
-      );
-
+                }
+              },
+            ),
+            Center(child: Text(doc['stock'].toString(), style: TextStyle(color: Colors.white, fontSize: 15.0, fontFamily: 'LoraFont'))),
+            RaisedButton(
+              elevation: 0.5,
+              color: VENTI_METRI_BLUE,
+              child: Text('+', style: TextStyle(color: Colors.white, fontSize: 22.0, fontFamily: 'LoraFont')),
+              onLongPress: (){
+                FirebaseFirestore.instance.runTransaction((transaction) async{
+                  DocumentSnapshot freshSnap = await transaction.get(doc.reference);
+                  await transaction.update(freshSnap.reference, {
+                    'stock' : doc['stock'] + 10,
+                  });
+                });
+              },
+              onPressed: (){
+                FirebaseFirestore.instance.runTransaction((transaction) async{
+                  DocumentSnapshot freshSnap = await transaction.get(doc.reference);
+                  await transaction.update(freshSnap.reference, {
+                    'stock' : doc['stock'] + 1,
+                  });
+                });
+              },
+            ),
+          ]
+      ),
+    );
     return rList;
   }
   Container _buildBottomSheet(BuildContext context, BarPositionClass element) {
