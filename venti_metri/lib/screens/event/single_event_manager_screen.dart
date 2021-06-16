@@ -215,6 +215,9 @@ class _SingleEventManagerScreenState extends State<SingleEventManagerScreen> {
             );
           },
         ),
+        SizedBox(
+          height:14,
+        ),
         Card(
           color: VENTI_METRI_LOCOROTONDO,
           child: Center(

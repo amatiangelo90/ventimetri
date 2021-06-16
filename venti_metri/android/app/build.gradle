@@ -34,6 +34,7 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     compileSdkVersion 30
+    ndkVersion "22.1.7171670"
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -56,6 +57,9 @@ android {
         multiDexEnabled true
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
+        ndk {
+            debugSymbolLevel 'SYMBOL_TABLE'
+        }
     }
 
     signingConfigs {
