@@ -1,10 +1,13 @@
 import 'dart:async';
 
 import 'package:animations/animations.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:venti_metri/screens/event/event_manager_screen.dart';
 import 'package:venti_metri/screens/venti_m_q_dashboard.dart';
 import 'package:venti_metri/utils/utils.dart';
+
+import 'auth/auth_screen.dart';
 
 class BranchChooseScreen extends StatefulWidget {
   static String id = 'choose';
@@ -14,266 +17,250 @@ class BranchChooseScreen extends StatefulWidget {
 
 class _BranchChooseScreenState extends State<BranchChooseScreen> {
   ScrollController scrollViewColtroller = ScrollController();
-  TextEditingController _partyCodeController = TextEditingController();
+  User loggedInUser;
+
+  FirebaseAuth _auth;
+
+  @override
+  void initState() {
+    super.initState();
+    _auth = FirebaseAuth.instance;
+    getCurrentUser();
+  }
+
+  void getCurrentUser() async {
+    try{
+      final user = await _auth.currentUser;
+      if(user != null){
+        loggedInUser = user;
+        print('Email logged in : ' + loggedInUser.email);
+      }
+    }catch(e){
+      print('Exception : ' + e);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
 
-
     return SafeArea(
       child: Scaffold(
-        backgroundColor: VENTI_METRI_BLUE,
+        backgroundColor: Colors.blueGrey.shade800,
         appBar: AppBar(
           automaticallyImplyLeading: false,
-          backgroundColor: VENTI_METRI_BLUE,
+          backgroundColor: Colors.blueGrey.shade800,
           title: Center(child: Text('20m² - Drink & Enjoy')),
           centerTitle: true,
           actions: [
             IconButton(icon: Icon(Icons.person ,size: 30.0, color: Colors.white,), onPressed: (){
-
+              if(_auth!=null){
+                _auth.signOut();
+              }
+              Navigator.pushNamed(context, LoginAuthScreen.id);
             }
             ),
           ],
         ),
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Expanded(
-              flex: 2,
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Container(
-                  color: Colors.white,
-                  child: GestureDetector(
-                    onTap: () =>
-                        showDialog(
-                            context: context,
-                            builder: (context) {
-                              return VentiMetriQuadriDashboard(
-                                branch: 'Cisternino',
-                              );
-                            }
-                        ),
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(4.0),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              image: DecorationImage(
-                                image: AssetImage('images/cisternino.jpg'),
-                                fit: BoxFit.cover,
-                                colorFilter: ColorFilter.mode(Colors.black, BlendMode.dst),
-                              ),
-                            ),
-                            child: Center(
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text('Cisternino', style: TextStyle(color: Colors.white, fontSize: 30),),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
+        body: Container(
+          height: double.infinity,
+          width: double.infinity,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Colors.blueGrey.shade800,
+                Colors.blueGrey.shade800,
+                Colors.blueGrey.shade900,
+                Colors.blueGrey.shade900,
+              ],
+              stops: [0.1, 0.4, 0.7, 0.9],
             ),
-            Expanded(
-              flex: 2,
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Container(
-                  color: Colors.white,
-                  child: GestureDetector(
-                    onTap: () =>
-                        showDialog(
-                            context: context,
-                            builder: (context) {
-                              return VentiMetriQuadriDashboard(
-                                branch: 'Locorotondo',
-                              );
-                            }
-                        ),
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(4.0),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              image: DecorationImage(
-                                image: AssetImage('images/locorotondo.jpg'),
-                                fit: BoxFit.cover,
-                                colorFilter: ColorFilter.mode(Colors.black, BlendMode.dst),
-                              ),
-                            ),
-                            child: Center(
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text('Locorotondo', style: TextStyle(color: Colors.white, fontSize: 30),),
-                                ],
-                              ),
-                            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                flex: 2,
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Container(
+                    color: Colors.white,
+                    child: GestureDetector(
+                      onTap: () =>
+                          showDialog(
+                              context: context,
+                              builder: (context) {
+                                return VentiMetriQuadriDashboard(
+                                  branch: 'Cisternino',
+                                );
+                              }
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            Expanded(
-              flex: 2,
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Container(
-                  color: Colors.white,
-                  child: GestureDetector(
-                    onTap: () =>
-                        showDialog(
-                            context: context,
-                            builder: (context) {
-                              return VentiMetriQuadriDashboard(
-                                branch: 'Monopoli',
-                              );
-                            }
-                        ),
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(4.0),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              image: DecorationImage(
-                                image: AssetImage('images/monopoli.jpg'),
-                                fit: BoxFit.cover,
-                                colorFilter: ColorFilter.mode(Colors.black, BlendMode.dst),
-                              ),
-                            ),
-                            child: Center(
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text('Monopoli', style: TextStyle(color: Colors.white, fontSize: 30),),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            Expanded(
-              flex: 2,
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Container(
-                  color: Colors.white,
-                  child: GestureDetector(
-                    onTap: () => showModal(
-                      configuration: const FadeScaleTransitionConfiguration(
-                        transitionDuration: Duration(milliseconds: 500),
-                      ),
-                      context: context,
-                      builder: (ctx) => AlertDialog(
-                        title: Center(child: Text('Serate', style: TextStyle(color: Colors.white, fontSize: 20),)),
-                        backgroundColor: VENTI_METRI_BLUE,
-                        actions: [
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
                           Padding(
-                            padding: const EdgeInsets.all(14.0),
-                            child: TextField(
-                              onChanged: (partyCode){
-                                if(partyCode != CURRENT_PASSWORD && partyCode.length == 4){
-                                  _partyCodeController.clear();
-                                  ScaffoldMessenger.of(context)
-                                      .showSnackBar(SnackBar(backgroundColor: Colors.red.shade500 ,
-                                      content: Text('Password errata')));
-                                }else if(partyCode == CURRENT_PASSWORD){
-                                  Navigator.of(context).pop(true);
-                                  _partyCodeController.clear();
-
-                                }
-                              },
-                              textAlign: TextAlign.center,
-                              style: TextStyle(color: Colors.white, fontSize: 20),
-                              controller: _partyCodeController,
-                              keyboardType: TextInputType.numberWithOptions(decimal: true, signed: true),
-                              decoration: InputDecoration(
-                                  border: OutlineInputBorder(
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.white, width: 2.0),
-                                  ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.white, width: 2.0),
-                                  ),
-                                  labelText: 'Codice Serata',
-                                  labelStyle: TextStyle(color: Colors.white, fontSize: 15),
-                                  fillColor: Colors.white
+                            padding: const EdgeInsets.all(4.0),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  image: AssetImage('images/cisternino.jpg'),
+                                  fit: BoxFit.cover,
+                                  colorFilter: ColorFilter.mode(Colors.black, BlendMode.dst),
+                                ),
+                              ),
+                              child: Center(
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text('Cisternino', style: TextStyle(color: Colors.white, fontSize: 30),),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
-                          SizedBox(height: 20.0,),
-                          Center(child: Text(' ---------', style: TextStyle(color: Colors.white, fontSize: 15),)),
-                          SizedBox(height: 20.0,),
-                          Center(
-                            child: ElevatedButton(
-                              child: Text('Accedi area gestione'),
-                              style: ButtonStyle(
-                                backgroundColor: MaterialStateProperty.all<Color>(VENTI_METRI_BLUE),
-                              ),
-                              onPressed: (){
-                                ScaffoldMessenger.of(context)
-                                    .showSnackBar(SnackBar(backgroundColor: Colors.green.shade500,
-                                    content: Text('Accesso al calendario eventi in corso..')));
-                                Navigator.pushNamed(context, PartyScreenManager.id);
-                              },
-                            ),
-                          ),
-                          SizedBox(height: 20.0,),
                         ],
                       ),
                     ),
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(4.0),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              image: DecorationImage(
-                                image: AssetImage('images/discoteche.jpg'),
-                                fit: BoxFit.cover,
-                                colorFilter: ColorFilter.mode(Colors.black, BlendMode.dst),
+                  ),
+                ),
+              ),
+              Expanded(
+                flex: 2,
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Container(
+                    color: Colors.white,
+                    child: GestureDetector(
+                      onTap: () =>
+                          showDialog(
+                              context: context,
+                              builder: (context) {
+                                return VentiMetriQuadriDashboard(
+                                  branch: 'Locorotondo',
+                                );
+                              }
+                          ),
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  image: AssetImage('images/locorotondo.jpg'),
+                                  fit: BoxFit.cover,
+                                  colorFilter: ColorFilter.mode(Colors.black, BlendMode.dst),
+                                ),
                               ),
-                            ),
-                            child: Center(
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text('Serate', style: TextStyle(color: Colors.white, fontSize: 30),),
-                                ],
+                              child: Center(
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text('Locorotondo', style: TextStyle(color: Colors.white, fontSize: 30),),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-          ],
+              Expanded(
+                flex: 2,
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Container(
+                    color: Colors.white,
+                    child: GestureDetector(
+                      onTap: () =>
+                          showDialog(
+                              context: context,
+                              builder: (context) {
+                                return VentiMetriQuadriDashboard(
+                                  branch: 'Monopoli',
+                                );
+                              }
+                          ),
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  image: AssetImage('images/monopoli.jpg'),
+                                  fit: BoxFit.cover,
+                                  colorFilter: ColorFilter.mode(Colors.black, BlendMode.dst),
+                                ),
+                              ),
+                              child: Center(
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text('Monopoli', style: TextStyle(color: Colors.white, fontSize: 30),),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Expanded(
+                flex: 2,
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Container(
+                    color: Colors.white,
+                    child: GestureDetector(
+                      onTap: () {
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(SnackBar(backgroundColor: Colors.green.shade500,
+                            content: Text('Accesso al calendario eventi in corso..')));
+                        Navigator.pushNamed(context, PartyScreenManager.id);
+                      },
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  image: AssetImage('images/discoteche.jpg'),
+                                  fit: BoxFit.cover,
+                                  colorFilter: ColorFilter.mode(Colors.black, BlendMode.dst),
+                                ),
+                              ),
+                              child: Center(
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text('Serate', style: TextStyle(color: Colors.white, fontSize: 30),),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              loggedInUser != null ? Center(child: Text('Utente autenticato : ${loggedInUser.email}', style: TextStyle(color: Colors.white, fontFamily: 'LoraFont', fontSize: 9),)) : SizedBox(height: 0,),
+              SizedBox(height: 5,),
+            ],
+          ),
         ),
       ),
     );

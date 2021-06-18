@@ -18,7 +18,7 @@ import 'event_manager_screen.dart';
 class AddEventScreen extends StatefulWidget {
   static String id = 'add_event_screen';
 
-  final Map<String, String> alreadyUsedPasswordMap;
+  final Map<String, EventClass> alreadyUsedPasswordMap;
 
   const AddEventScreen({@required this.alreadyUsedPasswordMap});
 
@@ -37,7 +37,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
   DateTime _currentSelectedDate;
   TextEditingController _eventNameController = TextEditingController();
   TextEditingController _passwordEventController = TextEditingController();
-  Map<String, String> _alreadyUsedPasswordMap;
+  Map<String, EventClass> _alreadyUsedPasswordMap;
   bool _isCreaSerataNotPressed = true;
 
   CRUDModel _crudModelEventSchema;
@@ -127,7 +127,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                                 .showSnackBar(SnackBar(
                                 duration: Duration(milliseconds: 1500),
                                 backgroundColor: Colors.redAccent,
-                                content: Text('Attenzione! Password già in uso per l\'evento ${_alreadyUsedPasswordMap[currentText]}')));
+                                content: Text('Attenzione! Password già in uso per l\'evento ${_alreadyUsedPasswordMap[currentText].title}')));
                             _refreshPassword();
                           }
                         },

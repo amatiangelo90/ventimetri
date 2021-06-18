@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flip_card/flip_card.dart';
 import 'package:flip_card/flip_card_controller.dart';
 import 'package:flutter/cupertino.dart';
@@ -18,7 +19,7 @@ import 'event_manager_screen.dart';
 class SingleEventManagerScreen extends StatefulWidget {
   static String id = 'event_manager_page';
 
-  final EventClass eventClass;
+    final EventClass eventClass;
   final Function function;
 
   SingleEventManagerScreen({@required this.eventClass, this.function});
@@ -36,10 +37,15 @@ class _SingleEventManagerScreenState extends State<SingleEventManagerScreen> {
   CRUDModel crudModelBarProducts;
   CRUDModel crudModelChampagnerieProducts;
 
+  User loggedInUser;
+  FirebaseAuth _auth;
+
 
   @override
   void initState() {
     super.initState();
+    _auth = FirebaseAuth.instance;
+    getCurrentUser();
     _eventClass = this.widget.eventClass;
     crudModelEventSchema = CRUDModel(EVENTS_SCHEMA);
     crudModelBarPosition = CRUDModel(BAR_POSITION_SCHEMA);
@@ -49,9 +55,24 @@ class _SingleEventManagerScreenState extends State<SingleEventManagerScreen> {
     crudModelChampagnerieProducts = CRUDModel(CHAMPAGNERIE_LIST_PRODUCT_SCHEMA + getAppIxFromNameEvent(_eventClass.title));
   }
 
+  void getCurrentUser() async {
+    try{
+      final user = await _auth.currentUser;
+      if(user != null){
+        setState(() {
+          loggedInUser = user;
+        });
+        print('Email logged in : ' + loggedInUser.email);
+      }else{
+        print('No user authenticated');
+      }
+    }catch(e){
+      print('Exception : ' + e);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-
     return SafeArea(
       child: Container(
         child: Scaffold(
@@ -60,7 +81,7 @@ class _SingleEventManagerScreenState extends State<SingleEventManagerScreen> {
             backgroundColor: VENTI_METRI_BLUE,
             centerTitle: true,
             actions: [
-              Padding(
+              loggedInUser == null ? SizedBox(width: 0,) : Padding(
                 padding: const EdgeInsets.fromLTRB(20, 0, 5, 0),
                 child: IconButton(
                   icon: Icon(FontAwesomeIcons.trash, color: Colors.redAccent, size: 20,),
@@ -194,6 +215,7 @@ class _SingleEventManagerScreenState extends State<SingleEventManagerScreen> {
                 children: buildCardItemsByBarPositionList(champagnerieList, 'champagnerie'),
               ),
             ),
+            SizedBox(height: 15,),
           ],
         ),
         Card(
@@ -336,7 +358,7 @@ class _SingleEventManagerScreenState extends State<SingleEventManagerScreen> {
             ),
           ),
           back: Container(
-            height: height * 2/6,
+            height: height * 1/4,
             width: width * 4/5,
             child: Card(
               shape: RoundedRectangleBorder(
@@ -401,9 +423,7 @@ class _SingleEventManagerScreenState extends State<SingleEventManagerScreen> {
 
                                 sleep(Duration(seconds:1));
                                 refreshPage();
-                                _flipCardController.controller.reset();
                               }
-
                             },
 
                             child: Text('Salva'),
@@ -453,7 +473,10 @@ class _SingleEventManagerScreenState extends State<SingleEventManagerScreen> {
     rList.add(
       TableRow(
           children: [
-            Text(doc['name'].toString(), style: TextStyle(color: Colors.white, fontSize: 15.0, fontFamily: 'LoraFont')),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
+              child: Text(doc['name'].toString(),overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.white, fontSize: 15.0, fontFamily: 'LoraFont')),
+            ),
             RaisedButton(
               elevation: 0.5,
               color: VENTI_METRI_BLUE,
@@ -479,7 +502,10 @@ class _SingleEventManagerScreenState extends State<SingleEventManagerScreen> {
                 }
               },
             ),
-            Center(child: Text(doc['stock'].toString(), style: TextStyle(color: Colors.white, fontSize: 15.0, fontFamily: 'LoraFont'))),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
+              child: Center(child: Text(doc['stock'].toString(), style: TextStyle(color: Colors.white, fontSize: 15.0, fontFamily: 'LoraFont'))),
+            ),
             RaisedButton(
               elevation: 0.5,
               color: VENTI_METRI_BLUE,

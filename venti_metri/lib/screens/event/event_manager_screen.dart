@@ -26,12 +26,11 @@ class _PartyScreenManagerState extends State<PartyScreenManager> {
       .toggledOff;
 
   LinkedHashMap<DateTime, List<EventClass>> _kEvents = new LinkedHashMap();
-  List<EventClass> currentEventList;
 
   DateTime _focusedDay = DateTime.now();
   DateTime _selectedDay;
 
-  Map<String,String> _alreadyUsedPasswordMap;
+  Map<String,EventClass> _alreadyUsedPasswordMap;
 
   @override
   void initState() {
@@ -97,7 +96,6 @@ class _PartyScreenManagerState extends State<PartyScreenManager> {
               onPressed: () {
                 Navigator.push(context,
                   MaterialPageRoute(builder: (context) => AddEventScreen(alreadyUsedPasswordMap: _alreadyUsedPasswordMap,),),);
-
               },
             ),
           ],

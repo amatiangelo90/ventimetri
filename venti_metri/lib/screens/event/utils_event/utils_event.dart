@@ -13,11 +13,12 @@ LinkedHashMap<DateTime, List<EventClass>> getKEvents(List<EventClass> eventsList
   return linkedHashMap;
 }
 
-Map<String, String> getMapAlreadyUsedPassword(List<EventClass> eventsList){
-  Map<String, String> map = Map<String, String>();
+Map<String, EventClass> getMapAlreadyUsedPassword(List<EventClass> eventsList){
+  Map<String, EventClass> map = Map<String, EventClass>();
 
   eventsList.forEach((element) {
-    map[element.passwordEvent.toString()] = element.title;
+    print(element.passwordEvent);
+    map[element.passwordEvent.toString()] = element;
   });
   return map;
 }
