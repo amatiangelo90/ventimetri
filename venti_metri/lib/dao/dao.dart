@@ -37,6 +37,11 @@ class Dao{
         .get();
   }
 
+  Future<QuerySnapshot> getBarPositionCollection(){
+    return _collectionReference.orderBy('name')
+        .get();
+  }
+
   Future<QuerySnapshot> getDataCollectionByDateRange() {
     return _collectionReference.get();
   }

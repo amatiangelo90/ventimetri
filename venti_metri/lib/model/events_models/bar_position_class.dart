@@ -9,6 +9,7 @@ class BarPositionClass {
   String eventName;
   String ownerBar;
   int passwordEvent;
+  int passwordBarChampPosition;
   String listDrinkId;
 
   BarPositionClass({
@@ -19,6 +20,7 @@ class BarPositionClass {
     @required this.eventName,
     @required this.ownerBar,
     @required this.passwordEvent,
+    @required this.passwordBarChampPosition,
     @required this.listDrinkId
   });
 
@@ -32,6 +34,7 @@ class BarPositionClass {
     'eventName': eventName,
     'ownerBar': ownerBar,
     'passwordEvent': passwordEvent,
+    'passwordBarChampPosition': passwordBarChampPosition,
     'listDrinkId': listDrinkId};
 
   @override
@@ -48,6 +51,7 @@ class BarPositionClass {
       ownerBar: cartMap['ownerBar'].toString(),
       docId: docId,
       passwordEvent: int.parse(cartMap['passwordEvent'].toString()),
+      passwordBarChampPosition: int.parse(cartMap['passwordBarChampPosition'].toString()),
       listDrinkId: cartMap['listDrinkId'].toString(),
     );
 

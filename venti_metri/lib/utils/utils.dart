@@ -52,7 +52,7 @@ const String MON_POS_IN = 'mon_pos_in';
 
 const String EVENTS_SCHEMA = 'events_schema';
 const String BAR_POSITION_SCHEMA = 'bar_position_schema';
-const String CHAMPAGNERIE_SCHEMA = 'champagnerie_schema';
+const String CHAMPAGNERIE_POSITION_SCHEMA = 'champagnerie_position_schema';
 const String BAR_LIST_PRODUCT_SCHEMA = 'bar_product_schema_';
 const String CHAMPAGNERIE_LIST_PRODUCT_SCHEMA = 'champ_product_schema_';
 

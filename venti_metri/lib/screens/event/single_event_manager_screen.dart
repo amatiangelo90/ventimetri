@@ -39,20 +39,25 @@ class _SingleEventManagerScreenState extends State<SingleEventManagerScreen> {
 
   User loggedInUser;
   FirebaseAuth _auth;
-
+  var _tapPosition;
 
   @override
   void initState() {
     super.initState();
+
     _auth = FirebaseAuth.instance;
+
     getCurrentUser();
+
     _eventClass = this.widget.eventClass;
+
     crudModelEventSchema = CRUDModel(EVENTS_SCHEMA);
     crudModelBarPosition = CRUDModel(BAR_POSITION_SCHEMA);
-    crudModelChampagnerie = CRUDModel(CHAMPAGNERIE_SCHEMA);
+    crudModelChampagnerie = CRUDModel(CHAMPAGNERIE_POSITION_SCHEMA);
 
     crudModelBarProducts = CRUDModel(BAR_LIST_PRODUCT_SCHEMA + getAppIxFromNameEvent(_eventClass.title));
     crudModelChampagnerieProducts = CRUDModel(CHAMPAGNERIE_LIST_PRODUCT_SCHEMA + getAppIxFromNameEvent(_eventClass.title));
+
   }
 
   void getCurrentUser() async {
@@ -167,8 +172,12 @@ class _SingleEventManagerScreenState extends State<SingleEventManagerScreen> {
   }
 
   Future<Widget> createBody() async {
+
     List<BarPositionClass> barPositionList = await crudModelBarPosition.fetchBarPositionListByEventId(_eventClass.id);
     List<BarPositionClass> champagnerieList = await crudModelChampagnerie.fetchBarPositionListByEventId(_eventClass.id);
+
+    print('List Bar position: ' + barPositionList.toString());
+    print('List Champagnerie position: ' + champagnerieList.toString());
 
     return Column(
       children: [
@@ -181,14 +190,13 @@ class _SingleEventManagerScreenState extends State<SingleEventManagerScreen> {
             child: Column(
               children: [
                 SizedBox(height: 2,),
-                Text('Password: ${_eventClass.passwordEvent}', style: TextStyle(fontSize: 13, color: VENTI_METRI_BLUE, fontFamily: 'LoraFont')),
+                Text('Password Evento: ${_eventClass.passwordEvent}', style: TextStyle(fontSize: 15, color: VENTI_METRI_BLUE, fontFamily: 'LoraFont')),
                 SizedBox(height: 2,),
               ],
             ),
           ),
         ),
         SizedBox(height: 5,),
-
         Column(
           children: [
             Center(
@@ -296,8 +304,12 @@ class _SingleEventManagerScreenState extends State<SingleEventManagerScreen> {
                 mainAxisSize: MainAxisSize.max,
                 children: <Widget>[
                   ListTile(
-                    title: Text(currentBarChampPosition.name, style: TextStyle(fontSize: 19, color: type == 'bar' ? Colors.white:  VENTI_METRI_BLUE, fontFamily: 'LoraFont')),
+                    title: Text(currentBarChampPosition.name, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 26, color: type == 'bar' ? Colors.white:  VENTI_METRI_BLUE, fontFamily: 'LoraFont')),
                     subtitle: Text('Resp: ' + currentBarChampPosition.ownerBar, style: TextStyle(color: type == 'bar' ? Colors.white:  VENTI_METRI_BLUE, fontFamily: 'LoraFont')),
+                  ),
+                  ListTile(
+                    title: Text(type == 'bar' ? 'Password postazione Bar' : 'Password postazione Chmapgnerie', style: TextStyle(fontSize: 15, color: type == 'bar' ? Colors.white:  VENTI_METRI_BLUE, fontFamily: 'LoraFont')),
+                    subtitle: Text(currentBarChampPosition.passwordBarChampPosition.toString(), style: TextStyle(fontSize: 25, color: type == 'bar' ? Colors.white:  VENTI_METRI_BLUE, fontFamily: 'LoraFont')),
                   ),
                   ButtonBar(
                     alignment: MainAxisAlignment.spaceEvenly,
@@ -317,7 +329,6 @@ class _SingleEventManagerScreenState extends State<SingleEventManagerScreen> {
                                 content: Text("Eliminare ${currentBarChampPosition.name} per l\'evento ${currentBarChampPosition.eventName}?", style: TextStyle(color: VENTI_METRI_BLUE, fontSize: 16.0, fontFamily: 'LoraFont'),),
                                 actions: <Widget>[
                                   FlatButton(
-
                                       onPressed: (){
                                         if(type == 'bar'){
                                           crudModelBarPosition.removeDocumentById(currentBarChampPosition.docId);
@@ -358,7 +369,7 @@ class _SingleEventManagerScreenState extends State<SingleEventManagerScreen> {
             ),
           ),
           back: Container(
-            height: height * 1/4,
+            height: height * 2/7,
             width: width * 4/5,
             child: Card(
               shape: RoundedRectangleBorder(
@@ -383,7 +394,6 @@ class _SingleEventManagerScreenState extends State<SingleEventManagerScreen> {
                         ),
                       ),
                       SizedBox(height: 3,),
-                      SizedBox(),
                       TextField(
                         controller: _ownerPositionController,
                         style: TextStyle(height:1),
@@ -392,6 +402,18 @@ class _SingleEventManagerScreenState extends State<SingleEventManagerScreen> {
                           border: OutlineInputBorder(),
                           icon: Icon(Icons.person),
                           labelText: 'Responsabile',
+                        ),
+                      ),
+                      SizedBox(height: 3,),
+                      TextField(
+                        enabled: false,
+                        style: TextStyle(height:1),
+                        keyboardType: TextInputType.number,
+                        controller: TextEditingController(text: currentBarChampPosition.passwordBarChampPosition.toString()),
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(),
+                          icon: Icon(Icons.vpn_key_outlined),
+                          labelText: 'Password',
                         ),
                       ),
                       ButtonBar(
@@ -449,7 +471,6 @@ class _SingleEventManagerScreenState extends State<SingleEventManagerScreen> {
     this.widget.function();
     setState(() {});
   }
-
   Widget _buildListItems(BuildContext context,
       DocumentSnapshot document,
       List<dynamic> productBarList) {
@@ -475,92 +496,173 @@ class _SingleEventManagerScreenState extends State<SingleEventManagerScreen> {
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
-              child: Text(doc['name'].toString(),overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.white, fontSize: 15.0, fontFamily: 'LoraFont')),
+              child: Text(doc['name'].toString(),overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.white, fontSize: 14.0, fontFamily: 'LoraFont')),
             ),
-            RaisedButton(
-              elevation: 0.5,
-              color: VENTI_METRI_BLUE,
-              child: Text('-', style: TextStyle(color: Colors.white, fontSize: 28.0, fontFamily: 'LoraFont')),
+            GestureDetector(
               onLongPress: (){
-                if(doc['stock'] > 10){
-                  FirebaseFirestore.instance.runTransaction((transaction) async{
-                    DocumentSnapshot freshSnap = await transaction.get(doc.reference);
-                    await transaction.update(freshSnap.reference, {
-                      'stock' : doc['stock'] - 10,
+                final RenderBox overlay = Overlay.of(context).context.findRenderObject();
+
+                showMenu(
+                    context: context,
+                    items: <PopupMenuEntry<double>>[MinusEntry()],
+                    position: RelativeRect.fromRect(
+                        _tapPosition & Size(40, 40),
+                        Offset.zero & overlay.size
+                    )
+                )
+                    .then<void>((double delta) {
+
+                  if (delta == null) return;
+
+                  if(doc['stock'] > delta){
+                    FirebaseFirestore.instance.runTransaction((transaction) async {
+                      DocumentSnapshot freshSnap = await transaction.get(doc.reference);
+                      await transaction.update(freshSnap.reference, {
+                        'stock' : doc['stock'] - delta,
+                      });
                     });
-                  });
-                }
+                  }
+                });
               },
-              onPressed: (){
-                if(doc['stock'] > 1){
-                  FirebaseFirestore.instance.runTransaction((transaction) async{
-                    DocumentSnapshot freshSnap = await transaction.get(doc.reference);
-                    await transaction.update(freshSnap.reference, {
-                      'stock' : doc['stock'] - 1,
-                    });
-                  });
-                }
-              },
+              onTapDown: _storePosition,
+                child: RaisedButton(
+                  elevation: 0.5,
+                  color: VENTI_METRI_BLUE,
+                  child: Text('-', style: TextStyle(color: Colors.redAccent, fontSize: 25.0, fontFamily: 'LoraFont')),
+                  onPressed: (){
+                    if(doc['stock'] > 1){
+                      FirebaseFirestore.instance.runTransaction((transaction) async {
+                        DocumentSnapshot freshSnap = await transaction.get(doc.reference);
+                        await transaction.update(freshSnap.reference, {
+                          'stock' : doc['stock'] - 1,
+                        });
+                      });
+                    }
+                  },
+                ),
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
-              child: Center(child: Text(doc['stock'].toString(), style: TextStyle(color: Colors.white, fontSize: 15.0, fontFamily: 'LoraFont'))),
+              padding: const EdgeInsets.fromLTRB(0, 15, 0, 0),
+              child: Center(child: Text(doc['stock'].toString(), style: TextStyle(color: Colors.white, fontSize: 14.0, fontFamily: 'LoraFont'))),
             ),
-            RaisedButton(
-              elevation: 0.5,
-              color: VENTI_METRI_BLUE,
-              child: Text('+', style: TextStyle(color: Colors.white, fontSize: 22.0, fontFamily: 'LoraFont')),
+            GestureDetector(
               onLongPress: (){
-                FirebaseFirestore.instance.runTransaction((transaction) async{
-                  DocumentSnapshot freshSnap = await transaction.get(doc.reference);
-                  await transaction.update(freshSnap.reference, {
-                    'stock' : doc['stock'] + 10,
+                final RenderBox overlay = Overlay.of(context).context.findRenderObject();
+
+                showMenu(
+                    context: context,
+                    items: <PopupMenuEntry<double>>[PlusEntry()],
+                    position: RelativeRect.fromRect(
+                        _tapPosition & Size(40, 40),
+                        Offset.zero & overlay.size
+                    )
+                )
+                    .then<void>((double delta) {
+
+                  if (delta == null) return;
+                  FirebaseFirestore.instance.runTransaction((transaction) async{
+                    DocumentSnapshot freshSnap = await transaction.get(doc.reference);
+                    await transaction.update(freshSnap.reference, {
+                      'stock' : doc['stock'] + delta,
+                    });
                   });
+
                 });
               },
-              onPressed: (){
-                FirebaseFirestore.instance.runTransaction((transaction) async{
-                  DocumentSnapshot freshSnap = await transaction.get(doc.reference);
-                  await transaction.update(freshSnap.reference, {
-                    'stock' : doc['stock'] + 1,
+              onTapDown: _storePosition,
+              child: RaisedButton(
+                elevation: 0.5,
+                color: VENTI_METRI_BLUE,
+                child: Text('+', style: TextStyle(color: Colors.greenAccent, fontSize: 25.0, fontFamily: 'LoraFont')),
+                onPressed: (){
+                  FirebaseFirestore.instance.runTransaction((transaction) async{
+                    DocumentSnapshot freshSnap = await transaction.get(doc.reference);
+                    await transaction.update(freshSnap.reference, {
+                      'stock' : doc['stock'] + 1,
+                    });
                   });
-                });
-              },
+                },
+              ),
             ),
           ]
       ),
     );
+
     return rList;
   }
-  Container _buildBottomSheet(BuildContext context, BarPositionClass element) {
-    return Container(
-      height: 600,
-      padding: const EdgeInsets.all(8.0),
-      decoration: BoxDecoration(
-        border: Border.all(color: VENTI_METRI_BLUE, width: 2.0),
-        borderRadius: BorderRadius.circular(8.0),
-      ),
-      child: ListView(
-        children: <Widget>[
-          ListTile(title: Text(element.name, style: TextStyle(color: VENTI_METRI_BLUE, fontSize: 15.0, fontFamily: 'LoraFont'))),
-          TextField(
-            keyboardType: TextInputType.number,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(),
-              icon: Icon(Icons.attach_money),
-              labelText: 'Enter an integer',
-            ),
-          ),
-          Container(
-            alignment: Alignment.center,
-            child: ElevatedButton.icon(
-              icon: const Icon(Icons.save),
-              label: const Text('Save and close'),
-              onPressed: () => Navigator.pop(context),
-            ),
-          )
-        ],
-      ),
+
+
+  void _storePosition(TapDownDetails details) {
+    _tapPosition = details.globalPosition;
+  }
+}
+
+class PlusEntry extends PopupMenuEntry<double> {
+  @override
+  final double height = 90;
+  @override
+  bool represents(double n) => n == 10 || n == 0.25 || n == 0.10;
+
+  @override
+  PlusEntryState createState() => PlusEntryState();
+}
+
+class PlusEntryState extends State<PlusEntry> {
+  void _plus10() {
+    Navigator.pop<double>(context, 10);
+  }
+
+  void _plus025() {
+    Navigator.pop<double>(context, 0.25);
+  }
+
+  void _plus010() {
+    Navigator.pop<double>(context, 0.10);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: <Widget>[
+        Expanded(child: FlatButton(onPressed: _plus10, child: Text('+10', style: TextStyle(color: VENTI_METRI_BLUE, fontSize: 15.0, fontFamily: 'LoraFont')))),
+        Expanded(child: FlatButton(onPressed: _plus025, child: Text('+0,25', style: TextStyle(color: VENTI_METRI_BLUE, fontSize: 15.0, fontFamily: 'LoraFont')))),
+        Expanded(child: FlatButton(onPressed: _plus010, child: Text('+0,1', style: TextStyle(color: VENTI_METRI_BLUE, fontSize: 15.0, fontFamily: 'LoraFont')))),
+      ],
+    );
+  }
+}
+
+class MinusEntry extends PopupMenuEntry<double> {
+  @override
+  final double height = 90;
+  @override
+  bool represents(double n) => n == 10 || n == 0.25 || n == 0.10;
+
+  @override
+  MinusEntryState createState() => MinusEntryState();
+}
+
+class MinusEntryState extends State<MinusEntry> {
+  void _plus10() {
+    Navigator.pop<double>(context, 10);
+  }
+
+  void _plus025() {
+    Navigator.pop<double>(context, 0.25);
+  }
+
+  void _plus010() {
+    Navigator.pop<double>(context, 0.10);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: <Widget>[
+        Expanded(child: FlatButton(onPressed: _plus10, child: Text('-10', style: TextStyle(color: VENTI_METRI_BLUE, fontSize: 15.0, fontFamily: 'LoraFont')))),
+        Expanded(child: FlatButton(onPressed: _plus025, child: Text('-0,25', style: TextStyle(color: VENTI_METRI_BLUE, fontSize: 15.0, fontFamily: 'LoraFont')))),
+        Expanded(child: FlatButton(onPressed: _plus010, child: Text('-0,1', style: TextStyle(color: VENTI_METRI_BLUE, fontSize: 15.0, fontFamily: 'LoraFont')))),
+      ],
     );
   }
 }
