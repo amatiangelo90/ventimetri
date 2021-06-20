@@ -5,8 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:venti_metri/dao/crud_model.dart';
+import 'package:venti_metri/model/events_models/bar_position_class.dart';
 import 'package:venti_metri/model/events_models/event_class.dart';
 import 'package:venti_metri/screens/auth/utilities/constants.dart';
+import 'package:venti_metri/screens/event/single_bar_champ_page_manager_screen.dart';
 import 'package:venti_metri/screens/event/single_event_manager_screen.dart';
 import 'package:venti_metri/screens/event/utils_event/utils_event.dart';
 import 'package:venti_metri/utils/utils.dart';
@@ -26,6 +28,8 @@ class _LoginAuthScreenState extends State<LoginAuthScreen> {
   bool _resetPasswordButtonPressed = false;
 
   Map<String,EventClass> _alreadyUsedPasswordMap;
+  Map<String, BarPositionClass> _barPositionMap;
+  Map<String, BarPositionClass> _champagneriePositionMap;
 
   TextEditingController _textEditingController = TextEditingController();
   TextEditingController _mailController = TextEditingController();
@@ -49,7 +53,6 @@ class _LoginAuthScreenState extends State<LoginAuthScreen> {
   @override
   void dispose() {
     errorController.close();
-
     super.dispose();
   }
 
@@ -427,7 +430,6 @@ class _LoginAuthScreenState extends State<LoginAuthScreen> {
 
   Widget _buildRegisterBtn() {
     return Container(
-
       width: double.infinity,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(20, 0, 20, 2),
@@ -579,15 +581,30 @@ class _LoginAuthScreenState extends State<LoginAuthScreen> {
                   onCompleted: (v) {
                     formKey.currentState.validate();
                     // conditions for validating
-                    if (currentText.length != 4 || !_alreadyUsedPasswordMap.keys.contains(currentText)) {
-                      errorController.add(ErrorAnimationType
-                          .shake); // Triggering error shake animation
+                    if(currentText.length == 4 && _barPositionMap.keys.contains(currentText)){
+                      snackBar("Accesso alla postazione Bar ${_barPositionMap[currentText].name} in corso..");
+                      print("Accesso alla postazione Bar ${_barPositionMap[currentText].name} in corso..");
+                      BarPositionClass _barPositionToWorkWith = _barPositionMap[currentText];
+                      Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => SingleBarChampManagerScreen(barPosClass: _barPositionToWorkWith, isBarPosition: true, isChampagneriePosition: false,),),);
+
                       setState(() {
                         _textEditingController.clear();
-                        hasError = true;
-                      });
-                      snackBar("Password sbagliata. Nessun Evento trovato!!");
-                    } else {
+                        hasError = false;
+                      },);
+                    }else if(currentText.length == 4 && _champagneriePositionMap.keys.contains(currentText)){
+                      snackBar("Accesso alla postazione Champagnerie ${_champagneriePositionMap[currentText].name} in corso..");
+                      print("Accesso alla postazione Champagnerie ${_champagneriePositionMap[currentText].name} in corso..");
+                      BarPositionClass _champagneriePositionToWorkWith = _champagneriePositionMap[currentText];
+                      Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => SingleBarChampManagerScreen(barPosClass: _champagneriePositionToWorkWith,isChampagneriePosition: true, isBarPosition: false,),),);
+
+                      setState(() {
+                        _textEditingController.clear();
+                        hasError = false;
+                      },);
+                    }else if (currentText.length == 4 && _alreadyUsedPasswordMap.keys.contains(currentText)) {
+
                       snackBar("Accesso all\'evento ${_alreadyUsedPasswordMap[currentText].title} in corso..");
 
                       EventClass toSend = _alreadyUsedPasswordMap[currentText];
@@ -598,6 +615,14 @@ class _LoginAuthScreenState extends State<LoginAuthScreen> {
                         _textEditingController.clear();
                         hasError = false;
                       },);
+                    } else {
+                      errorController.add(ErrorAnimationType
+                          .shake); // Triggering error shake animation
+                      setState(() {
+                        _textEditingController.clear();
+                        hasError = true;
+                      });
+                      snackBar("Password sbagliata. Nessun Evento o Postazione Bar/Champagnerie trovata!");
                     }
                   },
                   onChanged: (value) {
@@ -718,7 +743,7 @@ class _LoginAuthScreenState extends State<LoginAuthScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       Text(
-                        'Ricerca serata',
+                        'Ricerca Evento',
                         style: TextStyle(
                           color: Colors.white,
                           fontFamily: 'LoraFont',
@@ -744,8 +769,13 @@ class _LoginAuthScreenState extends State<LoginAuthScreen> {
                       _resetPasswordButtonPressed ? _buildPasswordForgotBtn() :
                       _registrationButtonPressed ? SizedBox(height: 0,) : _buildLoginBtn(),
                       _registrationButtonPressed ? _buildRegisterBtn() : SizedBox(height: 10,),
-
-
+                      SizedBox(height: 100,),
+                      Text('Designed by A.A.', style: TextStyle(
+                      color: Colors.white10,
+                        fontFamily: 'LoraFont',
+                        fontSize: 9.0,
+                        fontWeight: FontWeight.bold,
+                      ),),
                       //_buildSignInWithText(),
                       //_buildSocialBtnRow(),
                       //_buildSignupBtn(),
@@ -761,11 +791,34 @@ class _LoginAuthScreenState extends State<LoginAuthScreen> {
   }
 
   void initEvents() async {
+    print('Retrieve events list ...');
     CRUDModel crudModel = CRUDModel(EVENTS_SCHEMA);
     await crudModel.fetchEvents().then((value) {
       setState(() {
         _alreadyUsedPasswordMap = getMapAlreadyUsedPassword(value);
       });
     });
+    print(_alreadyUsedPasswordMap.toString());
+    print('===============================');
+    print('Retrieve bar position list ...');
+
+    CRUDModel crudModelBarPosition = CRUDModel(BAR_POSITION_SCHEMA);
+    await crudModelBarPosition.fetchBarPositionList().then((value) {
+      setState(() {
+        _barPositionMap = getMapBarPosition(value);
+      });
+    });
+    print(_barPositionMap.toString());
+    print('===============================');
+
+    print('Retrieve champagnerie position list ...');
+    CRUDModel crudModelChampagneriePosition = CRUDModel(CHAMPAGNERIE_POSITION_SCHEMA);
+    await crudModelChampagneriePosition.fetchBarPositionList().then((value) {
+      setState(() {
+        _champagneriePositionMap = getMapBarPosition(value);
+      });
+    });
+    print(_champagneriePositionMap.toString());
+    print('===============================');
   }
 }

@@ -1,6 +1,7 @@
 import 'dart:collection';
 import 'package:cloud_firestore_platform_interface/src/timestamp.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:venti_metri/model/events_models/bar_position_class.dart';
 import 'package:venti_metri/model/events_models/event_class.dart';
 
 
@@ -19,6 +20,14 @@ Map<String, EventClass> getMapAlreadyUsedPassword(List<EventClass> eventsList){
   eventsList.forEach((element) {
     print(element.passwordEvent);
     map[element.passwordEvent.toString()] = element;
+  });
+  return map;
+}
+Map<String, BarPositionClass> getMapBarPosition(List<BarPositionClass> barChampPositionList){
+  Map<String, BarPositionClass> map = Map<String, BarPositionClass>();
+
+  barChampPositionList.forEach((element) {
+    map[element.passwordBarChampPosition.toString()] = element;
   });
   return map;
 }

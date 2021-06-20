@@ -52,7 +52,7 @@ class _BranchChooseScreenState extends State<BranchChooseScreen> {
           title: Center(child: Text('20m² - Drink & Enjoy')),
           centerTitle: true,
           actions: [
-            IconButton(icon: Icon(Icons.person ,size: 30.0, color: Colors.white,), onPressed: (){
+            IconButton(icon: Icon(Icons.exit_to_app ,size: 30.0, color: Colors.white,), onPressed: (){
               if(_auth!=null){
                 _auth.signOut();
               }

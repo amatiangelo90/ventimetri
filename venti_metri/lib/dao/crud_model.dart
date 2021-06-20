@@ -16,7 +16,6 @@ class CRUDModel {
   CRUDModel(this.collection) {
     _dao = Dao(this.collection);
   }
-
   Future<List<ExpenceClass>> fetchExpences(DateTime start, DateTime end) async {
     var result = await _dao.getDataCollection(start, end);
     List<ExpenceClass> expencesList;
@@ -99,6 +98,10 @@ class CRUDModel {
   Future removeDocumentById(String id) async {
     await _dao.removeDocument(id);
     return;
+  }
+
+  Future deleteCollection(String collection) async{
+    await _dao.deleteCollection(collection);
   }
 
   Future updateProduct(ExpenceClass data, String id) async {

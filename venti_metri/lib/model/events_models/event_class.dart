@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:venti_metri/model/events_models/product_class.dart';
 
 class EventClass {
 
@@ -13,6 +12,8 @@ class EventClass {
   final String passwordEvent;
   final List<dynamic> productBarList;
   final List<dynamic> productChampagnerieList;
+  final List<dynamic> expencesBarProductList;
+  final List<dynamic> expencesChampagnerieProductList;
 
   const EventClass({
     @required this.docId,
@@ -23,7 +24,9 @@ class EventClass {
     @required this.listChampagneriePositionIds,
     @required this.passwordEvent,
     @required this.productBarList,
-    @required this.productChampagnerieList
+    @required this.productChampagnerieList,
+    @required this.expencesBarProductList,
+    @required this.expencesChampagnerieProductList
   });
 
   Map<String, dynamic> toJson() => {
@@ -35,7 +38,10 @@ class EventClass {
     'listChampagneriePositionIds': listChampagneriePositionIds,
     'passwordEvent': passwordEvent,
     'productBarList': productBarList,
-    'productChampagnerieList': productChampagnerieList};
+    'productChampagnerieList': productChampagnerieList,
+    'expencesBarProductList': expencesBarProductList,
+    'expencesChampagnerieProductList': expencesChampagnerieProductList
+  };
 
   @override
   String toString() => title;
@@ -52,16 +58,9 @@ class EventClass {
         listChampagneriePositionIds: cartMap['listChampagneriePositionIds'] as List,
         passwordEvent: cartMap['passwordEvent'],
         productBarList: cartMap['productBarList'] as List,
-        productChampagnerieList: cartMap['productChampagnerieList'] as List);
+        productChampagnerieList: cartMap['productChampagnerieList'] as List,
+        expencesBarProductList: cartMap['expencesBarProductList'] as List,
+        expencesChampagnerieProductList: cartMap['expencesChampagnerieProductList'] as List,
+    );
   }
-
-  serializeList(List<dynamic> listProducts) {
-    List<dynamic> orderDeserialized = <dynamic>[];
-
-    listProducts.forEach((element) {
-      orderDeserialized.add(element.toJson().toString());
-    });
-    return orderDeserialized;
-  }
-
 }

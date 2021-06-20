@@ -64,4 +64,12 @@ class Dao{
   Future<void> updateDocument(Map data , String id) {
     return _collectionReference.doc(id).update(data) ;
   }
+
+  Future<void> deleteCollection(String collection) {
+    _db.collection(collection).snapshots().forEach((snapshot) {
+      for (DocumentSnapshot ds in snapshot.docs){
+        ds.reference.delete();
+      }
+    });
+  }
 }

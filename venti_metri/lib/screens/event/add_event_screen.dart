@@ -35,18 +35,20 @@ class _AddEventScreenState extends State<AddEventScreen> {
   var uuid = Uuid();
   int _counterBar = 1;
   int _counterChampagnerie = 0;
-  List<int> _alreadyUsedBarChampPositionList = <int>[];
+  List<String> _alreadyUsedBarChampPositionList = <String>[];
   DateTime _currentSelectedDate;
   TextEditingController _eventNameController = TextEditingController();
   TextEditingController _passwordEventController = TextEditingController();
   Map<String, EventClass> _alreadyUsedPasswordMap;
   bool _isCreaSerataNotPressed = true;
 
-  CRUDModel _crudModelEventSchema;
+  CRUDModel _crudModelProductsEventSchema;
   CRUDModel _crudBarProdEventSchema;
   CRUDModel _crudChampProdEventSchema;
   CRUDModel _crudModelBarPositionSchema;
   CRUDModel _crudModelChampagnerieSchema;
+
+  CRUDModel _crudModelEventSchema;
 
   int _rowsPerPage = 5;
   int _rowsPerPageChampagnerie = 5;
@@ -61,7 +63,8 @@ class _AddEventScreenState extends State<AddEventScreen> {
   void initState() {
     super.initState();
     randomizer = new Random();
-    _crudModelEventSchema = CRUDModel(PRODUCT_LIST_SCHEMA);
+    _crudModelEventSchema = CRUDModel(EVENTS_SCHEMA);
+    _crudModelProductsEventSchema = CRUDModel(PRODUCT_LIST_SCHEMA);
     _crudModelBarPositionSchema = CRUDModel(BAR_POSITION_SCHEMA);
     _crudModelChampagnerieSchema = CRUDModel(CHAMPAGNERIE_POSITION_SCHEMA);
 
@@ -317,6 +320,12 @@ class _AddEventScreenState extends State<AddEventScreen> {
                                     duration: Duration(milliseconds: 1000),
                                     backgroundColor: Colors.redAccent,
                                     content: Text('Assegnare una password all\'evento')));
+                              }else if(!RegExp('[0-9][0-9][0-9][0-9]').hasMatch(_passwordEventController.text)){
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(SnackBar(
+                                    duration: Duration(milliseconds: 1000),
+                                    backgroundColor: Colors.redAccent,
+                                    content: Text('Utilizzare 4 numeri per la password evento')));
                               }else if(_passwordEventController.text.length < 4){
                                 ScaffoldMessenger.of(context)
                                     .showSnackBar(SnackBar(
@@ -330,30 +339,46 @@ class _AddEventScreenState extends State<AddEventScreen> {
                                     backgroundColor: Colors.redAccent,
                                     content: Text('Selezionare una data valida')));
                               }else{
+                                try{
                                 setState((){
                                   _isCreaSerataNotPressed = false;
                                 });
-                                /*FirebaseFirestore.instance.runTransaction((Transaction transaction) async {
+                                _crudBarProdEventSchema = CRUDModel(BAR_LIST_PRODUCT_SCHEMA + getAppIxFromNameEvent(_eventNameController.text));
 
-                                });*/
-                                CRUDModel crudModelEventSchema = CRUDModel(EVENTS_SCHEMA);
+                                List<String> _expencesBarSchemasList = <String>[];
+                                List<String> _expencesChampagnerieSchemasList = <String>[];
+
+                                List<String> barProdIdsList = <String>[];
+                                for(int i = 0; i < _productsBarList.length; i++){
+                                  if(_productsBarList[i].selected){
+                                    String addProductIdBar = await _crudBarProdEventSchema.addProductObject(_productsBarList[i]);
+                                    barProdIdsList.add(addProductIdBar);
+                                  }
+                                }
+
+                                _crudChampProdEventSchema = CRUDModel(CHAMPAGNERIE_LIST_PRODUCT_SCHEMA + getAppIxFromNameEvent(_eventNameController.text));
+                                List<String> champProdIdsList = <String>[];
+                                for(int i = 0; i < _productsChampagnerieList.length; i++){
+                                  if(_productsChampagnerieList[i].selected){
+                                    String addProductIdChamp = await _crudChampProdEventSchema.addProductObject(_productsChampagnerieList[i]);
+                                    champProdIdsList.add(addProductIdChamp);
+                                  }
+                                }
+
                                 String eventId = uuid.v1();
-
-
-
                                 List<String> barPositionList = [];
 
                                 for(int i = 0; i < _counterBar; i++){
-
-                                  int currentBarPosId;
+                                  String currentBarPosId;
                                   do{
-                                    currentBarPosId = min + randomizer.nextInt(max - min);
+                                    currentBarPosId = (min + randomizer.nextInt(max - min)).toString();
                                     print('Current id generated : ' + currentBarPosId.toString());
                                   }while(_alreadyUsedBarChampPositionList.contains(currentBarPosId));
 
                                   setState(() {
                                     _alreadyUsedBarChampPositionList.add(currentBarPosId);
                                   });
+
                                   String currentId = uuid.v1();
 
                                   BarPositionClass barPosClass = BarPositionClass(
@@ -363,22 +388,31 @@ class _AddEventScreenState extends State<AddEventScreen> {
                                     name: 'Bar ' + (i+1).toString(),
                                     ownerBar: '',
                                     listDrinkId: '-',
-                                    passwordEvent: int.parse(_passwordEventController.value.text),
+                                    passwordEvent: _passwordEventController.value.text,
                                       passwordBarChampPosition: currentBarPosId,
                                     idEvent: eventId
                                   );
                                   String addBarPositionObject = await _crudModelBarPositionSchema.addBarPositionObject(barPosClass);
                                   barPositionList.add(addBarPositionObject);
-                                }
 
+                                  _crudBarProdEventSchema = CRUDModel(BAR_LIST_PRODUCT_SCHEMA + _passwordEventController.value.text + currentBarPosId.toString());
+                                  _expencesBarSchemasList.add(BAR_LIST_PRODUCT_SCHEMA + _passwordEventController.value.text + currentBarPosId.toString());
+                                  List<String> barProdIdsList = <String>[];
+                                  for(int i = 0; i < _productsBarList.length; i++){
+                                    if(_productsBarList[i].selected){
+                                      String addProductIdBar = await _crudBarProdEventSchema.addProductObject(_productsBarList[i]);
+                                      barProdIdsList.add(addProductIdBar);
+                                    }
+                                  }
+                                }
 
                                 List<String> champagnerieList = [];
 
                                 for(int i = 0; i < _counterChampagnerie; i++){
                                   String currentId = uuid.v1();
-                                  int currentChampPosId;
+                                  String currentChampPosId;
                                   do{
-                                    currentChampPosId = min + randomizer.nextInt(max - min);
+                                    currentChampPosId = (min + randomizer.nextInt(max - min)).toString();
                                     print('Current id generated (Champagnerie): ' + currentChampPosId.toString());
                                   }while(_alreadyUsedBarChampPositionList.contains(currentChampPosId));
 
@@ -393,31 +427,23 @@ class _AddEventScreenState extends State<AddEventScreen> {
                                       name: 'Champagnerie ' + (i+1).toString(),
                                       ownerBar: '',
                                       listDrinkId: '-',
-                                      passwordEvent: int.parse(_passwordEventController.value.text),
+                                      passwordEvent: _passwordEventController.value.text,
                                       passwordBarChampPosition: currentChampPosId,
                                       idEvent: eventId
                                   );
                                   String addChampagnerieObject = await _crudModelChampagnerieSchema.addBarPositionObject(barPosClass);
                                   champagnerieList.add(addChampagnerieObject);
-                                }
-                                _crudBarProdEventSchema = CRUDModel(BAR_LIST_PRODUCT_SCHEMA + getAppIxFromNameEvent(_eventNameController.text));
-                                _crudChampProdEventSchema = CRUDModel(CHAMPAGNERIE_LIST_PRODUCT_SCHEMA + getAppIxFromNameEvent(_eventNameController.text));
 
-                                List<String> barProdIdsList = <String>[];
-                                for(int i = 0; i < _productsBarList.length; i++){
-                                  if(_productsBarList[i].selected){
-                                    String addProductIdBar = await _crudBarProdEventSchema.addProductObject(_productsBarList[i]);
-                                    barProdIdsList.add(addProductIdBar);
+                                  _crudChampProdEventSchema = CRUDModel(CHAMPAGNERIE_LIST_PRODUCT_SCHEMA + _passwordEventController.value.text + currentChampPosId.toString());
+                                  _expencesChampagnerieSchemasList.add(CHAMPAGNERIE_LIST_PRODUCT_SCHEMA + _passwordEventController.value.text + currentChampPosId.toString());
+                                  List<String> champProdIdsList = <String>[];
+                                  for(int i = 0; i < _productsChampagnerieList.length; i++){
+                                    if(_productsChampagnerieList[i].selected){
+                                      String addProductIdChamp = await _crudChampProdEventSchema.addProductObject(_productsChampagnerieList[i]);
+                                      champProdIdsList.add(addProductIdChamp);
+                                    }
                                   }
                                 }
-                                List<String> champProdIdsList = <String>[];
-                                for(int i = 0; i < _productsChampagnerieList.length; i++){
-                                  if(_productsChampagnerieList[i].selected){
-                                    String addProductIdChamp = await _crudChampProdEventSchema.addProductObject(_productsChampagnerieList[i]);
-                                    champProdIdsList.add(addProductIdChamp);
-                                  }
-                                }
-
 
                                 EventClass eventClass = EventClass(
                                     docId: '',
@@ -428,9 +454,12 @@ class _AddEventScreenState extends State<AddEventScreen> {
                                     date: Timestamp.fromDate(_currentSelectedDate),
                                     productBarList: barProdIdsList,
                                     title: _eventNameController.value.text,
-                                    productChampagnerieList: champProdIdsList);
+                                    productChampagnerieList: champProdIdsList,
+                                    expencesBarProductList: _expencesBarSchemasList,
+                                  expencesChampagnerieProductList: _expencesChampagnerieSchemasList
+                                );
 
-                                await crudModelEventSchema.addEventObject(eventClass);
+                                await _crudModelEventSchema.addEventObject(eventClass);
 
 
                                 ScaffoldMessenger.of(context)
@@ -439,6 +468,13 @@ class _AddEventScreenState extends State<AddEventScreen> {
                                     content: Text('Evento ${_eventNameController.value.text} creato per la data ${_currentSelectedDate.day}'+'/'
                                         + '${_currentSelectedDate.month}' +'/${_currentSelectedDate.year}')));
                                 Navigator.pushNamed(context, PartyScreenManager.id);
+                                }catch(e){
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(SnackBar(
+                                      duration: Duration(milliseconds: 3000),
+                                      backgroundColor: Colors.redAccent,
+                                      content: Text('Errore durante la creazione evento. ${e}')));
+                                }
                               }
                             },
                             style: ButtonStyle(
@@ -479,8 +515,8 @@ class _AddEventScreenState extends State<AddEventScreen> {
   }
 
   Future<void> initProductsList() async {
-    var list = await _crudModelEventSchema.fetchProducts();
-    var listChamp = await _crudModelEventSchema.fetchProducts();
+    var list = await _crudModelProductsEventSchema.fetchProducts();
+    var listChamp = await _crudModelProductsEventSchema.fetchProducts();
     setState(() {
       _productsBarList.clear();
       _productsChampagnerieList.clear();
@@ -503,7 +539,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
     });
     _alreadyUsedPasswordMap.keys.forEach((element) {
       if(int.tryParse(element) != null){
-        _alreadyUsedBarChampPositionList.add(int.parse(element));
+        _alreadyUsedBarChampPositionList.add(element);
       }
     });
     print('Current Already present passwords for bar: ' + _alreadyUsedBarChampPositionList.toString());

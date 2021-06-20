@@ -8,8 +8,8 @@ class BarPositionClass {
   String name;
   String eventName;
   String ownerBar;
-  int passwordEvent;
-  int passwordBarChampPosition;
+  String passwordEvent;
+  String passwordBarChampPosition;
   String listDrinkId;
 
   BarPositionClass({
@@ -50,8 +50,8 @@ class BarPositionClass {
       eventName: cartMap['eventName'].toString(),
       ownerBar: cartMap['ownerBar'].toString(),
       docId: docId,
-      passwordEvent: int.parse(cartMap['passwordEvent'].toString()),
-      passwordBarChampPosition: int.parse(cartMap['passwordBarChampPosition'].toString()),
+      passwordEvent: cartMap['passwordEvent'].toString(),
+      passwordBarChampPosition: cartMap['passwordBarChampPosition'].toString(),
       listDrinkId: cartMap['listDrinkId'].toString(),
     );
 
