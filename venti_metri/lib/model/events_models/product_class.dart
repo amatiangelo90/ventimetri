@@ -48,7 +48,7 @@ class Product {
     double stock = 0.0;
     double consumed = 0.0;
 
-   /* if(snapshot['price'].runtimeType == double){
+   if(snapshot['price'].runtimeType == double){
       price = snapshot['price'];
     }else if(snapshot['price'].runtimeType == int){
       int intPrice = snapshot['price'];
@@ -56,33 +56,33 @@ class Product {
     }else if(snapshot['price'].runtimeType == String){
     }else{
       print('Errore parsing object');
-    }*/
+    }
 
-    /*if(snapshot['stock'].runtimeType == double){
-      price = snapshot['stock'];
+    if(snapshot['stock'].runtimeType == double){
+      stock = snapshot['stock'];
     }else if(snapshot['stock'].runtimeType == int){
       int intPrice = snapshot['stock'];
-      price = intPrice.toDouble();
+      stock = intPrice.toDouble();
     }else{
       print('Errore parsing stock object');
     }
-*/
-    /*if(snapshot['consumed'].runtimeType == double){
-      price = snapshot['consumed'];
+
+    if(snapshot['consumed'].runtimeType == double){
+      consumed = snapshot['consumed'];
     }else if(snapshot['consumed'].runtimeType == int){
       int intPrice = snapshot['consumed'];
-      price = intPrice.toDouble();
+      consumed = intPrice.toDouble();
     }else{
       print('Errore parsing consumed object');
     }
-*/
+
     return Product(
       docId: docId ,
       id: snapshot['id'] as String,
       name: snapshot['name'] as String,
-      price: snapshot['price'],
-      stock: snapshot['stock'],
-      consumed: snapshot['consumed'],
+      price: price,
+      stock: stock,
+      consumed: consumed,
       category: snapshot['category'] as String,
       available: snapshot['available'] as String,
       measure: snapshot['measure'] as String,

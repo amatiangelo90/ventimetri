@@ -5,6 +5,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:venti_metri/dao/crud_model.dart';
 import 'package:venti_metri/model/events_models/bar_position_class.dart';
+import 'package:venti_metri/model/events_models/product_class.dart';
+import 'package:venti_metri/model/events_models/product_datasource.dart';
 import 'package:venti_metri/utils/utils.dart';
 
 class SingleBarChampManagerScreen extends StatefulWidget {
@@ -22,26 +24,40 @@ class SingleBarChampManagerScreen extends StatefulWidget {
 
 class _SingleBarChampManagerScreenState extends State<SingleBarChampManagerScreen> {
 
-  CRUDModel crudModelBarChampProductsExpences;
+  CRUDModel _crudModelProductsEventSchema;
+  CRUDModel _alreadyUsedProductSchema;
+  List<Product> _productsList = <Product>[];
+
   BarPositionClass _currentBarPositionObject;
   User loggedInUser;
   FirebaseAuth _auth;
-
+  int _rowsPerPage = 5;
   String _currentBarChampagneriePositionSchema;
+  bool _insertProductBottonPressed;
 
   @override
   void initState() {
     super.initState();
+    _crudModelProductsEventSchema = CRUDModel(PRODUCT_LIST_SCHEMA);
+
     _auth = FirebaseAuth.instance;
     getCurrentUser();
     _currentBarPositionObject = this.widget.barPosClass;
     if(this.widget.isBarPosition){
       _currentBarChampagneriePositionSchema = BAR_LIST_PRODUCT_SCHEMA;
+
     }else if(this.widget.isChampagneriePosition){
       _currentBarChampagneriePositionSchema = CHAMPAGNERIE_LIST_PRODUCT_SCHEMA;
+
     }else{
       print('Error - The bar position schema must be one between ${BAR_LIST_PRODUCT_SCHEMA} or ${CHAMPAGNERIE_LIST_PRODUCT_SCHEMA}');
     }
+    _insertProductBottonPressed = false;
+
+    _alreadyUsedProductSchema = CRUDModel(_currentBarChampagneriePositionSchema
+        + _currentBarPositionObject.passwordEvent.toString()
+        + _currentBarPositionObject.passwordBarChampPosition.toString());
+    initProductsList();
   }
 
   void getCurrentUser() async {
@@ -70,6 +86,21 @@ class _SingleBarChampManagerScreenState extends State<SingleBarChampManagerScree
             backgroundColor: VENTI_METRI_BLUE,
             centerTitle: true,
             title: Text(_currentBarPositionObject.name, style: TextStyle(fontFamily: 'LoraFont'),),
+            actions: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(0, 8, 10, 4),
+                child: IconButton(onPressed: (){
+                  setState(() {
+                    if(_insertProductBottonPressed){
+                      _insertProductBottonPressed = false;
+                    }else{
+                      _insertProductBottonPressed = true;
+                    }
+
+                  });
+                }, icon: Icon(_insertProductBottonPressed ? Icons.close : Icons.add_rounded, size: 30,)),
+              ),
+            ],
           ),
           body: Container(
             color: VENTI_METRI_BLUE,
@@ -116,6 +147,32 @@ class _SingleBarChampManagerScreenState extends State<SingleBarChampManagerScree
     List<Widget> items = <Widget>[];
     items.add(Column(
       children: [
+        _insertProductBottonPressed ? PaginatedDataTable(
+          rowsPerPage: _rowsPerPage,
+          availableRowsPerPage: const <int>[5, 10, 20, 25],
+          onRowsPerPageChanged: (int value) {
+            setState(() {
+              _rowsPerPage = value;
+            });
+          },
+          columns: kTableColumns,
+          source: ProductDataSource(_productsList),
+        ) : SizedBox(height: 0,),
+        _insertProductBottonPressed ? RaisedButton(
+          onPressed: () {
+            _productsList.forEach((element) async {
+              print(element.name + ' Selected? ' + element.selected.toString());
+              if(element.selected){
+                await _alreadyUsedProductSchema.addProductObject(element);
+              }
+            });
+            initProductsList();
+            refreshPage();
+          },
+          elevation: 5.0,
+          color: VENTI_METRI_BLUE,
+          child: Text('Aggiungi', style: TextStyle(color: Colors.white, fontSize: 21.0, fontFamily: 'LoraFont')),
+        ): SizedBox(height: 0,),
         Container(
           width: MediaQuery.of(context).size.width ,
           child: Card(
@@ -149,21 +206,16 @@ class _SingleBarChampManagerScreenState extends State<SingleBarChampManagerScree
                     children: [
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Text('PRODOTTO',overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.white, fontSize: 20.0, fontFamily: 'LoraFont')),
+                        child: Text('PRODOTTO',overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.white, fontSize: 15.0, fontFamily: 'LoraFont')),
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Text('CARICO', style: TextStyle(color: Colors.white, fontSize: 20.0, fontFamily: 'LoraFont')),
+                        child: Text('CARICO', style: TextStyle(color: Colors.white, fontSize: 15.0, fontFamily: 'LoraFont')),
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Text('SCARICO', style: TextStyle(color: Colors.white, fontSize: 20.0, fontFamily: 'LoraFont')),
+                        child: Text('SCARICO', style: TextStyle(color: Colors.white, fontSize: 15.0, fontFamily: 'LoraFont')),
                       ),
-                      loggedInUser != null ? Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text('CONSUMO', style: TextStyle(color: Colors.white, fontSize: 20.0, fontFamily: 'LoraFont')),
-                      ) : SizedBox(height: 0,),
-
                     ]
                 ),
               ],
@@ -201,7 +253,6 @@ class _SingleBarChampManagerScreenState extends State<SingleBarChampManagerScree
   }
 
 
-
   Widget _buildConsumptionItems(
       BuildContext context,
       DocumentSnapshot document) {
@@ -229,7 +280,7 @@ class _SingleBarChampManagerScreenState extends State<SingleBarChampManagerScree
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(8, 11, 8, 15),
-              child: Text(doc['name'].toString(),overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.white, fontSize: 17.0, fontFamily: 'LoraFont')),
+              child: Text(loggedInUser == null ? doc['name'].toString() : doc['name'].toString() + ' (' + doc['price'].toString()+')',overflow: TextOverflow.visible, style: TextStyle(color: Colors.white, fontSize: 15.0, fontFamily: 'LoraFont')),
             ),
             GestureDetector(
               onTap: () {
@@ -265,6 +316,7 @@ class _SingleBarChampManagerScreenState extends State<SingleBarChampManagerScree
                                 print(_currentController.value.text);
 
                                 if (_currentController == null) return;
+
                                 if (_currentController.value.text == '') {
                                   FirebaseFirestore.instance.runTransaction((transaction) async{
                                     DocumentSnapshot freshSnap = await transaction.get(doc.reference);
@@ -274,6 +326,8 @@ class _SingleBarChampManagerScreenState extends State<SingleBarChampManagerScree
                                   });
                                 };
                                 if (_currentController.value.text != '') {
+                                  if(double.parse(_currentController.value.text) < 0) return;
+
                                   if(double.tryParse(_currentController.value.text) != null){
                                     FirebaseFirestore.instance.runTransaction((transaction) async{
                                       DocumentSnapshot freshSnap = await transaction.get(doc.reference);
@@ -398,5 +452,22 @@ class _SingleBarChampManagerScreenState extends State<SingleBarChampManagerScree
     );
 
     return rList;
+  }
+
+  Future<void> initProductsList() async {
+
+    List<Product> list = await _crudModelProductsEventSchema.fetchProducts();
+    List<Product> alreadyUsedProduct = await _alreadyUsedProductSchema.fetchProducts();
+    List<String> nameListProduct = <String>[];
+
+    alreadyUsedProduct.forEach((element) {
+      nameListProduct.add(element.name);
+    });
+
+    setState(() {
+      _productsList.clear();
+      _productsList.addAll(list);
+      _productsList.removeWhere((element) => nameListProduct.contains(element.name));
+    });
   }
 }

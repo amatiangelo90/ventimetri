@@ -11,6 +11,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:venti_metri/dao/crud_model.dart';
 import 'package:venti_metri/model/events_models/bar_position_class.dart';
 import 'package:venti_metri/model/events_models/event_class.dart';
+import 'package:venti_metri/model/events_models/product_class.dart';
 import 'package:venti_metri/screens/event/single_bar_champ_page_manager_screen.dart';
 import 'package:venti_metri/screens/event/utils_event/utils_event.dart';
 import 'package:venti_metri/utils/utils.dart';
@@ -44,6 +45,10 @@ class _SingleEventManagerScreenState extends State<SingleEventManagerScreen> {
   List<BarPositionClass> _barExpencesClassList = <BarPositionClass>[];
   List<BarPositionClass> _champagnerieExpencesClassList = <BarPositionClass>[];
 
+  List<BarPositionClass> barPositionList;
+  List<BarPositionClass> champagneriePositionList;
+
+
   User loggedInUser;
   FirebaseAuth _auth;
   var _tapPosition;
@@ -61,9 +66,7 @@ class _SingleEventManagerScreenState extends State<SingleEventManagerScreen> {
     crudModelEventSchema = CRUDModel(EVENTS_SCHEMA);
     crudModelBarPosition = CRUDModel(BAR_POSITION_SCHEMA);
     crudModelChampagnerie = CRUDModel(CHAMPAGNERIE_POSITION_SCHEMA);
-
   }
-
   void getCurrentUser() async {
     try{
       final user = await _auth.currentUser;
@@ -154,6 +157,12 @@ class _SingleEventManagerScreenState extends State<SingleEventManagerScreen> {
                   },
                 ),
               ),
+              IconButton(
+                icon: Icon(Icons.refresh, size: 30,),
+                onPressed: (){
+                  refreshPage();
+                },
+              ),
             ],
             title: Text(_eventClass.title, style: TextStyle(fontFamily: 'LoraFont'),),
           ),
@@ -196,22 +205,20 @@ class _SingleEventManagerScreenState extends State<SingleEventManagerScreen> {
 
   Future<List<Widget>> createBody() async {
 
-    List<BarPositionClass> barPositionList = await crudModelBarPosition.fetchBarPositionListByEventId(_eventClass.id);
+    barPositionList = await crudModelBarPosition.fetchBarPositionListByEventId(_eventClass.id);
+    champagneriePositionList = await crudModelChampagnerie.fetchBarPositionListByEventId(_eventClass.id);
 
-    List<BarPositionClass> champagneriePositionList = await crudModelChampagnerie.fetchBarPositionListByEventId(_eventClass.id);
 
-    // TODO check this code to manage the consumption
-    barPositionList.forEach((element) async {
-      print('Schema to retrieve bar product ' + BAR_LIST_PRODUCT_SCHEMA + element.passwordEvent.toString() + element.passwordBarChampPosition.toString());
-      CRUDModel currentCrudModel = CRUDModel(BAR_LIST_PRODUCT_SCHEMA + element.passwordEvent.toString() + element.passwordBarChampPosition.toString());
-      _barExpencesClassList.addAll(await currentCrudModel.fetchBarPositionList());
-    });
-    champagneriePositionList.forEach((element) async {
-      print('Schema to retrieve champagnerie product ' + BAR_LIST_PRODUCT_SCHEMA + element.passwordEvent.toString() + element.passwordBarChampPosition.toString());
-      CRUDModel currentCrudModel = CRUDModel(CHAMPAGNERIE_LIST_PRODUCT_SCHEMA + element.passwordEvent.toString() + element.passwordBarChampPosition.toString());
-      _champagnerieExpencesClassList.addAll(await currentCrudModel.fetchBarPositionList());
-    });
+    print(_barExpencesClassList);
+    if(champagneriePositionList != null){
+      champagneriePositionList.forEach((element) async {
+        print('Schema to retrieve champagnerie product ' + BAR_LIST_PRODUCT_SCHEMA + element.passwordEvent.toString() + element.passwordBarChampPosition.toString());
+        CRUDModel currentCrudModel = CRUDModel(CHAMPAGNERIE_LIST_PRODUCT_SCHEMA + element.passwordEvent.toString() + element.passwordBarChampPosition.toString());
+        _champagnerieExpencesClassList.addAll(await currentCrudModel.fetchBarPositionList());
+      });
+    }
 
+    print(_champagnerieExpencesClassList);
 
     List<Widget> items = <Widget>[];
     items.add(Column(
@@ -261,18 +268,65 @@ class _SingleEventManagerScreenState extends State<SingleEventManagerScreen> {
             SizedBox(height: 15,),
           ],
         ),
-        Card(
-          color: VENTI_METRI_MONOPOLI,
-          child: const Center(
-            child: const Text('Resoconto Bar', style: TextStyle(fontSize: 17, color: Colors.white, fontFamily: 'LoraFont')),
-          ),
+        Container(
+            child: FutureBuilder(
+              initialData: <Widget>[Column(
+                children: [
+                  Center(child: CircularProgressIndicator(
+                    color: VENTI_METRI_PINK,
+                  )),
+                  SizedBox(),
+                  Center(child: Text('Caricamento dati per tabella resoconto..',
+                    style: TextStyle(fontSize: 16.0, color: Colors.black, fontFamily: 'LoraFont'),
+                  ),),
+                ],
+              )],
+              future: buildRecapTableBarChampConsumption(barPositionList, true, false),
+              builder: (context, snapshot){
+                if(snapshot.hasData){
+                  return Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: ListView(
+                      primary: false,
+                      shrinkWrap: true,
+                      children: snapshot.data,
+                    ),
+                  );
+                }else{
+                  return CircularProgressIndicator();
+                }
+              },
+            )
         ),
-
-        Card(
-          color: VENTI_METRI_LOCOROTONDO,
-          child: Center(
-            child: Text('Resoconto   Champagnerie', style: TextStyle(fontSize: 17, color: VENTI_METRI_BLUE, fontFamily: 'LoraFont')),
-          ),
+        Container(
+            child: FutureBuilder(
+              initialData: <Widget>[Column(
+                children: [
+                  Center(child: CircularProgressIndicator(
+                    color: VENTI_METRI_PINK,
+                  )),
+                  SizedBox(),
+                  Center(child: Text('Caricamento dati per tabella resoconto..',
+                    style: TextStyle(fontSize: 16.0, color: Colors.black, fontFamily: 'LoraFont'),
+                  ),),
+                ],
+              )],
+              future: buildRecapTableBarChampConsumption(champagneriePositionList, false, true),
+              builder: (context, snapshot){
+                if(snapshot.hasData){
+                  return Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: ListView(
+                      primary: false,
+                      shrinkWrap: true,
+                      children: snapshot.data,
+                    ),
+                  );
+                }else{
+                  return CircularProgressIndicator();
+                }
+              },
+            )
         ),
       ],
     ),
@@ -526,5 +580,74 @@ class _SingleEventManagerScreenState extends State<SingleEventManagerScreen> {
     setState(() {});
   }
 
+  Future<List<Widget>> buildRecapTableBarChampConsumption(List<BarPositionClass> barChampagneriePositionList, bool barRecap, bool champRecap) async{
+    String currentSchema;
+
+    if(barRecap){
+      currentSchema = BAR_LIST_PRODUCT_SCHEMA;
+    } else if(champRecap){
+      currentSchema = CHAMPAGNERIE_LIST_PRODUCT_SCHEMA;
+    }
+    List<Widget> listOut = <Widget>[];
+
+    if(barChampagneriePositionList != null){
+      barChampagneriePositionList.forEach((element) async {
+        print('Schema to retrieve bar/champagnerie product ' + currentSchema + element.passwordEvent.toString() + element.passwordBarChampPosition.toString());
+        CRUDModel currentCrudModel = CRUDModel(currentSchema + element.passwordEvent.toString() + element.passwordBarChampPosition.toString());
+        List<Product> currentProductList = await currentCrudModel.fetchProducts();
+        listOut.add(
+          Card(
+            color: barRecap ? VENTI_METRI_MONOPOLI : VENTI_METRI_LOCOROTONDO,
+            child: Center(
+              child: Text('${element.name}', style: TextStyle(fontSize: 17, color: barRecap ? Colors.white : VENTI_METRI_BLUE, fontFamily: 'LoraFont')),
+            ),
+          ),
+        );
+        listOut.add(
+            buildTableWithCurrentBarChampagnerieProductElements(currentProductList)
+        );
+
+      });
+    }
+
+    return listOut;
+  }
+
+  Widget buildTableWithCurrentBarChampagnerieProductElements(List<Product> currentProductList) {
+
+
+    return Table(
+        border: TableBorder.all(), // Allows to add a border decoration around your table
+        children:
+
+          buildTableRowByCurrentProductList(currentProductList),
+    );
+  }
+
+  buildTableRowByCurrentProductList(List<Product> currentProductList) {
+    List<TableRow> _tableRow = <TableRow>[];
+
+    _tableRow.add(
+      TableRow(children :[
+        Text('Prodotto', style: TextStyle(fontSize: 15, color: Colors.orange, fontFamily: 'LoraFont')),
+        Text('Prezzo', style: TextStyle(fontSize: 15, color: Colors.orange, fontFamily: 'LoraFont')),
+        Text('Carico', style: TextStyle(fontSize: 15, color: Colors.orange, fontFamily: 'LoraFont')),
+        Text('Scarico', style: TextStyle(fontSize: 15, color: Colors.orange, fontFamily: 'LoraFont')),
+        Text('Consumo', style: TextStyle(fontSize: 15, color: Colors.orange, fontFamily: 'LoraFont')),
+      ]),
+    );
+    currentProductList.forEach((element) {
+      _tableRow.add(
+        TableRow(children :[
+          Text(element.name, style: TextStyle(fontSize: 15, color: Colors.white, fontFamily: 'LoraFont')),
+          Text(loggedInUser == null ? '**' : element.price.toString(), style: TextStyle(fontSize: 15, color: Colors.white, fontFamily: 'LoraFont')),
+          Text(element.stock.toString(), style: TextStyle(fontSize: 15, color: Colors.white, fontFamily: 'LoraFont')),
+          Text(element.consumed.toString(), style: TextStyle(fontSize: 15, color: Colors.white, fontFamily: 'LoraFont')),
+          Text(loggedInUser == null ? '**' : ((element.stock - element.consumed) * element.price).toStringAsFixed(2), style: TextStyle(fontSize: 15, color: Colors.white, fontFamily: 'LoraFont')),
+        ]),
+      );
+    });
+    return _tableRow;
+  }
 }
 
