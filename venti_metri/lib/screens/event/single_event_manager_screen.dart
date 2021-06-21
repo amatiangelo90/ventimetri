@@ -48,7 +48,6 @@ class _SingleEventManagerScreenState extends State<SingleEventManagerScreen> {
   List<BarPositionClass> barPositionList;
   List<BarPositionClass> champagneriePositionList;
 
-
   User loggedInUser;
   FirebaseAuth _auth;
   var _tapPosition;
@@ -328,11 +327,17 @@ class _SingleEventManagerScreenState extends State<SingleEventManagerScreen> {
               },
             )
         ),
+        SizedBox(height: 100,),
+        Text('Designed by Amati Angelo.', style: TextStyle(
+          color: Colors.white10,
+          fontFamily: 'LoraFont',
+          fontSize: 9.0,
+          fontWeight: FontWeight.bold,
+        ),),
       ],
     ),
     );
     return items;
-
   }
 
   List<Widget> buildCardItemsByBarPositionList(List<BarPositionClass> barPositionList, String type) {
@@ -596,17 +601,24 @@ class _SingleEventManagerScreenState extends State<SingleEventManagerScreen> {
         CRUDModel currentCrudModel = CRUDModel(currentSchema + element.passwordEvent.toString() + element.passwordBarChampPosition.toString());
         List<Product> currentProductList = await currentCrudModel.fetchProducts();
         listOut.add(
-          Card(
-            color: barRecap ? VENTI_METRI_MONOPOLI : VENTI_METRI_LOCOROTONDO,
-            child: Center(
-              child: Text('${element.name}', style: TextStyle(fontSize: 17, color: barRecap ? Colors.white : VENTI_METRI_BLUE, fontFamily: 'LoraFont')),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0, 5, 0, 8),
+            child: Card(
+              color: barRecap ? VENTI_METRI_MONOPOLI : VENTI_METRI_LOCOROTONDO,
+              child: Center(
+                child: Column(
+                  children: [
+                    Text('${element.name}', style: TextStyle(fontSize: 17, color: barRecap ? Colors.white : VENTI_METRI_BLUE, fontFamily: 'LoraFont')),
+                    element.ownerBar != '' ? Text('Responsabile : ${element.ownerBar}', style: TextStyle(fontSize: 17, color: barRecap ? Colors.white : VENTI_METRI_BLUE, fontFamily: 'LoraFont')) : SizedBox(height: 0,),
+                  ],
+                ),
+              ),
             ),
           ),
         );
         listOut.add(
             buildTableWithCurrentBarChampagnerieProductElements(currentProductList)
         );
-
       });
     }
 
@@ -617,36 +629,80 @@ class _SingleEventManagerScreenState extends State<SingleEventManagerScreen> {
 
 
     return Table(
-        border: TableBorder.all(), // Allows to add a border decoration around your table
-        children:
-
-          buildTableRowByCurrentProductList(currentProductList),
+        border: TableBorder(horizontalInside: BorderSide(width: 0.5, color: Colors.black12, style: BorderStyle.solid)),
+        children: buildTableRowByCurrentProductList(currentProductList),
     );
   }
 
   buildTableRowByCurrentProductList(List<Product> currentProductList) {
     List<TableRow> _tableRow = <TableRow>[];
+    double _currentTotal = 0.0;
 
-    _tableRow.add(
-      TableRow(children :[
-        Text('Prodotto', style: TextStyle(fontSize: 15, color: Colors.orange, fontFamily: 'LoraFont')),
-        Text('Prezzo', style: TextStyle(fontSize: 15, color: Colors.orange, fontFamily: 'LoraFont')),
-        Text('Carico', style: TextStyle(fontSize: 15, color: Colors.orange, fontFamily: 'LoraFont')),
-        Text('Scarico', style: TextStyle(fontSize: 15, color: Colors.orange, fontFamily: 'LoraFont')),
-        Text('Consumo', style: TextStyle(fontSize: 15, color: Colors.orange, fontFamily: 'LoraFont')),
-      ]),
-    );
-    currentProductList.forEach((element) {
+    if(loggedInUser != null){
       _tableRow.add(
         TableRow(children :[
-          Text(element.name, style: TextStyle(fontSize: 15, color: Colors.white, fontFamily: 'LoraFont')),
-          Text(loggedInUser == null ? '**' : element.price.toString(), style: TextStyle(fontSize: 15, color: Colors.white, fontFamily: 'LoraFont')),
-          Text(element.stock.toString(), style: TextStyle(fontSize: 15, color: Colors.white, fontFamily: 'LoraFont')),
-          Text(element.consumed.toString(), style: TextStyle(fontSize: 15, color: Colors.white, fontFamily: 'LoraFont')),
-          Text(loggedInUser == null ? '**' : ((element.stock - element.consumed) * element.price).toStringAsFixed(2), style: TextStyle(fontSize: 15, color: Colors.white, fontFamily: 'LoraFont')),
+          Text('Prodotto', style: TextStyle(fontSize: 11, color: Colors.orange, fontFamily: 'LoraFont')),
+          Center(child: Text('Prezzo(€)', style: TextStyle(fontSize: 11, color: Colors.orange, fontFamily: 'LoraFont'))),
+          Center(child: Text('Carico', style: TextStyle(fontSize: 11, color: Colors.orange, fontFamily: 'LoraFont'))),
+          Center(child: Text('Scarico', style: TextStyle(fontSize: 11, color: Colors.orange, fontFamily: 'LoraFont'))),
+          Center(child: Text('Residuo', style: TextStyle(fontSize: 11, color: Colors.orange, fontFamily: 'LoraFont'))),
+          Center(child: Text('Costi(€)', style: TextStyle(fontSize: 11, color: Colors.orange, fontFamily: 'LoraFont'))),
         ]),
       );
-    });
+      currentProductList.forEach((element) {
+        _currentTotal = _currentTotal + ((element.stock - element.consumed) * element.price);
+
+        _tableRow.add(
+          TableRow(
+              children :[
+            Text(element.name, style: TextStyle(fontSize: 10, color: Colors.white, fontFamily: 'LoraFont')),
+            Center(child: Text(element.price.toString(), style: TextStyle(fontSize: 15, color: Colors.white, fontFamily: 'LoraFont'))),
+            Center(child: Text(element.stock.toString(), style: TextStyle(fontSize: 15, color: Colors.white, fontFamily: 'LoraFont'))),
+            Center(child: Text(element.consumed.toString(), style: TextStyle(fontSize: 15, color: Colors.white, fontFamily: 'LoraFont'))),
+            Center(child: Text((element.stock - element.consumed).toStringAsFixed(2), style: TextStyle(fontSize: 15, color: Colors.white, fontFamily: 'LoraFont'))),
+            Center(child: Text(((element.stock - element.consumed) * element.price).toStringAsFixed(2), style: TextStyle(fontSize: 15, color: Colors.green, fontFamily: 'LoraFont'))),
+          ]),
+        );
+      });
+      _tableRow.add(
+        TableRow(
+
+            children :[
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
+            child: Text('Totale', style: TextStyle(fontSize: 16, color: Colors.blueAccent, fontFamily: 'LoraFont')),
+          ),
+          Center(child: Text('', style: TextStyle(fontSize: 11, color: Colors.redAccent, fontFamily: 'LoraFont'))),
+          Center(child: Text('', style: TextStyle(fontSize: 11, color: Colors.redAccent, fontFamily: 'LoraFont'))),
+          Center(child: Text('', style: TextStyle(fontSize: 11, color: Colors.redAccent, fontFamily: 'LoraFont'))),
+          Center(child: Text('', style: TextStyle(fontSize: 11, color: Colors.redAccent, fontFamily: 'LoraFont'))),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
+            child: Center(child: Text(_currentTotal.toStringAsFixed(2), style: TextStyle(fontSize: 15, color: Colors.blueAccent, fontFamily: 'LoraFont'))),
+          ),
+        ]),
+      );
+    }else{
+      _tableRow.add(
+        TableRow(children :[
+          Text('Prodotto', style: TextStyle(fontSize: 15, color: Colors.orange, fontFamily: 'LoraFont')),
+          Center(child: Text('Carico', style: TextStyle(fontSize: 15, color: Colors.orange, fontFamily: 'LoraFont'))),
+          Center(child: Text('Scarico', style: TextStyle(fontSize: 15, color: Colors.orange, fontFamily: 'LoraFont'))),
+          Center(child: Text('Rimanenza', style: TextStyle(fontSize: 15, color: Colors.orange, fontFamily: 'LoraFont'))),
+        ]),
+      );
+      currentProductList.forEach((element) {
+        _tableRow.add(
+          TableRow(children :[
+            Text(element.name, style: TextStyle(fontSize: 15, color: Colors.white, fontFamily: 'LoraFont')),
+            Center(child: Text(element.stock.toString(), style: TextStyle(fontSize: 15, color: Colors.white, fontFamily: 'LoraFont'))),
+            Center(child: Text(element.consumed.toString(), style: TextStyle(fontSize: 15, color: Colors.white, fontFamily: 'LoraFont'))),
+            Center(child: Text((element.stock - element.consumed).toStringAsFixed(2), style: TextStyle(fontSize: 15, color: Colors.white, fontFamily: 'LoraFont'))),
+          ]),
+        );
+      });
+    }
+
     return _tableRow;
   }
 }
