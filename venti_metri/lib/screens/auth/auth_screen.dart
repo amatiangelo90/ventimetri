@@ -26,6 +26,7 @@ class _LoginAuthScreenState extends State<LoginAuthScreen> {
   final _auth = FirebaseAuth.instance;
   bool _registrationButtonPressed = false;
   bool _resetPasswordButtonPressed = false;
+  User loggedInUser;
 
   Map<String,EventClass> _alreadyUsedPasswordMap;
   Map<String, BarPositionClass> _barPositionMap;
@@ -48,6 +49,8 @@ class _LoginAuthScreenState extends State<LoginAuthScreen> {
     super.initState();
     errorController = StreamController<ErrorAnimationType>();
     initEvents();
+    getCurrentUser();
+
   }
 
   @override
@@ -699,91 +702,95 @@ class _LoginAuthScreenState extends State<LoginAuthScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.blueGrey.shade500,
-        title: Text('20m2 - Drink&Enjoy', style: TextStyle(
-        color: Colors.white,
-        fontFamily: 'LoraFont',
-        fontSize: 20.0,
-        fontWeight: FontWeight.bold,
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          elevation: 0,
+          backgroundColor: Colors.blueGrey.shade500,
+          title: Center(
+            child: Text('20m2 - Drink&Enjoy', style: TextStyle(
+            color: Colors.white,
+            fontFamily: 'LoraFont',
+            fontSize: 20.0,
+            fontWeight: FontWeight.bold,
+            ),
+            ),
+          ),
+          automaticallyImplyLeading: false,
         ),
-        ),
-        automaticallyImplyLeading: false,
-      ),
-      body: AnnotatedRegion<SystemUiOverlayStyle>(
-        value: SystemUiOverlayStyle.light,
-        child: GestureDetector(
-          onTap: () => FocusScope.of(context).unfocus(),
-          child: Stack(
-            children: <Widget>[
-              Container(
-                height: double.infinity,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.blueGrey.shade500,
-                      Colors.blueGrey.shade600,
-                      Colors.blueGrey.shade700,
-                      Colors.blueGrey.shade800,
-                    ],
-                    stops: [0.1, 0.4, 0.7, 0.9],
+        body: AnnotatedRegion<SystemUiOverlayStyle>(
+          value: SystemUiOverlayStyle.light,
+          child: GestureDetector(
+            onTap: () => FocusScope.of(context).unfocus(),
+            child: Stack(
+              children: <Widget>[
+                Container(
+                  height: double.infinity,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.blueGrey.shade500,
+                        Colors.blueGrey.shade600,
+                        Colors.blueGrey.shade700,
+                        Colors.blueGrey.shade800,
+                      ],
+                      stops: [0.1, 0.4, 0.7, 0.9],
+                    ),
                   ),
                 ),
-              ),
-              Container(
-                height: double.infinity,
-                child: SingleChildScrollView(
-                  physics: AlwaysScrollableScrollPhysics(),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Text(
-                        'Ricerca Evento',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontFamily: 'LoraFont',
-                          fontSize: 20.0,
-                          fontWeight: FontWeight.bold,
+                Container(
+                  height: double.infinity,
+                  child: SingleChildScrollView(
+                    physics: AlwaysScrollableScrollPhysics(),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Text(
+                          'Ricerca Evento',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontFamily: 'LoraFont',
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                      _buildInputPasswordForEventWidget(),
-                      SizedBox(height: 20.0),
-                      _buildEmailTF(),
-                      SizedBox(
-                        height: 10.0,
-                      ),
-                      _resetPasswordButtonPressed ? SizedBox(width: 0,) : _registrationButtonPressed ? Column(
-                        children: [
-                          _buildPasswordReg(),
-                          _buildPasswordConf(),
-                        ],
-                      ) : _buildPasswordTF(),
-                      //_buildRememberMeCheckbox(),
-                      _registrationButtonPressed ? _buildAdminPasswordReg() : SizedBox(height: 0,),
-                      _buildRegistrationForgotPasswordRowBtn(),
-                      _resetPasswordButtonPressed ? _buildPasswordForgotBtn() :
-                      _registrationButtonPressed ? SizedBox(height: 0,) : _buildLoginBtn(),
-                      _registrationButtonPressed ? _buildRegisterBtn() : SizedBox(height: 10,),
-                      SizedBox(height: 100,),
-                      Text('Designed by A.A.', style: TextStyle(
-                      color: Colors.white10,
-                        fontFamily: 'LoraFont',
-                        fontSize: 9.0,
-                        fontWeight: FontWeight.bold,
-                      ),),
-                      //_buildSignInWithText(),
-                      //_buildSocialBtnRow(),
-                      //_buildSignupBtn(),
-                    ],
+                        _buildInputPasswordForEventWidget(),
+                        SizedBox(height: 20.0),
+                        _buildEmailTF(),
+                        SizedBox(
+                          height: 10.0,
+                        ),
+                        _resetPasswordButtonPressed ? SizedBox(width: 0,) : _registrationButtonPressed ? Column(
+                          children: [
+                            _buildPasswordReg(),
+                            _buildPasswordConf(),
+                          ],
+                        ) : _buildPasswordTF(),
+                        //_buildRememberMeCheckbox(),
+                        _registrationButtonPressed ? _buildAdminPasswordReg() : SizedBox(height: 0,),
+                        _buildRegistrationForgotPasswordRowBtn(),
+                        _resetPasswordButtonPressed ? _buildPasswordForgotBtn() :
+                        _registrationButtonPressed ? SizedBox(height: 0,) : _buildLoginBtn(),
+                        _registrationButtonPressed ? _buildRegisterBtn() : SizedBox(height: 10,),
+                        SizedBox(height: 200,),
+                        Text('Designed by Amati Angelo', style: TextStyle(
+                        color: Colors.white10,
+                          fontFamily: 'LoraFont',
+                          fontSize: 9.0,
+                          fontWeight: FontWeight.bold,
+                        ),),
+                        //_buildSignInWithText(),
+                        //_buildSocialBtnRow(),
+                        //_buildSignupBtn(),
+                      ],
+                    ),
                   ),
-                ),
-              )
-            ],
+                )
+              ],
+            ),
           ),
         ),
       ),
@@ -820,5 +827,29 @@ class _LoginAuthScreenState extends State<LoginAuthScreen> {
     });
     print(_champagneriePositionMap.toString());
     print('===============================');
+  }
+
+  void getCurrentUser() async {
+    try{
+      final user = await _auth.currentUser;
+      if(user != null){
+
+        if(user != null){
+          print('Email logged in : ' + user.email);
+          Navigator.pushNamed(context, BranchChooseScreen.id);
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(
+              duration: Duration(milliseconds: 700),
+              backgroundColor: Colors.green,
+              content: Text('Accesso con utenza ${loggedInUser.email}...', style: TextStyle(fontFamily: 'LoraFont', color: Colors.white),)));
+        }else{
+          print('Not logged');
+        }
+      }else{
+        print('No user authenticated');
+      }
+    }catch(e){
+      print('Exception : ' + e);
+    }
   }
 }

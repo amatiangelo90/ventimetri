@@ -45,12 +45,9 @@ class _SingleEventManagerScreenState extends State<SingleEventManagerScreen> {
   List<BarPositionClass> _barExpencesClassList = <BarPositionClass>[];
   List<BarPositionClass> _champagnerieExpencesClassList = <BarPositionClass>[];
 
-  List<BarPositionClass> barPositionList;
-  List<BarPositionClass> champagneriePositionList;
 
   User loggedInUser;
   FirebaseAuth _auth;
-  var _tapPosition;
 
   @override
   void initState() {
@@ -59,7 +56,6 @@ class _SingleEventManagerScreenState extends State<SingleEventManagerScreen> {
     _auth = FirebaseAuth.instance;
 
     getCurrentUser();
-
     _eventClass = this.widget.eventClass;
 
     crudModelEventSchema = CRUDModel(EVENTS_SCHEMA);
@@ -203,10 +199,8 @@ class _SingleEventManagerScreenState extends State<SingleEventManagerScreen> {
   }
 
   Future<List<Widget>> createBody() async {
-
-    barPositionList = await crudModelBarPosition.fetchBarPositionListByEventId(_eventClass.id);
-    champagneriePositionList = await crudModelChampagnerie.fetchBarPositionListByEventId(_eventClass.id);
-
+    List<BarPositionClass> barPositionList = await crudModelBarPosition.fetchBarPositionListByEventId(_eventClass.id);
+    List<BarPositionClass> champagneriePositionList = await crudModelChampagnerie.fetchBarPositionListByEventId(_eventClass.id);
 
     print(_barExpencesClassList);
     if(champagneriePositionList != null){
@@ -362,122 +356,124 @@ class _SingleEventManagerScreenState extends State<SingleEventManagerScreen> {
               ),
               color: type == 'bar' ? VENTI_METRI_MONOPOLI : VENTI_METRI_LOCOROTONDO,
               elevation: 10,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                mainAxisSize: MainAxisSize.max,
-                children: <Widget>[
-                  ListTile(
-                    title: Text(currentBarChampPosition.name, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 26, color: type == 'bar' ? Colors.white:  VENTI_METRI_BLUE, fontFamily: 'LoraFont')),
-                    subtitle: Text('Resp: ' + currentBarChampPosition.ownerBar, style: TextStyle(color: type == 'bar' ? Colors.white:  VENTI_METRI_BLUE, fontFamily: 'LoraFont')),
-                  ),
-                  ListTile(
-                    title: Text('Password', style: TextStyle(fontSize: 15, color: type == 'bar' ? Colors.white:  VENTI_METRI_BLUE, fontFamily: 'LoraFont')),
-                    subtitle: Text(currentBarChampPosition.passwordBarChampPosition.toString(), style: TextStyle(fontSize: 25, color: type == 'bar' ? Colors.white:  VENTI_METRI_BLUE, fontFamily: 'LoraFont')),
-                  ),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisSize: MainAxisSize.max,
+                  children: <Widget>[
+                    ListTile(
+                      title: Text(currentBarChampPosition.name, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 26, color: type == 'bar' ? Colors.white:  VENTI_METRI_BLUE, fontFamily: 'LoraFont')),
+                      subtitle: Text('Resp: ' + currentBarChampPosition.ownerBar, style: TextStyle(color: type == 'bar' ? Colors.white:  VENTI_METRI_BLUE, fontFamily: 'LoraFont')),
+                    ),
+                    ListTile(
+                      title: Text('Password', style: TextStyle(fontSize: 15, color: type == 'bar' ? Colors.white:  VENTI_METRI_BLUE, fontFamily: 'LoraFont')),
+                      subtitle: Text(currentBarChampPosition.passwordBarChampPosition.toString(), style: TextStyle(fontSize: 25, color: type == 'bar' ? Colors.white:  VENTI_METRI_BLUE, fontFamily: 'LoraFont')),
+                    ),
 
 
-                  ButtonBar(
-                    alignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      RaisedButton(
+                    ButtonBar(
+                      alignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        RaisedButton(
 
-                        elevation: 3.0,
-                        onPressed: () {
-                          if(type == 'bar'){
-                            Navigator.push(context,
-                              MaterialPageRoute(builder: (context) => SingleBarChampManagerScreen(barPosClass: currentBarChampPosition,isBarPosition: true,isChampagneriePosition: false,),),);
-                          }else{
-                            Navigator.push(context,
-                              MaterialPageRoute(builder: (context) => SingleBarChampManagerScreen(barPosClass: currentBarChampPosition,isChampagneriePosition: true,isBarPosition: false,),),);
-                          }
+                          elevation: 3.0,
+                          onPressed: () {
+                            if(type == 'bar'){
+                              Navigator.push(context,
+                                MaterialPageRoute(builder: (context) => SingleBarChampManagerScreen(barPosClass: currentBarChampPosition,isBarPosition: true,isChampagneriePosition: false,),),);
+                            }else{
+                              Navigator.push(context,
+                                MaterialPageRoute(builder: (context) => SingleBarChampManagerScreen(barPosClass: currentBarChampPosition,isChampagneriePosition: true,isBarPosition: false,),),);
+                            }
 
 
-                        },
-                        padding: EdgeInsets.all(10.0),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20.0),
-                        ),
-                        color: VENTI_METRI_BLUE,
-                        child: Text(
-                          'Carico/Scarico',
-                          style: TextStyle(
-                            color: Colors.white,
-                            letterSpacing: 1.0,
-                            fontSize: 14.0,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'LoraFont',
+                          },
+                          padding: EdgeInsets.all(10.0),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20.0),
+                          ),
+                          color: VENTI_METRI_BLUE,
+                          child: Text(
+                            'Carico/Scarico',
+                            style: TextStyle(
+                              color: Colors.white,
+                              letterSpacing: 1.0,
+                              fontSize: 14.0,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'LoraFont',
+                            ),
                           ),
                         ),
-                      ),
-                      RaisedButton(
+                        RaisedButton(
 
-                        elevation: 3.0,
-                        onPressed: () async {
-                          return await showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                title: const Text("Conferma", style: TextStyle(color: Colors.white, fontSize: 19.0, fontFamily: 'LoraFont'),),
-                                content: Text("Eliminare ${currentBarChampPosition.name} per l\'evento ${currentBarChampPosition.eventName}?", style: TextStyle(color: VENTI_METRI_BLUE, fontSize: 16.0, fontFamily: 'LoraFont'),),
-                                actions: <Widget>[
-                                  FlatButton(
-                                      onPressed: (){
-                                        if(type == 'bar'){
-                                          CRUDModel variableCrudModel = CRUDModel(BAR_LIST_PRODUCT_SCHEMA + currentBarChampPosition.passwordEvent.toString() + currentBarChampPosition.passwordBarChampPosition.toString());
-                                          variableCrudModel.deleteCollection(BAR_LIST_PRODUCT_SCHEMA + currentBarChampPosition.passwordEvent.toString() + currentBarChampPosition.passwordBarChampPosition.toString());
-                                        }else{
-                                          CRUDModel variableCrudModel = CRUDModel(CHAMPAGNERIE_LIST_PRODUCT_SCHEMA + currentBarChampPosition.passwordEvent.toString() + currentBarChampPosition.passwordBarChampPosition.toString());
-                                          variableCrudModel.deleteCollection(CHAMPAGNERIE_LIST_PRODUCT_SCHEMA + currentBarChampPosition.passwordEvent.toString() + currentBarChampPosition.passwordBarChampPosition.toString());
-                                        }
-                                        if(type == 'bar'){
-                                          crudModelBarPosition.removeDocumentById(currentBarChampPosition.docId);
-                                          _eventClass.listBarPositionIds.remove(currentBarChampPosition.docId);
-                                          crudModelEventSchema.updateEventClassById(_eventClass, _eventClass.docId);
-                                        }else{
-                                          crudModelChampagnerie.removeDocumentById(currentBarChampPosition.docId);
-                                          _eventClass.listChampagneriePositionIds.remove(currentBarChampPosition.docId);
-                                          crudModelEventSchema.updateEventClassById(_eventClass, _eventClass.docId);
-                                        }
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(SnackBar(
-                                            duration: Duration(milliseconds: 1000),
-                                            backgroundColor: Colors.orange,
-                                            content: Text('${currentBarChampPosition.name} per l\'evento ${currentBarChampPosition.eventName} eliminato!')));
-                                        refreshPage();
-                                        Navigator.of(context).pop(false);
-                                      },
+                          elevation: 3.0,
+                          onPressed: () async {
+                            return await showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text("Conferma", style: TextStyle(color: Colors.white, fontSize: 19.0, fontFamily: 'LoraFont'),),
+                                  content: Text("Eliminare ${currentBarChampPosition.name} per l\'evento ${currentBarChampPosition.eventName}?", style: TextStyle(color: VENTI_METRI_BLUE, fontSize: 16.0, fontFamily: 'LoraFont'),),
+                                  actions: <Widget>[
+                                    FlatButton(
+                                        onPressed: (){
+                                          if(type == 'bar'){
+                                            CRUDModel variableCrudModel = CRUDModel(BAR_LIST_PRODUCT_SCHEMA + currentBarChampPosition.passwordEvent.toString() + currentBarChampPosition.passwordBarChampPosition.toString());
+                                            variableCrudModel.deleteCollection(BAR_LIST_PRODUCT_SCHEMA + currentBarChampPosition.passwordEvent.toString() + currentBarChampPosition.passwordBarChampPosition.toString());
+                                          }else{
+                                            CRUDModel variableCrudModel = CRUDModel(CHAMPAGNERIE_LIST_PRODUCT_SCHEMA + currentBarChampPosition.passwordEvent.toString() + currentBarChampPosition.passwordBarChampPosition.toString());
+                                            variableCrudModel.deleteCollection(CHAMPAGNERIE_LIST_PRODUCT_SCHEMA + currentBarChampPosition.passwordEvent.toString() + currentBarChampPosition.passwordBarChampPosition.toString());
+                                          }
+                                          if(type == 'bar'){
+                                            crudModelBarPosition.removeDocumentById(currentBarChampPosition.docId);
+                                            _eventClass.listBarPositionIds.remove(currentBarChampPosition.docId);
+                                            crudModelEventSchema.updateEventClassById(_eventClass, _eventClass.docId);
+                                          }else{
+                                            crudModelChampagnerie.removeDocumentById(currentBarChampPosition.docId);
+                                            _eventClass.listChampagneriePositionIds.remove(currentBarChampPosition.docId);
+                                            crudModelEventSchema.updateEventClassById(_eventClass, _eventClass.docId);
+                                          }
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(SnackBar(
+                                              duration: Duration(milliseconds: 1000),
+                                              backgroundColor: Colors.orange,
+                                              content: Text('${currentBarChampPosition.name} per l\'evento ${currentBarChampPosition.eventName} eliminato!')));
+                                          refreshPage();
+                                          Navigator.of(context).pop(false);
+                                        },
 
-                                      child: const Text("Elimina")
+                                        child: const Text("Elimina")
 
-                                  ),
-                                  FlatButton(
-                                    onPressed: () => Navigator.of(context).pop(false),
-                                    child: const Text("Indietro"),
-                                  ),
-                                ],
-                              );
-                            },
-                          );
-                        },
-                        padding: EdgeInsets.all(10.0),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20.0),
-                        ),
-                        color: VENTI_METRI_BLUE,
-                        child: Text(
-                          'Elimina',
-                          style: TextStyle(
-                            color: Colors.white,
-                            letterSpacing: 1.0,
-                            fontSize: 14.0,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'LoraFont',
+                                    ),
+                                    FlatButton(
+                                      onPressed: () => Navigator.of(context).pop(false),
+                                      child: const Text("Indietro"),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          },
+                          padding: EdgeInsets.all(10.0),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20.0),
+                          ),
+                          color: VENTI_METRI_BLUE,
+                          child: Text(
+                            'Elimina',
+                            style: TextStyle(
+                              color: Colors.white,
+                              letterSpacing: 1.0,
+                              fontSize: 14.0,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'LoraFont',
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                ],
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -586,6 +582,7 @@ class _SingleEventManagerScreenState extends State<SingleEventManagerScreen> {
   }
 
   Future<List<Widget>> buildRecapTableBarChampConsumption(List<BarPositionClass> barChampagneriePositionList, bool barRecap, bool champRecap) async{
+
     String currentSchema;
 
     if(barRecap){

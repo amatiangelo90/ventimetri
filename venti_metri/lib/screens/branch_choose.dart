@@ -49,13 +49,18 @@ class _BranchChooseScreenState extends State<BranchChooseScreen> {
         appBar: AppBar(
           automaticallyImplyLeading: false,
           backgroundColor: Colors.blueGrey.shade800,
-          title: Center(child: Text('20m² - Drink & Enjoy')),
+          title: Center(child: Text('20m² - Drink & Enjoy', style: TextStyle(color: Colors.white, fontSize: 20, fontFamily: 'LoraFont'),)),
           centerTitle: true,
           actions: [
             IconButton(icon: Icon(Icons.exit_to_app ,size: 30.0, color: Colors.white,), onPressed: (){
               if(_auth!=null){
                 _auth.signOut();
               }
+              ScaffoldMessenger.of(context)
+                  .showSnackBar(SnackBar(
+                  duration: Duration(milliseconds: 700),
+                  backgroundColor: Colors.orangeAccent,
+                  content: Text('Logging out...', style: TextStyle(fontFamily: 'LoraFont', color: Colors.white),)));
               Navigator.pushNamed(context, LoginAuthScreen.id);
             }
             ),

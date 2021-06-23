@@ -249,6 +249,13 @@ class _SingleBarChampManagerScreenState extends State<SingleBarChampManagerScree
 
 
   void refreshPage() {
+    setState(() {
+      if(_insertProductBottonPressed){
+        _insertProductBottonPressed = false;
+      }else{
+        _insertProductBottonPressed = true;
+      }
+    });
     setState(() {});
   }
 
@@ -273,6 +280,9 @@ class _SingleBarChampManagerScreenState extends State<SingleBarChampManagerScree
 
 
   _buidTableRowCounsumption(DocumentSnapshot doc) {
+
+    TextEditingController _amountController = TextEditingController(text: doc['stock'].toString());
+
 
     List<TableRow> rList = <TableRow>[];
     rList.add(
@@ -366,6 +376,9 @@ class _SingleBarChampManagerScreenState extends State<SingleBarChampManagerScree
                 child: Text(doc['stock'].toString(), style: TextStyle(color: Colors.lightGreen, fontSize: 20.0, fontFamily: 'LoraFont')),
               ),
             ),
+
+
+
             GestureDetector(
               onTap: () {
                 showModalBottomSheet(
