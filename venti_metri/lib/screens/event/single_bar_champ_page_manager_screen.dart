@@ -81,11 +81,19 @@ class _SingleBarChampManagerScreenState extends State<SingleBarChampManagerScree
     return SafeArea(
       child: Container(
         child: Scaffold(
-          backgroundColor: VENTI_METRI_BLUE,
+          backgroundColor: Colors.blueGrey.shade800,
           appBar: AppBar(
             backgroundColor: VENTI_METRI_BLUE,
             centerTitle: true,
-            title: Text(_currentBarPositionObject.name, style: TextStyle(fontFamily: 'LoraFont'),),
+            title: Column(
+              children: [
+                Text(_currentBarPositionObject.name, style: TextStyle(color: Colors.white, fontSize: 20.0, fontFamily: 'LoraFont')),
+                Padding(
+                  padding: const EdgeInsets.all(3.0),
+                  child: Text('Responsabile: ' + _currentBarPositionObject.ownerBar, style: TextStyle(color: Colors.blueGrey, fontSize: 14.0, fontFamily: 'LoraFont')),
+                ),
+              ],
+            ),
             actions: [
               Padding(
                 padding: const EdgeInsets.fromLTRB(0, 8, 10, 4),
@@ -102,38 +110,108 @@ class _SingleBarChampManagerScreenState extends State<SingleBarChampManagerScree
               ),
             ],
           ),
-          body: Container(
-            color: VENTI_METRI_BLUE,
-            child: SingleChildScrollView(
-              child: FutureBuilder(
-                initialData: <Widget>[Column(
-                  children: [
-                    Center(child: CircularProgressIndicator()),
-                    SizedBox(),
-                    Center(child: Text('Caricamento dati..',
-                      style: TextStyle(fontSize: 16.0,
-                          color: VENTI_METRI_BLUE,
-                          fontFamily: 'LoraFont'),
-                    ),),
-                  ],
-                ),
-                ],
-                future: createBody(),
-                builder: (context, snapshot){
-                  if(snapshot.hasData){
-                    return Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: ListView(
-                        primary: false,
-                        shrinkWrap: true,
-                        children: snapshot.data,
+          body: SingleChildScrollView(
+            child: Column(
+              children: [
+                _insertProductBottonPressed ? PaginatedDataTable(
+                  rowsPerPage: _rowsPerPage,
+                  availableRowsPerPage: const <int>[5, 10, 20, 25],
+                  onRowsPerPageChanged: (int value) {
+                    setState(() {
+                      _rowsPerPage = value;
+                    });
+                  },
+                  columns: kTableColumns,
+                  source: ProductDataSource(_productsList),
+                ) : SizedBox(height: 0,),
+                _insertProductBottonPressed ? RaisedButton(
+                  onPressed: () {
+                    _productsList.forEach((element) async {
+                      print(element.name + ' Selected? ' + element.selected.toString());
+                      if(element.selected){
+                        await _alreadyUsedProductSchema.addProductObject(element);
+                      }
+                    });
+                    initProductsList();
+                    refreshPage();
+                  },
+                  elevation: 5.0,
+                  color: VENTI_METRI_BLUE,
+                  child: Text('Aggiungi', style: TextStyle(color: Colors.white, fontSize: 21.0, fontFamily: 'LoraFont')),
+                ): SizedBox(height: 0,),
+                SizedBox(height: 5,),
+
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 5, 20, 5),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        flex: 3,
+                        child: Text(
+                          'Prodotto',
+                          style: TextStyle(fontSize: 18.0,color: Colors.white, fontFamily: 'LoraFont'),
+                        ),
                       ),
-                    );
-                  }else{
-                    return CircularProgressIndicator();
-                  }
-                },
+                      Expanded(
+                        flex: 2,
+                        child: Text(
+                          'Carico',
+                          style: TextStyle(fontSize: 18.0,color: Colors.orange, fontFamily: 'LoraFont'),
+                        ),
+                      ),
+                      Expanded(
+                        flex: 2,
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
+                          child: Text(
+                            'Scarico',
+                            style: TextStyle(fontSize: 18.0,color: Colors.green, fontFamily: 'LoraFont'),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        flex: 1,
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
+                          child: Text(
+                            '',
+                            style: TextStyle(fontSize: 18.0,color: Colors.green, fontFamily: 'LoraFont'),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                color: Colors.blueGrey.shade800,
+                child: FutureBuilder(
+                  initialData: <Widget>[Column(
+                    children: [
+                      Center(child: CircularProgressIndicator()),
+                      SizedBox(),
+                      Center(child: Text('Caricamento dati..',
+                        style: TextStyle(fontSize: 16.0,
+                            color: VENTI_METRI_BLUE,
+                            fontFamily: 'LoraFont'),
+                      ),),
+                    ],
+                  ),
+                  ],
+                  future: createBody(),
+                  builder: (context, snapshot){
+                    if(snapshot.hasData){
+                      return Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: snapshot.data,
+                      );
+                    }else{
+                      return CircularProgressIndicator();
+                    }
+                  },
+                ),
               ),
+              ],
             ),
           ),
         ),
@@ -141,87 +219,10 @@ class _SingleBarChampManagerScreenState extends State<SingleBarChampManagerScree
     );
   }
 
-  Future<List<Widget>> createBody() async {
+  Future<Widget> createBody() async {
 
-
-    List<Widget> items = <Widget>[];
-    items.add(Column(
+    return Column(
       children: [
-        _insertProductBottonPressed ? PaginatedDataTable(
-          rowsPerPage: _rowsPerPage,
-          availableRowsPerPage: const <int>[5, 10, 20, 25],
-          onRowsPerPageChanged: (int value) {
-            setState(() {
-              _rowsPerPage = value;
-            });
-          },
-          columns: kTableColumns,
-          source: ProductDataSource(_productsList),
-        ) : SizedBox(height: 0,),
-        _insertProductBottonPressed ? RaisedButton(
-          onPressed: () {
-            _productsList.forEach((element) async {
-              print(element.name + ' Selected? ' + element.selected.toString());
-              if(element.selected){
-                await _alreadyUsedProductSchema.addProductObject(element);
-              }
-            });
-            initProductsList();
-            refreshPage();
-          },
-          elevation: 5.0,
-          color: VENTI_METRI_BLUE,
-          child: Text('Aggiungi', style: TextStyle(color: Colors.white, fontSize: 21.0, fontFamily: 'LoraFont')),
-        ): SizedBox(height: 0,),
-        Container(
-          width: MediaQuery.of(context).size.width ,
-          child: Card(
-            color: this.widget.isBarPosition ? VENTI_METRI_MONOPOLI : VENTI_METRI_LOCOROTONDO,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                children: [
-                  Text('Evento : ${_currentBarPositionObject.eventName}' ,overflow: TextOverflow.ellipsis, style: TextStyle(color: this.widget.isBarPosition ? Colors.white : VENTI_METRI_BLUE, fontSize: 16.0, fontFamily: 'LoraFont')),
-                  Text('Password postazione bar : ${_currentBarPositionObject.passwordBarChampPosition}' ,overflow: TextOverflow.ellipsis, style: TextStyle(color: this.widget.isBarPosition ? Colors.white : VENTI_METRI_BLUE, fontSize: 16.0, fontFamily: 'LoraFont')),
-                  Text('Responsabile : ${_currentBarPositionObject.ownerBar}' ,overflow: TextOverflow.ellipsis, style: TextStyle(color: this.widget.isBarPosition ? Colors.white : VENTI_METRI_BLUE, fontSize: 16.0, fontFamily: 'LoraFont')),
-                ],
-              ),
-            ),
-          ),
-        ),
-
-        Card(
-          color: VENTI_METRI_BLUE,
-          elevation: 6,
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Table(
-              border: TableBorder(
-                  horizontalInside: BorderSide(
-                      width: 3,
-                      color: Colors.white,
-                      style: BorderStyle.solid)),
-              children: [
-                TableRow(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text('PRODOTTO',overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.white, fontSize: 15.0, fontFamily: 'LoraFont')),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text('CARICO', style: TextStyle(color: Colors.white, fontSize: 15.0, fontFamily: 'LoraFont')),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text('SCARICO', style: TextStyle(color: Colors.white, fontSize: 15.0, fontFamily: 'LoraFont')),
-                      ),
-                    ]
-                ),
-              ],
-            ),
-          ),
-        ),
         StreamBuilder(
           stream: FirebaseFirestore.instance.collection(_currentBarChampagneriePositionSchema
               + _currentBarPositionObject.passwordEvent.toString()
@@ -233,20 +234,157 @@ class _SingleBarChampManagerScreenState extends State<SingleBarChampManagerScree
               height: MediaQuery.of(context).size.height*6/7,
               width: MediaQuery.of(context).size.width,
               child: ListView.builder(
-                  itemExtent: 40,
+                  shrinkWrap: true,
                   itemCount: snapshot.data.docs.length,
-                  itemBuilder: (context, index) => _buildConsumptionItems(context, snapshot.data.docs[index])
+                  itemBuilder: (context, index) => _buildPlayerModelList(snapshot.data.docs[index])
               ),
             );
           },
         ),
       ],
-    ),
     );
-    return items;
 
   }
+  Widget _buildPlayerModelList(DocumentSnapshot doc) {
+    TextEditingController _textEditingControllerStock;
+    if(doc['stock'].toString() != '' && doc['stock'].toString() != '0.0' && doc['stock'].toString() != '0' && doc['stock'].toString() != '0,0'){
+      _textEditingControllerStock = new TextEditingController(text:doc['stock'].toString());
+    }else{
+      _textEditingControllerStock = new TextEditingController();
+    }
 
+    TextEditingController _textEditingControllerConsumed;
+    if(doc['consumed'].toString() != '' && doc['consumed'].toString() != '0.0' && doc['consumed'].toString() != '0' && doc['consumed'].toString() != '0,0'){
+      _textEditingControllerConsumed = new TextEditingController(text:doc['consumed'].toString());
+    }else{
+      _textEditingControllerConsumed = new TextEditingController();
+    }
+
+    bool _expanded = false;
+    return Container(
+      child: Card(
+        color: VENTI_METRI_BLUE,
+        child: ExpansionTile(
+          initiallyExpanded: _expanded,
+          maintainState: false,
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                flex: 3,
+                child: Text(
+                  doc['name'].toString(),
+                  style: TextStyle(fontSize: 16.0,color: Colors.white, fontFamily: 'LoraFont'),
+                ),
+              ),
+              Expanded(
+                flex: 2,
+                child: Text(
+                  doc['stock'].toString(),
+                  style: TextStyle(fontSize: 18.0,color: Colors.orange, fontFamily: 'LoraFont'),
+                ),
+              ),
+              Expanded(
+                flex: 2,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
+                  child: Text(
+                    doc['consumed'].toString(),
+                    style: TextStyle(fontSize: 18.0,color: Colors.green, fontFamily: 'LoraFont'),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextField(
+                style: TextStyle(fontSize: 18.0,color: Colors.orange, fontFamily: 'LoraFont'),
+                controller: _textEditingControllerStock,
+                keyboardType: TextInputType.numberWithOptions(decimal: true, signed: true),
+                decoration: InputDecoration(
+                  focusedBorder: OutlineInputBorder (
+                    borderSide: BorderSide(color: Colors.orangeAccent, width: 1.0),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.orangeAccent, width: 1.0),
+                  ),
+                  border: OutlineInputBorder(
+
+                  ),
+                  labelText: 'Carico',
+                  labelStyle: TextStyle(fontSize: 18.0,color: Colors.orange, fontFamily: 'LoraFont'),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextField(
+                style: TextStyle(fontSize: 18.0,color: Colors.green, fontFamily: 'LoraFont'),
+                controller: _textEditingControllerConsumed,
+                keyboardType: TextInputType.numberWithOptions(decimal: true, signed: true),
+                decoration: InputDecoration(
+                  focusedBorder: OutlineInputBorder (
+                    borderSide: BorderSide(color: Colors.green, width: 1.0),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.green, width: 1.0),
+                  ),
+                  border: OutlineInputBorder(
+
+                  ),
+                  labelText: 'Scarico',
+                  labelStyle: TextStyle(fontSize: 18.0,color: Colors.green, fontFamily: 'LoraFont'),
+                ),
+              ),
+            ),
+            Container(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: RaisedButton(
+                  elevation: 5.0,
+                  color: Colors.white,
+                  child: Text('Salva', style: TextStyle(fontSize: 18.0,color: VENTI_METRI_BLUE, fontFamily: 'LoraFont'),),
+                  onPressed: (){
+                    if (_textEditingControllerStock == null || _textEditingControllerConsumed == null) return;
+
+                    double _currentStockValue = 0.0;
+                    double _currentConsumedValue = 0.0;
+                    if(_textEditingControllerStock.value.text.replaceAll(",", ".") != ''){
+                      if(double.tryParse(_textEditingControllerStock.value.text.replaceAll(",", ".")) != null){
+                        _currentStockValue = double.parse(_textEditingControllerStock.value.text.replaceAll(",", "."));
+                        if(double.parse(_textEditingControllerStock.value.text.replaceAll(",", ".")) < 0) return;
+                      }
+                    }
+
+                    if(_textEditingControllerConsumed.value.text.replaceAll(",", ".") != ''){
+                      if(double.tryParse(_textEditingControllerConsumed.value.text.replaceAll(",", ".")) != null){
+                        _currentConsumedValue = double.parse(_textEditingControllerConsumed.value.text.replaceAll(",", "."));
+                        if(double.parse(_textEditingControllerConsumed.value.text.replaceAll(",", ".")) < 0) return;
+                      }
+                    }
+
+                        FirebaseFirestore.instance.runTransaction((transaction) async{
+                          DocumentSnapshot freshSnap = await transaction.get(doc.reference);
+                          await transaction.update(freshSnap.reference, {
+                            'stock' : _currentStockValue,
+                          });
+                          await transaction.update(freshSnap.reference, {
+                            'consumed' : _currentConsumedValue,
+                          });
+                        });
+
+                  },
+                ),
+              ),
+            ),
+
+          ],
+        ),
+      ),
+    );
+  }
 
   void refreshPage() {
     setState(() {
@@ -256,216 +394,9 @@ class _SingleBarChampManagerScreenState extends State<SingleBarChampManagerScree
         _insertProductBottonPressed = true;
       }
     });
-    setState(() {});
+    //setState(() {});
   }
 
-
-  Widget _buildConsumptionItems(
-      BuildContext context,
-      DocumentSnapshot document) {
-
-    return ListTile(
-      title: Table(
-        border: TableBorder(
-            horizontalInside: BorderSide(
-                width: 1,
-                color: Colors.white,
-                style: BorderStyle.solid),
-        ),
-
-        children: _buidTableRowCounsumption(document),
-      ),
-    );
-  }
-
-
-  _buidTableRowCounsumption(DocumentSnapshot doc) {
-
-    TextEditingController _amountController = TextEditingController(text: doc['stock'].toString());
-
-
-    List<TableRow> rList = <TableRow>[];
-    rList.add(
-      TableRow(
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(8, 11, 8, 15),
-              child: Text(loggedInUser == null ? doc['name'].toString() : doc['name'].toString() + ' (' + doc['price'].toString()+')',overflow: TextOverflow.visible, style: TextStyle(color: Colors.white, fontSize: 15.0, fontFamily: 'LoraFont')),
-            ),
-            GestureDetector(
-              onTap: () {
-                showModalBottomSheet(
-                    context: context,
-                    builder: (context) {
-                      TextEditingController _currentController = TextEditingController(text: doc['stock'].toString());
-                      return Container(
-                        height: MediaQuery.of(context).size.height * 2/4,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            ListTile(
-                              leading: new Icon(Icons.edit),
-                              title: new Text('Modifica CARICO per ' + doc['name'].toString()),
-                            ),
-                            Text(doc['measure'].toString(),overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.black, fontSize: 20.0, fontFamily: 'LoraFont')),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: TextField(
-                                controller: _currentController,
-                                keyboardType: TextInputType.numberWithOptions(decimal: true, signed: false),
-                                decoration: InputDecoration(
-                                  border: OutlineInputBorder(),
-                                  icon: Icon(Icons.line_style),
-                                  labelText: 'Quantità',
-                                ),
-                              ),
-                            ),
-                            RaisedButton(
-                              elevation: 3.0,
-                              onPressed: () {
-                                print(_currentController.value.text);
-
-                                if (_currentController == null) return;
-
-                                if (_currentController.value.text == '') {
-                                  FirebaseFirestore.instance.runTransaction((transaction) async{
-                                    DocumentSnapshot freshSnap = await transaction.get(doc.reference);
-                                    await transaction.update(freshSnap.reference, {
-                                      'stock' : 0,
-                                    });
-                                  });
-                                };
-                                if (_currentController.value.text != '') {
-                                  if(double.parse(_currentController.value.text) < 0) return;
-
-                                  if(double.tryParse(_currentController.value.text) != null){
-                                    FirebaseFirestore.instance.runTransaction((transaction) async{
-                                      DocumentSnapshot freshSnap = await transaction.get(doc.reference);
-                                      await transaction.update(freshSnap.reference, {
-                                        'stock' : double.parse(_currentController.value.text),
-                                      });
-                                    });
-                                  }
-                                };
-                                Navigator.of(context).pop(true);
-                              },
-                              padding: EdgeInsets.all(10.0),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20.0),
-                              ),
-                              color: Colors.green,
-                              child: Text(
-                                'Salva',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  letterSpacing: 1.0,
-                                  fontSize: 14.0,
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'LoraFont',
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    }
-                    );
-              },
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(8, 11, 8, 15),
-                child: Text(doc['stock'].toString(), style: TextStyle(color: Colors.lightGreen, fontSize: 20.0, fontFamily: 'LoraFont')),
-              ),
-            ),
-
-
-
-            GestureDetector(
-              onTap: () {
-                showModalBottomSheet(
-                    context: context,
-                    builder: (context) {
-                      TextEditingController _currentController = TextEditingController(text: doc['consumed'].toString());
-                      return Container(
-                        height: MediaQuery.of(context).size.height * 2/4,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            ListTile(
-                              leading: new Icon(Icons.edit),
-                              title: new Text('Modifica SCARICO per ' + doc['name'].toString()),
-                            ),
-                            Text(doc['measure'].toString(),overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.black, fontSize: 20.0, fontFamily: 'LoraFont')),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: TextField(
-                                controller: _currentController,
-                                keyboardType: TextInputType.numberWithOptions(decimal: true, signed: false),
-                                decoration: InputDecoration(
-                                  border: OutlineInputBorder(),
-                                  icon: Icon(Icons.line_style),
-                                  labelText: 'Quantità',
-                                ),
-                              ),
-                            ),
-                            RaisedButton(
-                              elevation: 3.0,
-                              onPressed: () {
-                                print(_currentController.value.text);
-
-                                if (_currentController == null) return;
-                                if (_currentController.value.text == '') {
-                                  FirebaseFirestore.instance.runTransaction((transaction) async{
-                                    DocumentSnapshot freshSnap = await transaction.get(doc.reference);
-                                    await transaction.update(freshSnap.reference, {
-                                      'consumed' : 0,
-                                    });
-                                  });
-                                };
-                                if (_currentController.value.text != '') {
-                                  if(double.tryParse(_currentController.value.text) != null){
-                                    FirebaseFirestore.instance.runTransaction((transaction) async{
-                                      DocumentSnapshot freshSnap = await transaction.get(doc.reference);
-                                      await transaction.update(freshSnap.reference, {
-                                        'consumed' : double.parse(_currentController.value.text),
-                                      });
-                                    });
-                                  }
-                                };
-                                Navigator.of(context).pop(true);
-                              },
-                              padding: EdgeInsets.all(10.0),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20.0),
-                              ),
-                              color: Colors.orangeAccent,
-                              child: Text(
-                                'Salva',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  letterSpacing: 1.0,
-                                  fontSize: 14.0,
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'LoraFont',
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    }
-                );
-              },
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(8, 11, 8, 15),
-                child: Text(doc['consumed'].toString(), style: TextStyle(color: Colors.orangeAccent, fontSize: 20.0, fontFamily: 'LoraFont')),
-              ),
-            ),
-          ]
-      ),
-    );
-
-    return rList;
-  }
 
   Future<void> initProductsList() async {
 

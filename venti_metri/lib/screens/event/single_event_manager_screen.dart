@@ -224,12 +224,27 @@ class _SingleEventManagerScreenState extends State<SingleEventManagerScreen> {
           child: Center(
             child: Column(
               children: [
-                SizedBox(height: 2,),
+                SizedBox(height: 6,),
                 Text('Password Evento: ${_eventClass.passwordEvent}', style: TextStyle(fontSize: 15, color: VENTI_METRI_BLUE, fontFamily: 'LoraFont')),
-                SizedBox(height: 2,),
+                SizedBox(height: 6,),
               ],
             ),
           ),
+        ),
+        SizedBox(height: 5,),
+        Column(
+          children: [
+            Center(
+              child: Text('Resoconto', style: TextStyle(fontSize: 17, color: Colors.white, fontFamily: 'LoraFont')),
+            ),
+            SizedBox(height: 3,),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: buildRecaTableForAllEvent(),
+              ),
+            ),
+          ],
         ),
         SizedBox(height: 5,),
         Column(
@@ -653,9 +668,9 @@ class _SingleEventManagerScreenState extends State<SingleEventManagerScreen> {
           TableRow(
               children :[
             Text(element.name, style: TextStyle(fontSize: 10, color: Colors.white, fontFamily: 'LoraFont')),
-            Center(child: Text(element.price.toString(), style: TextStyle(fontSize: 15, color: Colors.white, fontFamily: 'LoraFont'))),
-            Center(child: Text(element.stock.toString(), style: TextStyle(fontSize: 15, color: Colors.white, fontFamily: 'LoraFont'))),
-            Center(child: Text(element.consumed.toString(), style: TextStyle(fontSize: 15, color: Colors.white, fontFamily: 'LoraFont'))),
+            Center(child: Text(element.price.toStringAsFixed(2), style: TextStyle(fontSize: 15, color: Colors.white, fontFamily: 'LoraFont'))),
+            Center(child: Text(element.stock.toStringAsFixed(2), style: TextStyle(fontSize: 15, color: Colors.white, fontFamily: 'LoraFont'))),
+            Center(child: Text(element.consumed.toStringAsFixed(2), style: TextStyle(fontSize: 15, color: Colors.white, fontFamily: 'LoraFont'))),
             Center(child: Text((element.stock - element.consumed).toStringAsFixed(2), style: TextStyle(fontSize: 15, color: Colors.white, fontFamily: 'LoraFont'))),
             Center(child: Text(((element.stock - element.consumed) * element.price).toStringAsFixed(2), style: TextStyle(fontSize: 15, color: Colors.green, fontFamily: 'LoraFont'))),
           ]),
@@ -701,6 +716,11 @@ class _SingleEventManagerScreenState extends State<SingleEventManagerScreen> {
     }
 
     return _tableRow;
+  }
+
+  buildRecaTableForAllEvent() {
+    List<Widget> items = <Widget>[];
+    return items;
   }
 }
 

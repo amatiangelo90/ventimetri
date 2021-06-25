@@ -775,7 +775,7 @@ class _LoginAuthScreenState extends State<LoginAuthScreen> {
                         _resetPasswordButtonPressed ? _buildPasswordForgotBtn() :
                         _registrationButtonPressed ? SizedBox(height: 0,) : _buildLoginBtn(),
                         _registrationButtonPressed ? _buildRegisterBtn() : SizedBox(height: 10,),
-                        SizedBox(height: 200,),
+                        SizedBox(height: 100,),
                         Text('Designed by Amati Angelo', style: TextStyle(
                         color: Colors.white10,
                           fontFamily: 'LoraFont',
