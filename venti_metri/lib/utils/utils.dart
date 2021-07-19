@@ -55,6 +55,7 @@ const String BAR_POSITION_SCHEMA = 'bar_position_schema';
 const String CHAMPAGNERIE_POSITION_SCHEMA = 'champagnerie_position_schema';
 const String BAR_LIST_PRODUCT_SCHEMA = 'bar_product_schema_';
 const String CHAMPAGNERIE_LIST_PRODUCT_SCHEMA = 'champ_product_schema_';
+const String EXPENCES_EVENT_SCHEMA = 'expences_event_';
 
 const String PRODUCT_LIST_SCHEMA = 'product_list_schema';
 
@@ -82,6 +83,24 @@ const kTableColumns = <DataColumn>[
   ),
   DataColumn(
     label: Text('Prezzo'),
+    numeric: true,
+  ),
+];
+
+const kTableExpencesColumns = <DataColumn>[
+  DataColumn(
+    label: Text('Casuale'),
+  ),
+  DataColumn(
+    label: Text('Quantità'),
+    numeric: true,
+  ),
+  DataColumn(
+    label: Text('Prezzo'),
+    numeric: true,
+  ),
+  DataColumn(
+    label: Text('Totale'),
     numeric: true,
   ),
 ];

@@ -712,7 +712,7 @@ class _LoginAuthScreenState extends State<LoginAuthScreen> {
             color: Colors.white,
             fontFamily: 'LoraFont',
             fontSize: 20.0,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.normal,
             ),
             ),
           ),
@@ -748,13 +748,16 @@ class _LoginAuthScreenState extends State<LoginAuthScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        Text(
-                          'Ricerca Evento',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontFamily: 'LoraFont',
-                            fontSize: 20.0,
-                            fontWeight: FontWeight.bold,
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            'Ricerca Evento',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontFamily: 'LoraFont',
+                              fontSize: 20.0,
+                              fontWeight: FontWeight.normal,
+                            ),
                           ),
                         ),
                         _buildInputPasswordForEventWidget(),

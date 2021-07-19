@@ -16,10 +16,20 @@ class CRUDModel {
   CRUDModel(this.collection) {
     _dao = Dao(this.collection);
   }
+
   Future<List<ExpenceClass>> fetchExpences(DateTime start, DateTime end) async {
     var result = await _dao.getDataCollection(start, end);
     List<ExpenceClass> expencesList;
     expencesList = result.docs
+        .map((doc) => ExpenceClass.fromMap(doc.data(), doc.id))
+        .toList();
+
+    return expencesList;
+  }
+
+  Future<List<ExpenceClass>> fetchAllExpences() async {
+    var result = await _dao.getAllDataCollection();
+    List<ExpenceClass> expencesList = result.docs
         .map((doc) => ExpenceClass.fromMap(doc.data(), doc.id))
         .toList();
 
@@ -33,7 +43,6 @@ class CRUDModel {
     result.docs.forEach((element) {
       print(element.data());
     });
-
     productList =
         result.docs.map((doc) => Product.fromMap(doc.data(), doc.id)).toList();
 
@@ -104,7 +113,7 @@ class CRUDModel {
     await _dao.deleteCollection(collection);
   }
 
-  Future updateProduct(ExpenceClass data, String id) async {
+  Future updateExpence(ExpenceClass data, String id) async {
     await _dao.updateDocument(data.toJson(), id);
     return;
   }

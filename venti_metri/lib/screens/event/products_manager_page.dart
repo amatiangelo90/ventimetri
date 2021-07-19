@@ -183,111 +183,115 @@ class _ProductPageManagerState extends State<ProductPageManager> {
                           ),
                         ),
                       ) : SizedBox(height: 0,),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Column(
-                                  children: [
-                                    Text('-5', style: TextStyle(fontSize: 10.0,color: Colors.white, fontFamily: 'LoraFont'),),
-                                    RoundIconButton(
-                                      icon: FontAwesomeIcons.minus,
-                                      function: () {
-                                        setState(() {
-                                          if(_price > 5)
-                                            _price = _price - 5;
-                                        });
-                                      },
-                                    ),
-                                  ],
-                                ),
-                                Column(
-                                  children: [
-                                    Text('-0.5', style: TextStyle(fontSize: 10.0,color: Colors.white, fontFamily: 'LoraFont'),),
-                                    RoundIconButton(
-                                      icon: FontAwesomeIcons.minus,
-                                      function: () {
-                                        setState(() {
-                                          if(_price > 1)
-                                            _price = _price - 0.5;
-                                        });
-                                      },
-                                    ),
-                                  ],
-                                ),
-                                Column(
-                                  children: [
-                                    Text('-0.1', style: TextStyle(fontSize: 10.0,color: Colors.white, fontFamily: 'LoraFont'),),
-                                    RoundIconButton(
-                                      icon: FontAwesomeIcons.minus,
-                                      function: () {
-                                        setState(() {
-                                          if(_price > 0.1)
-                                            _price = _price - 0.1;
-                                        });
-                                      },
-                                    ),
-                                  ],
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Column(
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Column(
                                     children: [
-                                      Text('Prezzo', style: TextStyle(fontSize: 17.0,color: Colors.white, fontFamily: 'LoraFont'),),
-                                      SizedBox(height: 4,),
-                                      Text(_price.toStringAsFixed(2) + ' €', style: TextStyle(fontSize: 20.0,color: Colors.white, fontFamily: 'LoraFont'),),
+                                      Text('-5', style: TextStyle(fontSize: 10.0,color: Colors.white, fontFamily: 'LoraFont'),),
+                                      RoundIconButton(
+                                        icon: FontAwesomeIcons.minus,
+                                        function: () {
+                                          setState(() {
+                                            if(_price > 5)
+                                              _price = _price - 5;
+                                          });
+                                        },
+                                      ),
                                     ],
                                   ),
-                                ),
-                                Column(
-                                  children: [
-                                    Text('+0.1', style: TextStyle(fontSize: 10.0,color: Colors.white, fontFamily: 'LoraFont'),),
-                                    RoundIconButton(
-                                      icon: FontAwesomeIcons.plus,
-                                      function: () {
-                                        setState(() {
-                                          _price = _price + 0.1;
-                                        });
-                                      },
+                                  Column(
+                                    children: [
+                                      Text('-0.5', style: TextStyle(fontSize: 10.0,color: Colors.white, fontFamily: 'LoraFont'),),
+                                      RoundIconButton(
+                                        icon: FontAwesomeIcons.minus,
+                                        function: () {
+                                          setState(() {
+                                            if(_price > 1)
+                                              _price = _price - 0.5;
+                                          });
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                  Column(
+                                    children: [
+                                      Text('-0.1', style: TextStyle(fontSize: 10.0,color: Colors.white, fontFamily: 'LoraFont'),),
+                                      RoundIconButton(
+                                        icon: FontAwesomeIcons.minus,
+                                        function: () {
+                                          setState(() {
+                                            if(_price > 0.1)
+                                              _price = _price - 0.1;
+                                          });
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Column(
+                                      children: [
+                                        Text('Prezzo', style: TextStyle(fontSize: 17.0,color: Colors.white, fontFamily: 'LoraFont'),),
+                                        SizedBox(height: 4,),
+                                        Text(_price.toStringAsFixed(2) + ' €', style: TextStyle(fontSize: 20.0,color: Colors.white, fontFamily: 'LoraFont'),),
+                                      ],
                                     ),
-                                  ],
-                                ),
-                                Column(
-                                  children: [
-                                    Text('+0.5', style: TextStyle(fontSize: 10.0,color: Colors.white, fontFamily: 'LoraFont'),),
-                                    RoundIconButton(
-                                      icon: FontAwesomeIcons.plus,
-                                      function: () {
-                                        setState(() {
-                                          _price = _price + 0.5;
-                                        });
-                                      },
-                                    ),
-                                  ],
-                                ),
-                                Column(
-                                  children: [
-                                    Text('+5', style: TextStyle(fontSize: 10.0,color: Colors.white, fontFamily: 'LoraFont'),),
-                                    RoundIconButton(
-                                      icon: FontAwesomeIcons.plus,
-                                      function: () {
-                                        setState(() {
-                                          _price = _price + 5;
-                                        });
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              ],
+                                  ),
+                                  Column(
+                                    children: [
+                                      Text('+0.1', style: TextStyle(fontSize: 10.0,color: Colors.white, fontFamily: 'LoraFont'),),
+                                      RoundIconButton(
+                                        icon: FontAwesomeIcons.plus,
+                                        function: () {
+                                          setState(() {
+                                            _price = _price + 0.1;
+                                          });
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                  Column(
+                                    children: [
+                                      Text('+0.5', style: TextStyle(fontSize: 10.0,color: Colors.white, fontFamily: 'LoraFont'),),
+                                      RoundIconButton(
+                                        icon: FontAwesomeIcons.plus,
+                                        function: () {
+                                          setState(() {
+                                            _price = _price + 0.5;
+                                          });
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                  Column(
+                                    children: [
+                                      Text('+5', style: TextStyle(fontSize: 10.0,color: Colors.white, fontFamily: 'LoraFont'),),
+                                      RoundIconButton(
+                                        icon: FontAwesomeIcons.plus,
+                                        function: () {
+                                          setState(() {
+                                            _price = _price + 5;
+                                          });
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
+
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [

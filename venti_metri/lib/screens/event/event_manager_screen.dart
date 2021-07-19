@@ -35,11 +35,9 @@ class _PartyScreenManagerState extends State<PartyScreenManager> {
   @override
   void initState() {
     super.initState();
-
     initEvents();
     _selectedDay = _focusedDay;
     _selectedEvents = ValueNotifier(_getEventsForDay(_selectedDay));
-
   }
 
   refresh(){
@@ -110,6 +108,19 @@ class _PartyScreenManagerState extends State<PartyScreenManager> {
           ),
         ),
         body: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Colors.blueGrey.shade900,
+                Colors.blueGrey.shade900,
+                Colors.blueGrey.shade900,
+                Colors.blueGrey.shade900,
+              ],
+              stops: [0.1, 0.4, 0.7, 0.9],
+            ),
+          ),
           child: FutureBuilder(
             initialData: <Widget>[Column(
               children: [
@@ -145,6 +156,16 @@ class _PartyScreenManagerState extends State<PartyScreenManager> {
     return Column(
       children: [
         TableCalendar<EventClass>(
+
+          headerStyle: HeaderStyle(
+            formatButtonTextStyle: TextStyle(fontSize: 14.0, color: VENTI_METRI_LOCOROTONDO, fontFamily: 'LoraFont'),
+            titleTextStyle: TextStyle(fontSize: 14.0, color: VENTI_METRI_LOCOROTONDO, fontFamily: 'LoraFont'),
+          ),
+          daysOfWeekStyle: DaysOfWeekStyle(
+            weekdayStyle: TextStyle(fontSize: 14.0, color: VENTI_METRI_LOCOROTONDO, fontFamily: 'LoraFont'),
+            weekendStyle: TextStyle(fontSize: 14.0, color: VENTI_METRI_LOCOROTONDO, fontFamily: 'LoraFont'),
+
+          ),
           firstDay: kFirstDay,
           lastDay: kLastDay,
           focusedDay: _focusedDay,
@@ -153,15 +174,26 @@ class _PartyScreenManagerState extends State<PartyScreenManager> {
           rangeSelectionMode: _rangeSelectionMode,
           eventLoader: _getEventsForDay,
           startingDayOfWeek: StartingDayOfWeek.monday,
+
           calendarStyle: CalendarStyle(
+
             markerSize: 10,
+            selectedTextStyle: TextStyle(fontSize: 14.0, color: VENTI_METRI_LOCOROTONDO, fontFamily: 'LoraFont'),
+            defaultTextStyle: TextStyle(fontSize: 14.0, color: Colors.white, fontFamily: 'LoraFont'),
+            weekendTextStyle: TextStyle(fontSize: 14.0, color: VENTI_METRI_MONOPOLI, fontFamily: 'LoraFont'),
+
+            selectedDecoration: BoxDecoration(
+              color: Colors.blueGrey.shade600,
+              shape: BoxShape.circle,
+            ),
             markerDecoration: BoxDecoration(
-              color: Colors.orange,
-              borderRadius: BorderRadius.circular(10),
+              color: VENTI_METRI_MONOPOLI,
+              borderRadius: BorderRadius.circular(20),
+
             ),
             outsideDaysVisible: false,
             canMarkersOverflow: true,
-            isTodayHighlighted: true,
+            isTodayHighlighted: false,
           ),
           onDaySelected: _onDaySelected,
           onFormatChanged: (format) {
@@ -185,13 +217,14 @@ class _PartyScreenManagerState extends State<PartyScreenManager> {
                 itemBuilder: (context, event) {
                   return Container(
                     margin: const EdgeInsets.symmetric(
-                      horizontal: 12.0,
+                      horizontal: 0.0,
                       vertical: 4.0,
                     ),
                     decoration: BoxDecoration(
                       color: VENTI_METRI_BLUE,
-                      border: Border.all(),
-                      borderRadius: BorderRadius.circular(17.0),
+                      border: Border.all(color: VENTI_METRI_LOCOROTONDO),
+
+                      borderRadius: BorderRadius.circular(9.0),
                     ),
                     child: ListTile(
                       onTap: () => {
@@ -205,11 +238,17 @@ class _PartyScreenManagerState extends State<PartyScreenManager> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text('${eventsList[event].title}', style: TextStyle(color: Colors.white, fontSize: 25, fontFamily: 'LoraFont'),),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 0.0,
+                                  vertical: 4.0,
+                                ),
+                                child: Text('${eventsList[event].title}', style: TextStyle(color: VENTI_METRI_LOCOROTONDO, fontSize: 25, fontFamily: 'LoraFont'),),
+                              ),
                               Row(
                                 children: [
                                   Text('Password: ', style: TextStyle(color: Colors.white, fontFamily: 'LoraFont'),),
-                                  Text('${eventsList[event].passwordEvent}', style: TextStyle(color: Colors.orange, fontFamily: 'LoraFont'),),
+                                  Text('${eventsList[event].passwordEvent}', style: TextStyle(color: VENTI_METRI_MONOPOLI, fontFamily: 'LoraFont'),),
                                 ],
                               ),
                             ],

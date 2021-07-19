@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:venti_metri/dao/crud_model.dart';
 import 'package:venti_metri/model/events_models/bar_position_class.dart';
 import 'package:venti_metri/model/events_models/product_class.dart';
@@ -150,14 +151,14 @@ class _SingleBarChampManagerScreenState extends State<SingleBarChampManagerScree
                         flex: 3,
                         child: Text(
                           'Prodotto',
-                          style: TextStyle(fontSize: 18.0,color: Colors.white, fontFamily: 'LoraFont'),
+                          style: TextStyle(fontSize: 16.0,color: Colors.white, fontFamily: 'LoraFont'),
                         ),
                       ),
                       Expanded(
                         flex: 2,
                         child: Text(
                           'Carico',
-                          style: TextStyle(fontSize: 18.0,color: Colors.orange, fontFamily: 'LoraFont'),
+                          style: TextStyle(fontSize: 16.0,color: Colors.orange, fontFamily: 'LoraFont'),
                         ),
                       ),
                       Expanded(
@@ -166,7 +167,7 @@ class _SingleBarChampManagerScreenState extends State<SingleBarChampManagerScree
                           padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
                           child: Text(
                             'Scarico',
-                            style: TextStyle(fontSize: 18.0,color: Colors.green, fontFamily: 'LoraFont'),
+                            style: TextStyle(fontSize: 16.0,color: Colors.green, fontFamily: 'LoraFont'),
                           ),
                         ),
                       ),
@@ -176,7 +177,7 @@ class _SingleBarChampManagerScreenState extends State<SingleBarChampManagerScree
                           padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
                           child: Text(
                             '',
-                            style: TextStyle(fontSize: 18.0,color: Colors.green, fontFamily: 'LoraFont'),
+                            style: TextStyle(fontSize: 16.0,color: Colors.green, fontFamily: 'LoraFont'),
                           ),
                         ),
                       ),
@@ -236,7 +237,9 @@ class _SingleBarChampManagerScreenState extends State<SingleBarChampManagerScree
               child: ListView.builder(
                   shrinkWrap: true,
                   itemCount: snapshot.data.docs.length,
-                  itemBuilder: (context, index) => _buildPlayerModelList(snapshot.data.docs[index])
+                  itemBuilder: (context, index) => _buildPlayerModelList(snapshot.data.docs[index], _currentBarChampagneriePositionSchema
+                      + _currentBarPositionObject.passwordEvent.toString()
+                      + _currentBarPositionObject.passwordBarChampPosition.toString())
               ),
             );
           },
@@ -245,7 +248,7 @@ class _SingleBarChampManagerScreenState extends State<SingleBarChampManagerScree
     );
 
   }
-  Widget _buildPlayerModelList(DocumentSnapshot doc) {
+  Widget _buildPlayerModelList(DocumentSnapshot doc, String currentSchema) {
     TextEditingController _textEditingControllerStock;
     if(doc['stock'].toString() != '' && doc['stock'].toString() != '0.0' && doc['stock'].toString() != '0' && doc['stock'].toString() != '0,0'){
       _textEditingControllerStock = new TextEditingController(text:doc['stock'].toString());
@@ -262,126 +265,173 @@ class _SingleBarChampManagerScreenState extends State<SingleBarChampManagerScree
 
     bool _expanded = false;
     return Container(
-      child: Card(
-        color: VENTI_METRI_BLUE,
-        child: ExpansionTile(
-          initiallyExpanded: _expanded,
-          maintainState: false,
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                flex: 3,
-                child: Text(
-                  doc['name'].toString(),
-                  style: TextStyle(fontSize: 16.0,color: Colors.white, fontFamily: 'LoraFont'),
+      child: Dismissible(
+        direction: DismissDirection.endToStart,
+        key: Key(doc['id']),
+        background: Container(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
+                  child: Icon(FontAwesomeIcons.trash, color: Colors.white,),
                 ),
-              ),
-              Expanded(
-                flex: 2,
-                child: Text(
-                  doc['stock'].toString(),
-                  style: TextStyle(fontSize: 18.0,color: Colors.orange, fontFamily: 'LoraFont'),
-                ),
-              ),
-              Expanded(
-                flex: 2,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
+              ],
+            ),
+            color: Colors.deepOrangeAccent.shade700),
+        child: Card(
+          color: VENTI_METRI_BLUE,
+          child: ExpansionTile(
+            initiallyExpanded: _expanded,
+            maintainState: false,
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  flex: 3,
                   child: Text(
-                    doc['consumed'].toString(),
-                    style: TextStyle(fontSize: 18.0,color: Colors.green, fontFamily: 'LoraFont'),
+                    doc['name'].toString(),
+                    style: TextStyle(fontSize: 14.0,color: Colors.white, fontFamily: 'LoraFont'),
+                  ),
+                ),
+                Expanded(
+                  flex: 2,
+                  child: Text(
+                    doc['stock'].toString(),
+                    style: TextStyle(fontSize: 16.0,color: Colors.orange, fontFamily: 'LoraFont'),
+                  ),
+                ),
+                Expanded(
+                  flex: 2,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
+                    child: Text(
+                      doc['consumed'].toString(),
+                      style: TextStyle(fontSize: 16.0,color: Colors.green, fontFamily: 'LoraFont'),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextField(
+                  style: TextStyle(fontSize: 16.0,color: Colors.orange, fontFamily: 'LoraFont'),
+                  controller: _textEditingControllerStock,
+                  keyboardType: TextInputType.numberWithOptions(decimal: true, signed: true),
+                  decoration: InputDecoration(
+                    focusedBorder: OutlineInputBorder (
+                      borderSide: BorderSide(color: Colors.orangeAccent, width: 1.0),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.orangeAccent, width: 1.0),
+                    ),
+                    border: OutlineInputBorder(
+
+                    ),
+                    labelText: 'Carico',
+                    labelStyle: TextStyle(fontSize: 16.0,color: Colors.orange, fontFamily: 'LoraFont'),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextField(
+                  style: TextStyle(fontSize: 16.0,color: Colors.green, fontFamily: 'LoraFont'),
+                  controller: _textEditingControllerConsumed,
+                  keyboardType: TextInputType.numberWithOptions(decimal: true, signed: true),
+                  decoration: InputDecoration(
+                    focusedBorder: OutlineInputBorder (
+                      borderSide: BorderSide(color: Colors.green, width: 1.0),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.green, width: 1.0),
+                    ),
+                    border: OutlineInputBorder(
+
+                    ),
+                    labelText: 'Scarico',
+                    labelStyle: TextStyle(fontSize: 16.0,color: Colors.green, fontFamily: 'LoraFont'),
+                  ),
+                ),
+              ),
+              Container(
+                width: 200,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: RaisedButton(
+                    padding: EdgeInsets.all(10.0),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
+                    color: Colors.blueGrey.shade700,
+                    elevation: 19.0,
+                    child: Text('Salva', style: TextStyle(fontSize: 18.0,color: Colors.white, fontFamily: 'LoraFont'),),
+                    onPressed: (){
+                      if (_textEditingControllerStock == null || _textEditingControllerConsumed == null) return;
+                      double _currentStockValue = 0.0;
+                      double _currentConsumedValue = 0.0;
+                      if(_textEditingControllerStock.value.text.replaceAll(",", ".") != ''){
+                        if(double.tryParse(_textEditingControllerStock.value.text.replaceAll(",", ".")) != null){
+                          _currentStockValue = double.parse(_textEditingControllerStock.value.text.replaceAll(",", "."));
+                          if(double.parse(_textEditingControllerStock.value.text.replaceAll(",", ".")) < 0) return;
+                        }
+                      }
+                      if(_textEditingControllerConsumed.value.text.replaceAll(",", ".") != ''){
+                        if(double.tryParse(_textEditingControllerConsumed.value.text.replaceAll(",", ".")) != null){
+                          _currentConsumedValue = double.parse(_textEditingControllerConsumed.value.text.replaceAll(",", "."));
+                          if(double.parse(_textEditingControllerConsumed.value.text.replaceAll(",", ".")) < 0) return;
+                        }
+                      }
+                          FirebaseFirestore.instance.runTransaction((transaction) async{
+                            DocumentSnapshot freshSnap = await transaction.get(doc.reference);
+                            await transaction.update(freshSnap.reference, {
+                              'stock' : _currentStockValue,
+                            });
+                            await transaction.update(freshSnap.reference, {
+                              'consumed' : _currentConsumedValue,
+                            });
+                          });
+                      ScaffoldMessenger.of(context)
+                          .showSnackBar(SnackBar(
+                          duration: Duration(milliseconds: 500),
+                          backgroundColor: Colors.green,
+                          content: Text('Aggiornamento effettuato')));
+                    },
                   ),
                 ),
               ),
             ],
           ),
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextField(
-                style: TextStyle(fontSize: 18.0,color: Colors.orange, fontFamily: 'LoraFont'),
-                controller: _textEditingControllerStock,
-                keyboardType: TextInputType.numberWithOptions(decimal: true, signed: true),
-                decoration: InputDecoration(
-                  focusedBorder: OutlineInputBorder (
-                    borderSide: BorderSide(color: Colors.orangeAccent, width: 1.0),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.orangeAccent, width: 1.0),
-                  ),
-                  border: OutlineInputBorder(
-
-                  ),
-                  labelText: 'Carico',
-                  labelStyle: TextStyle(fontSize: 18.0,color: Colors.orange, fontFamily: 'LoraFont'),
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextField(
-                style: TextStyle(fontSize: 18.0,color: Colors.green, fontFamily: 'LoraFont'),
-                controller: _textEditingControllerConsumed,
-                keyboardType: TextInputType.numberWithOptions(decimal: true, signed: true),
-                decoration: InputDecoration(
-                  focusedBorder: OutlineInputBorder (
-                    borderSide: BorderSide(color: Colors.green, width: 1.0),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.green, width: 1.0),
-                  ),
-                  border: OutlineInputBorder(
-
-                  ),
-                  labelText: 'Scarico',
-                  labelStyle: TextStyle(fontSize: 18.0,color: Colors.green, fontFamily: 'LoraFont'),
-                ),
-              ),
-            ),
-            Container(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: RaisedButton(
-                  elevation: 5.0,
-                  color: Colors.white,
-                  child: Text('Salva', style: TextStyle(fontSize: 18.0,color: VENTI_METRI_BLUE, fontFamily: 'LoraFont'),),
-                  onPressed: (){
-                    if (_textEditingControllerStock == null || _textEditingControllerConsumed == null) return;
-
-                    double _currentStockValue = 0.0;
-                    double _currentConsumedValue = 0.0;
-                    if(_textEditingControllerStock.value.text.replaceAll(",", ".") != ''){
-                      if(double.tryParse(_textEditingControllerStock.value.text.replaceAll(",", ".")) != null){
-                        _currentStockValue = double.parse(_textEditingControllerStock.value.text.replaceAll(",", "."));
-                        if(double.parse(_textEditingControllerStock.value.text.replaceAll(",", ".")) < 0) return;
-                      }
-                    }
-
-                    if(_textEditingControllerConsumed.value.text.replaceAll(",", ".") != ''){
-                      if(double.tryParse(_textEditingControllerConsumed.value.text.replaceAll(",", ".")) != null){
-                        _currentConsumedValue = double.parse(_textEditingControllerConsumed.value.text.replaceAll(",", "."));
-                        if(double.parse(_textEditingControllerConsumed.value.text.replaceAll(",", ".")) < 0) return;
-                      }
-                    }
-
-                        FirebaseFirestore.instance.runTransaction((transaction) async{
-                          DocumentSnapshot freshSnap = await transaction.get(doc.reference);
-                          await transaction.update(freshSnap.reference, {
-                            'stock' : _currentStockValue,
-                          });
-                          await transaction.update(freshSnap.reference, {
-                            'consumed' : _currentConsumedValue,
-                          });
-                        });
-
-                  },
-                ),
-              ),
-            ),
-
-          ],
         ),
+        confirmDismiss: (direction) async {
+          return await showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text("Attenzione"),
+                content: Container(
+                  child: Text("Eliminare la voce ${doc['name']}?"),
+                ),
+                actions: <Widget>[
+                  FlatButton(
+                      onPressed: () => Navigator.of(context).pop(true),
+                      child: const Text("Conferma")
+                  ),
+                  FlatButton(
+                    onPressed: () => Navigator.of(context).pop(false),
+                    child: const Text("Indietro"),
+                  ),
+                ],
+              );
+            },
+          );
+        },
+        onDismissed: (direction) async {
+            CRUDModel crudModel = CRUDModel(currentSchema);
+            await crudModel.removeDocumentById(doc.id);
+        },
       ),
     );
   }

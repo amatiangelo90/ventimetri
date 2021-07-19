@@ -12,6 +12,7 @@ import 'package:venti_metri/dao/crud_model.dart';
 import 'package:venti_metri/model/events_models/bar_position_class.dart';
 import 'package:venti_metri/model/events_models/event_class.dart';
 import 'package:venti_metri/model/events_models/product_class.dart';
+import 'package:venti_metri/screens/event/recap_event_screen.dart';
 import 'package:venti_metri/screens/event/single_bar_champ_page_manager_screen.dart';
 import 'package:venti_metri/screens/event/utils_event/utils_event.dart';
 import 'package:venti_metri/utils/utils.dart';
@@ -21,7 +22,7 @@ import 'event_manager_screen.dart';
 class SingleEventManagerScreen extends StatefulWidget {
   static String id = 'event_manager_page';
 
-    final EventClass eventClass;
+  final EventClass eventClass;
   final Function function;
 
   SingleEventManagerScreen({@required this.eventClass, this.function});
@@ -41,6 +42,7 @@ class _SingleEventManagerScreenState extends State<SingleEventManagerScreen> {
 
   CRUDModel crudModelBarProductsExpences;
   CRUDModel crudModelChampagnerieProductsExpences;
+  CRUDModel crudModelExpences;
 
   List<BarPositionClass> _barExpencesClassList = <BarPositionClass>[];
   List<BarPositionClass> _champagnerieExpencesClassList = <BarPositionClass>[];
@@ -61,6 +63,7 @@ class _SingleEventManagerScreenState extends State<SingleEventManagerScreen> {
     crudModelEventSchema = CRUDModel(EVENTS_SCHEMA);
     crudModelBarPosition = CRUDModel(BAR_POSITION_SCHEMA);
     crudModelChampagnerie = CRUDModel(CHAMPAGNERIE_POSITION_SCHEMA);
+    crudModelExpences = CRUDModel(EXPENCES_EVENT_SCHEMA + getAppIxFromNameEvent(_eventClass.title));
   }
   void getCurrentUser() async {
     try{
@@ -112,6 +115,8 @@ class _SingleEventManagerScreenState extends State<SingleEventManagerScreen> {
                                     crudModelChampagnerieProductsExpences = CRUDModel(element);
                                     crudModelChampagnerieProductsExpences.deleteCollection(element);
                                   });
+
+                                  crudModelExpences.deleteCollection(EXPENCES_EVENT_SCHEMA + getAppIxFromNameEvent(_eventClass.title));
 
                                   _eventClass.listBarPositionIds.forEach((element) {
                                     crudModelBarPosition.removeDocumentById(element);
@@ -234,9 +239,6 @@ class _SingleEventManagerScreenState extends State<SingleEventManagerScreen> {
         SizedBox(height: 5,),
         Column(
           children: [
-            Center(
-              child: Text('Resoconto', style: TextStyle(fontSize: 17, color: Colors.white, fontFamily: 'LoraFont')),
-            ),
             SizedBox(height: 3,),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
@@ -336,6 +338,98 @@ class _SingleEventManagerScreenState extends State<SingleEventManagerScreen> {
               },
             )
         ),
+        SizedBox(height: 25,),
+        Container(
+          height: 60,
+          width: double.infinity,
+          child: RaisedButton(
+            padding: EdgeInsets.all(10.0),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(30.0),
+            ),
+            color: Colors.blueGrey.shade500,
+            elevation: 19.0,
+            child: Text('Resoconto', style: TextStyle(fontSize: 18.0,color: Colors.white, fontFamily: 'LoraFont'),),
+            onPressed: (){
+              Navigator.push(context,
+                MaterialPageRoute(builder: (context) => RecapEventPage(eventClass: _eventClass,
+                  barPositionList: barPositionList,
+                  champPositionList: champagneriePositionList,),),);
+            },
+          ),
+        ),
+        SizedBox(height: 25,),
+        Container(
+          height: 60,
+          width: double.infinity,
+          child: RaisedButton(
+            padding: EdgeInsets.all(10.0),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(30.0),
+            ),
+            color: Colors.redAccent,
+            elevation: 19.0,
+            child: Text('Cancella Evento', style: TextStyle(fontSize: 18.0,color: Colors.white, fontFamily: 'LoraFont'),),
+              onPressed: () async {
+                return await showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: const Text("Conferma", style: TextStyle(color: Colors.white, fontSize: 19.0, fontFamily: 'LoraFont'),),
+                      content: Text("Eliminare l'evento ${_eventClass.title}?", style: TextStyle(color: VENTI_METRI_BLUE, fontSize: 16.0, fontFamily: 'LoraFont'),),
+                      actions: <Widget>[
+                        FlatButton(
+                            onPressed: (){
+
+                              _eventClass.expencesBarProductList.forEach((element) {
+                                crudModelBarProductsExpences = CRUDModel(element);
+                                crudModelBarProductsExpences.deleteCollection(element);
+                              });
+
+                              _eventClass.expencesChampagnerieProductList.forEach((element) {
+                                crudModelChampagnerieProductsExpences = CRUDModel(element);
+                                crudModelChampagnerieProductsExpences.deleteCollection(element);
+                              });
+
+                              _eventClass.listBarPositionIds.forEach((element) {
+                                crudModelBarPosition.removeDocumentById(element);
+                              });
+                              _eventClass.listChampagneriePositionIds.forEach((element) {
+                                crudModelChampagnerie.removeDocumentById(element);
+                              });
+
+                              crudModelBarProducts = CRUDModel(BAR_LIST_PRODUCT_SCHEMA + getAppIxFromNameEvent(_eventClass.title));
+
+                              _eventClass.productBarList.forEach((element) {
+                                crudModelBarProducts.removeDocumentById(element);
+                              });
+
+                              crudModelChampagnerieProducts = CRUDModel(CHAMPAGNERIE_LIST_PRODUCT_SCHEMA + getAppIxFromNameEvent(_eventClass.title));
+                              _eventClass.productChampagnerieList.forEach((element) {
+                                crudModelChampagnerieProducts.removeDocumentById(element);
+                              });
+
+                              crudModelEventSchema.removeDocumentById(_eventClass.docId);
+
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                  backgroundColor: Colors.orange,
+                                  content: Text('Evento ${_eventClass.title} eliminato!')));
+                              Navigator.pushNamed(context, PartyScreenManager.id);
+                            },
+                            child: const Text("Elimina")
+                        ),
+                        FlatButton(
+                          onPressed: () => Navigator.of(context).pop(false),
+                          child: const Text("Indietro"),
+                        ),
+                      ],
+                    );
+                  },
+                );
+            },
+          ),
+        ),
         SizedBox(height: 100,),
         Text('Designed by Amati Angelo.', style: TextStyle(
           color: Colors.white10,
@@ -384,8 +478,6 @@ class _SingleEventManagerScreenState extends State<SingleEventManagerScreen> {
                       title: Text('Password', style: TextStyle(fontSize: 15, color: type == 'bar' ? Colors.white:  VENTI_METRI_BLUE, fontFamily: 'LoraFont')),
                       subtitle: Text(currentBarChampPosition.passwordBarChampPosition.toString(), style: TextStyle(fontSize: 25, color: type == 'bar' ? Colors.white:  VENTI_METRI_BLUE, fontFamily: 'LoraFont')),
                     ),
-
-
                     ButtonBar(
                       alignment: MainAxisAlignment.spaceEvenly,
                       children: [
@@ -528,18 +620,7 @@ class _SingleEventManagerScreenState extends State<SingleEventManagerScreen> {
                           labelText: 'Responsabile',
                         ),
                       ),
-                      SizedBox(height: 3,),
-                      TextField(
-                        enabled: false,
-                        style: TextStyle(height:1),
-                        keyboardType: TextInputType.number,
-                        controller: TextEditingController(text: currentBarChampPosition.passwordBarChampPosition.toString()),
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                          icon: Icon(Icons.vpn_key_outlined),
-                          labelText: 'Password',
-                        ),
-                      ),
+
                       ButtonBar(
                         alignment: MainAxisAlignment.spaceEvenly,
                         children: [
@@ -596,7 +677,10 @@ class _SingleEventManagerScreenState extends State<SingleEventManagerScreen> {
     setState(() {});
   }
 
-  Future<List<Widget>> buildRecapTableBarChampConsumption(List<BarPositionClass> barChampagneriePositionList, bool barRecap, bool champRecap) async{
+  //RECAP
+  Future<List<Widget>> buildRecapTableBarChampConsumption(List<BarPositionClass> barChampagneriePositionList,
+      bool barRecap,
+      bool champRecap) async{
 
     String currentSchema;
 
@@ -672,7 +756,7 @@ class _SingleEventManagerScreenState extends State<SingleEventManagerScreen> {
             Center(child: Text(element.stock.toStringAsFixed(2), style: TextStyle(fontSize: 15, color: Colors.white, fontFamily: 'LoraFont'))),
             Center(child: Text(element.consumed.toStringAsFixed(2), style: TextStyle(fontSize: 15, color: Colors.white, fontFamily: 'LoraFont'))),
             Center(child: Text((element.stock - element.consumed).toStringAsFixed(2), style: TextStyle(fontSize: 15, color: Colors.white, fontFamily: 'LoraFont'))),
-            Center(child: Text(((element.stock - element.consumed) * element.price).toStringAsFixed(2), style: TextStyle(fontSize: 15, color: Colors.green, fontFamily: 'LoraFont'))),
+            Center(child: Text(((element.stock - element.consumed) * element.price).toStringAsFixed(2), style: TextStyle(fontSize: 13, color: Colors.green, fontFamily: 'LoraFont'))),
           ]),
         );
       });
@@ -690,7 +774,7 @@ class _SingleEventManagerScreenState extends State<SingleEventManagerScreen> {
           Center(child: Text('', style: TextStyle(fontSize: 11, color: Colors.redAccent, fontFamily: 'LoraFont'))),
           Padding(
             padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
-            child: Center(child: Text(_currentTotal.toStringAsFixed(2), style: TextStyle(fontSize: 15, color: Colors.blueAccent, fontFamily: 'LoraFont'))),
+            child: Center(child: Text(_currentTotal.toStringAsFixed(2), style: TextStyle(fontSize: 13, color: Colors.blueAccent, fontFamily: 'LoraFont'))),
           ),
         ]),
       );

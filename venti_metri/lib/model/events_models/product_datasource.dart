@@ -25,8 +25,8 @@ class ProductDataSource extends DataTableSource {
         },
         cells: <DataCell>[
           DataCell(Text(product.name)),
-          DataCell(Text('${product.measure}')),
-          DataCell(Text('${product.price}')),
+          DataCell(Text(product.measure.toString())),
+          DataCell(Text(product.price.toStringAsFixed(2))),
         ]
     );
   }

@@ -17,6 +17,10 @@ class Dao{
         .get();
   }
 
+  Future<QuerySnapshot> getAllDataCollection(){
+    return _collectionReference.get();
+  }
+
   Future<QuerySnapshot> getAllData(){
     return _collectionReference.get();
   }
