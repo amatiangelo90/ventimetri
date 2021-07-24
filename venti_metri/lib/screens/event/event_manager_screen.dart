@@ -236,32 +236,39 @@ class _PartyScreenManagerState extends State<PartyScreenManager> {
                       title: Column(
                         children: [
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Padding(
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 0.0,
                                   vertical: 4.0,
                                 ),
-                                child: Text('${eventsList[event].title}', style: TextStyle(color: VENTI_METRI_LOCOROTONDO, fontSize: 25, fontFamily: 'LoraFont'),),
-                              ),
-                              Row(
-                                children: [
-                                  Text('Password: ', style: TextStyle(color: Colors.white, fontFamily: 'LoraFont'),),
-                                  Text('${eventsList[event].passwordEvent}', style: TextStyle(color: VENTI_METRI_MONOPOLI, fontFamily: 'LoraFont'),),
-                                ],
+                                child: Text('${eventsList[event].title}', overflow: TextOverflow.clip, style: TextStyle(color: VENTI_METRI_LOCOROTONDO, fontSize: 24, fontFamily: 'LoraFont'),),
                               ),
                             ],
                           ),
                           SizedBox(height: 10,),
                           Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text('Posizioni Bar: ${eventsList[event].listBarPositionIds.length}', style: TextStyle(color: Colors.white, fontSize: 17, fontFamily: 'LoraFont'),),
+                              Text('Password :', style: TextStyle(color: Colors.white, fontFamily: 'LoraFont'),),
+                              Text('${eventsList[event].passwordEvent}', style: TextStyle(color: VENTI_METRI_MONOPOLI, fontFamily: 'LoraFont'),),
                             ],
                           ),
+                          SizedBox(height: 10,),
                           Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text('Champagnerie: ${eventsList[event].listChampagneriePositionIds.length}', style: TextStyle(color: Colors.white, fontSize: 17, fontFamily: 'LoraFont'),),
+                              Text('Posizioni Bar :', style: TextStyle(color: Colors.white, fontSize: 17, fontFamily: 'LoraFont'),),
+                              Text('${eventsList[event].listBarPositionIds.length}', style: TextStyle(color: VENTI_METRI_CISTERNINO, fontFamily: 'LoraFont'),),
+                            ],
+                          ),
+                          SizedBox(height: 10,),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text('Champagnerie :', style: TextStyle(color: Colors.white, fontSize: 17, fontFamily: 'LoraFont'),),
+                              Text('${eventsList[event].listChampagneriePositionIds.length}', style: TextStyle(color: VENTI_METRI_CISTERNINO, fontFamily: 'LoraFont'),),
                             ],
                           ),
                           SizedBox(height: 20,),
