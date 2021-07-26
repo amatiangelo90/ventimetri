@@ -11,6 +11,7 @@ import 'package:venti_metri/screens/auth/utilities/constants.dart';
 import 'package:venti_metri/screens/event/single_bar_champ_page_manager_screen.dart';
 import 'package:venti_metri/screens/event/single_event_manager_screen.dart';
 import 'package:venti_metri/screens/event/utils_event/utils_event.dart';
+import 'package:venti_metri/screens/home_screen.dart';
 import 'package:venti_metri/utils/utils.dart';
 
 import '../branch_choose.dart';
@@ -705,8 +706,15 @@ class _LoginAuthScreenState extends State<LoginAuthScreen> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
+
           elevation: 0,
+          leading: IconButton(onPressed: (){
+            Navigator.pushNamed(context, HomeScreen.id);
+          },
+            icon: Icon(Icons.arrow_back_ios, size: 30,),
+            color: Colors.white,),
           backgroundColor: Colors.blueGrey.shade500,
+          centerTitle: true,
           title: Center(
             child: Text('20m2 - Drink&Enjoy', style: TextStyle(
             color: Colors.white,
@@ -716,7 +724,12 @@ class _LoginAuthScreenState extends State<LoginAuthScreen> {
             ),
             ),
           ),
-          automaticallyImplyLeading: false,
+          actions: [
+            IconButton(onPressed: (){
+            },
+              icon: Icon(Icons.info, size: 1,),
+                color: Colors.blueGrey.shade500,),
+          ],
         ),
         body: AnnotatedRegion<SystemUiOverlayStyle>(
           value: SystemUiOverlayStyle.light,

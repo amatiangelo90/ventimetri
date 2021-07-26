@@ -3,11 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:venti_metri/screens/auth/auth_screen.dart';
 import 'package:venti_metri/screens/branch_choose.dart';
 import 'package:venti_metri/screens/event/add_event_screen.dart';
+import 'package:venti_metri/screens/customer_page_events.dart';
 import 'package:venti_metri/screens/event/recap_event_screen.dart';
 import 'package:venti_metri/screens/event/single_bar_champ_page_manager_screen.dart';
 import 'package:venti_metri/screens/event/single_event_manager_screen.dart';
 import 'package:venti_metri/screens/event/event_manager_screen.dart';
 import 'package:venti_metri/screens/event/products_manager_page.dart';
+import 'package:venti_metri/screens/home_screen.dart';
+import 'package:venti_metri/screens/reservation/reservation.dart';
 import 'package:venti_metri/screens/venti_m_q_dashboard.dart';
 import 'package:venti_metri/screens/venti_m_q_splah.dart';
 
@@ -31,6 +34,7 @@ class MyApp extends StatelessWidget {
         initialRoute: VentiMetriQuadriSplash.id,
         routes:{
           VentiMetriQuadriSplash.id : (context) => VentiMetriQuadriSplash(),
+          HomeScreen.id : (context) => HomeScreen(),
           VentiMetriQuadriDashboard.id : (context) => VentiMetriQuadriDashboard(),
           BranchChooseScreen.id : (context) => BranchChooseScreen(),
           ExpenceProfitDetails.id : (context) => ExpenceProfitDetails(),
@@ -41,6 +45,8 @@ class MyApp extends StatelessWidget {
           LoginAuthScreen.id : (context) => LoginAuthScreen(),
           SingleBarChampManagerScreen.id : (context) => SingleBarChampManagerScreen(),
           RecapEventPage.id  : (context) => RecapEventPage(),
+          CustomerPartyScreen.id  : (context) => CustomerPartyScreen(),
+          TableReservationScreen.id  : (context) => TableReservationScreen(),
         }
     );
   }

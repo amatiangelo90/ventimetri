@@ -6,8 +6,8 @@ import 'package:uuid/uuid.dart';
 import 'package:venti_metri/component/round_icon_botton.dart';
 import 'package:venti_metri/dao/crud_model.dart';
 import 'package:venti_metri/model/events_models/content_page.dart';
-import 'package:venti_metri/model/events_models/product_class.dart';
 import 'package:venti_metri/model/events_models/product_datasource.dart';
+import 'package:venti_metri/model/events_models/product_event.dart';
 import 'package:venti_metri/utils/utils.dart';
 
 class ProductPageManager extends StatefulWidget {

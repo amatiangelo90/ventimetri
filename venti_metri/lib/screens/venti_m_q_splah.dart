@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:venti_metri/component/chart_class.dart';
 import 'package:venti_metri/screens/branch_choose.dart';
+import 'package:venti_metri/screens/home_screen.dart';
 
 import 'auth/auth_screen.dart';
 
@@ -40,6 +41,6 @@ class _VentiMetriQuadriSplashState extends State<VentiMetriQuadriSplash> {
   @override
   void initState() {
     super.initState();
-    Timer(Duration(milliseconds: 1500), ()=> Navigator.pushNamed(context, LoginAuthScreen.id));
+    Timer(Duration(milliseconds: 1500), ()=> Navigator.pushNamed(context, HomeScreen.id));
   }
 }

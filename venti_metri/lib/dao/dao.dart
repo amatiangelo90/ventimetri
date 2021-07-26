@@ -76,4 +76,8 @@ class Dao{
       }
     });
   }
+
+  Future<QuerySnapshot> getOrdersStoreCollection() {
+    return _collectionReference.orderBy('address',descending: false).orderBy('hourPickupDelivery', descending: false).get();
+  }
 }

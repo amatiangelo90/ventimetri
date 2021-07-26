@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:venti_metri/model/events_models/product_class.dart';
+import 'package:venti_metri/model/events_models/product_event.dart';
 import 'package:venti_metri/model/expence_class.dart';
 
 class ExpencesDataSource extends DataTableSource {

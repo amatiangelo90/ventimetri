@@ -6,8 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:venti_metri/dao/crud_model.dart';
 import 'package:venti_metri/model/events_models/bar_position_class.dart';
-import 'package:venti_metri/model/events_models/product_class.dart';
 import 'package:venti_metri/model/events_models/product_datasource.dart';
+import 'package:venti_metri/model/events_models/product_event.dart';
 import 'package:venti_metri/utils/utils.dart';
 
 class SingleBarChampManagerScreen extends StatefulWidget {

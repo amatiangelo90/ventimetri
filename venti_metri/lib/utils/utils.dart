@@ -69,9 +69,11 @@ final Color VENTI_METRI_RED = Colors.red.shade900;
 final Color VENTI_METRI_GREEN = const Color(0xff53fdd7);
 final Color VENTI_METRI_PINK = const Color(0xffff5182);
 final Color VENTI_METRI_BLUE = Colors.blueGrey.shade900;
+final Color VENTI_METRI_BLUE_800 = Colors.blueGrey.shade800;
 final Color VENTI_METRI_CISTERNINO = Colors.teal.shade50;
 final Color VENTI_METRI_MONOPOLI = Colors.redAccent.shade100;
 final Color VENTI_METRI_LOCOROTONDO = Colors.orangeAccent.shade100;
+
 
 const kTableColumns = <DataColumn>[
   DataColumn(
@@ -145,6 +147,7 @@ String getDateFromDateTime(DateTime dateTimeSelected) {
   /*return dateTimeSelected.day.toString()+'/'+dateTimeSelected.month.toString()+'/'+dateTimeSelected.year.toString();
 */
 }
+
 
 String formatDateTimefromString(String dateTimeSelected) {
   return DateTime.parse(dateTimeSelected).day.toString()+'/'+DateTime.parse(dateTimeSelected).month.toString()+'/'+ DateTime.parse(dateTimeSelected).year.toString();

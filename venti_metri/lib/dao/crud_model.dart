@@ -1,10 +1,14 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:venti_metri/model/cart.dart';
 import 'package:venti_metri/model/events_models/bar_position_class.dart';
 import 'package:venti_metri/model/events_models/event_class.dart';
-import 'package:venti_metri/model/events_models/product_class.dart';
+import 'package:venti_metri/model/events_models/product_event.dart';
+import 'package:venti_metri/model/exception_event.dart';
 import 'package:venti_metri/model/expence_class.dart';
+import 'package:venti_metri/model/order_store.dart';
 
 import 'dao.dart';
 
@@ -12,6 +16,7 @@ class CRUDModel {
   final String collection;
 
   Dao _dao;
+  List<OrderStore> customerOrders;
 
   CRUDModel(this.collection) {
     _dao = Dao(this.collection);
@@ -148,4 +153,105 @@ class CRUDModel {
     await _dao.updateDocument(data.toJson(), id);
     return;
   }
+
+  Future addException(
+      String name,
+      String exception,
+      String time) async {
+
+    ExceptionEvent exceptionEv = ExceptionEvent(
+        Random.secure().nextInt(40000000).toString(),
+        name,
+        exception,
+        time);
+
+    await _dao.addDocument(exceptionEv.toJson());
+    return ;
+  }
+
+
+  Future addOrder(
+      String uniqueId,
+      String name,
+      String total,
+      String time,
+      List<dynamic> cartItems,
+      bool confirmed,
+      String typeOrder,
+      String datePickupDelivery,
+      String hourPickupDelivery,
+      String address,
+      String city) async {
+
+    OrderStore orderStore = OrderStore(
+        '',
+        uniqueId,
+        name,
+        cartItems,
+        time,
+        total,
+        confirmed,
+        typeOrder,
+        datePickupDelivery,
+        hourPickupDelivery,
+        city,
+        address);
+
+    await _dao.addDocument(orderStore.toJson());
+    return ;
+  }
+
+  Future removeProduct(String id) async{
+    await _dao.removeDocument(id) ;
+    return ;
+  }
+
+  Future<List<OrderStore>> fetchCustomersOrder() async {
+
+    try{
+      var result = await _dao.getOrdersStoreCollection();
+
+      //customerOrders = result.docs
+      //    .map((doc) => OrderStore.fromMap(
+      //    doc.data(),
+      //    doc.id,
+      //    buildListCart(doc.data()['cartItemsList'])))
+      //   .toList();
+
+      print(customerOrders);
+
+      return customerOrders.toList();
+    }catch(e){
+      throw Exception(e);
+    }
+  }
+
+  List buildListCart(List element) {
+
+    try{
+      List<Cart> listCart = <Cart>[];
+      element.forEach((currentItem) {
+        currentItem = currentItem.toString().replaceAll('{', '{"');
+        currentItem = currentItem.toString().replaceAll('}', '"}');
+        currentItem = currentItem.toString().replaceAll(',', '","');
+        currentItem = currentItem.toString().replaceAll(':', '":"');
+        currentItem = currentItem.toString().replaceAll(' product', 'product');
+        currentItem = currentItem.toString().replaceAll(' numberOfItem', 'numberOfItem');
+        currentItem = currentItem.toString().replaceAll(' changes', 'changes');
+        Map valueMap = json.decode(currentItem);
+        listCart.add(Cart(
+            product : Product(),
+            numberOfItem: int.parse(valueMap['numberOfItem'].toString().replaceAll(" ", "")),
+            changes: null
+        ));
+      });
+
+      return listCart;
+    }catch(e){
+      print('Exception: ' + e.toString());
+      throw Exception(e);
+    }
+
+  }
+
 }

@@ -1,7 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flip_card/flip_card.dart';
 import 'package:flip_card/flip_card_controller.dart';
@@ -11,7 +9,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:venti_metri/dao/crud_model.dart';
 import 'package:venti_metri/model/events_models/bar_position_class.dart';
 import 'package:venti_metri/model/events_models/event_class.dart';
-import 'package:venti_metri/model/events_models/product_class.dart';
+import 'package:venti_metri/model/events_models/product_event.dart';
 import 'package:venti_metri/screens/event/recap_event_screen.dart';
 import 'package:venti_metri/screens/event/single_bar_champ_page_manager_screen.dart';
 import 'package:venti_metri/screens/event/utils_event/utils_event.dart';
