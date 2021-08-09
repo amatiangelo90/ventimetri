@@ -1,10 +1,8 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:venti_metri/screens/auth/auth_screen.dart';
-import 'package:venti_metri/screens/event/event_manager_screen.dart';
+import 'package:venti_metri/screens/customer_page_events.dart';
 import 'package:venti_metri/screens/reservation/reservation.dart';
-import 'package:venti_metri/screens/venti_m_q_dashboard.dart';
+import 'delivery/table_covers_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   static String id = 'home';
@@ -107,8 +105,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       onTap: () {
                         ScaffoldMessenger.of(context)
                             .showSnackBar(SnackBar(backgroundColor: Colors.green.shade500,
-                            content: Text('Accesso al calendario eventi in corso..')));
-                        Navigator.pushNamed(context, PartyScreenManager.id);
+                            content: Text('Accesso al menu delivery in corso..')));
+                        Navigator.pushNamed(context, TableCoversScreen.id);
                       },
                       child: Stack(
                         alignment: Alignment.center,
@@ -150,9 +148,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           showDialog(
                               context: context,
                               builder: (context) {
-                                return VentiMetriQuadriDashboard(
-                                  branch: 'Locorotondo',
-                                );
+                                return CustomerPartyScreen();
                               }
                           ),
                       child: Stack(

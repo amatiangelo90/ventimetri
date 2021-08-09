@@ -38,4 +38,15 @@ class TimeSlotPickup {
       TimeSlotPickup(5, '14:00'),
     ];
   }
+
+  static List<TimeSlotPickup> getPartySlots() {
+    return <TimeSlotPickup>[
+      TimeSlotPickup(1, 'Start Time'),
+      TimeSlotPickup(2, '21:00'),
+      TimeSlotPickup(3, '21:30'),
+      TimeSlotPickup(4, '22:00'),
+      TimeSlotPickup(5, '22:30'),
+      TimeSlotPickup(5, '23:00'),
+    ];
+  }
 }

@@ -1,19 +1,16 @@
 import 'dart:collection';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:venti_metri/dao/crud_model.dart';
 import 'package:venti_metri/model/events_models/event_class.dart';
-import 'package:venti_metri/screens/event/single_event_manager_screen.dart';
-import 'package:venti_metri/screens/event/products_manager_page.dart';
 import 'package:venti_metri/screens/event/utils_event/utils_event.dart';
+import 'package:venti_metri/screens/home_screen.dart';
+import 'package:venti_metri/screens/reservation/reservation_event.dart';
 import 'package:venti_metri/utils/utils.dart';
-
 import 'branch_choose.dart';
-import 'event/add_event_screen.dart';
 
 class CustomerPartyScreen extends StatefulWidget {
-  static String id = 'customer_party_screen';
+  static String id = 'customerpartyscreen';
   @override
   _CustomerPartyScreenState createState() => _CustomerPartyScreenState();
 }
@@ -29,8 +26,6 @@ class _CustomerPartyScreenState extends State<CustomerPartyScreen> {
 
   DateTime _focusedDay = DateTime.now();
   DateTime _selectedDay;
-
-  Map<String,EventClass> _alreadyUsedPasswordMap;
 
   @override
   void initState() {
@@ -77,30 +72,16 @@ class _CustomerPartyScreenState extends State<CustomerPartyScreen> {
           backgroundColor: VENTI_METRI_BLUE,
           centerTitle: true,
           leading: IconButton(
-            icon: Icon(Icons.home, color: Colors.white, size: 25,),
+            icon: Icon(Icons.arrow_back_ios, color: Colors.white, size: 25,),
             onPressed: () {
-              Navigator.pushNamed(context, BranchChooseScreen.id);
+              Navigator.pushNamed(context, HomeScreen.id);
             },
           ),
           actions: [
-            IconButton(
-              icon: Icon(FontAwesomeIcons.wineBottle, color: Colors.white, size: 25,),
-              onPressed: () {
-                Navigator.pushNamed(context, ProductPageManager.id);
-              },
-            ),
-            IconButton(
-              icon: Icon(Icons.add_circle, color: Colors.white, size: 25,),
-              onPressed: () {
-                Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => AddEventScreen(alreadyUsedPasswordMap: _alreadyUsedPasswordMap,),),);
-              },
-            ),
           ],
           title: GestureDetector(
             onTap: (){
               setState(() {
-
               });
             },
             child: Text('Calendario Eventi',style: TextStyle(fontFamily: 'LoraFont'),
@@ -229,8 +210,10 @@ class _CustomerPartyScreenState extends State<CustomerPartyScreen> {
                     child: ListTile(
                       onTap: () => {
                         Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => SingleEventManagerScreen(eventClass: eventsList[event], function: refresh,),),),
+                          MaterialPageRoute(builder: (context) => EventReservationScreen(listCalendarConfiguration: [],
+                            currentEvent: eventsList[event],),),),
                       },
+
                       subtitle: Text('Codice Evento: ${eventsList[event].id}', style: TextStyle(fontSize: 8, color: Colors.white, fontFamily: 'LoraFont'),),
 
                       title: Column(
@@ -251,24 +234,16 @@ class _CustomerPartyScreenState extends State<CustomerPartyScreen> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text('Password :', style: TextStyle(color: Colors.white, fontFamily: 'LoraFont'),),
-                              Text('${eventsList[event].passwordEvent}', style: TextStyle(color: VENTI_METRI_MONOPOLI, fontFamily: 'LoraFont'),),
+                              Text('Location :', style: TextStyle(color: Colors.white, fontFamily: 'LoraFont'),),
+                              Text('${eventsList[event].address}', style: TextStyle(color: VENTI_METRI_MONOPOLI, fontFamily: 'LoraFont'),),
                             ],
                           ),
                           SizedBox(height: 10,),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text('Posizioni Bar :', style: TextStyle(color: Colors.white, fontSize: 17, fontFamily: 'LoraFont'),),
-                              Text('${eventsList[event].listBarPositionIds.length}', style: TextStyle(color: VENTI_METRI_CISTERNINO, fontFamily: 'LoraFont'),),
-                            ],
-                          ),
-                          SizedBox(height: 10,),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text('Champagnerie :', style: TextStyle(color: Colors.white, fontSize: 17, fontFamily: 'LoraFont'),),
-                              Text('${eventsList[event].listChampagneriePositionIds.length}', style: TextStyle(color: VENTI_METRI_CISTERNINO, fontFamily: 'LoraFont'),),
+                              Text('Start Time :', style: TextStyle(color: Colors.white, fontSize: 17, fontFamily: 'LoraFont'),),
+                              Text('${eventsList[event].startTime}', style: TextStyle(color: VENTI_METRI_CISTERNINO, fontFamily: 'LoraFont'),),
                             ],
                           ),
                           SizedBox(height: 20,),
@@ -289,7 +264,6 @@ class _CustomerPartyScreenState extends State<CustomerPartyScreen> {
     CRUDModel crudModel = CRUDModel(EVENTS_SCHEMA);
     await crudModel.fetchEvents().then((value) {
       setState(() {
-        _alreadyUsedPasswordMap = getMapAlreadyUsedPassword(value);
         _kEvents.addAll(getKEvents(value));
       });
     });

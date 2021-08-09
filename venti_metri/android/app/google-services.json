@@ -8,9 +8,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1034741062753:android:a08c7f99513f4d01981e20",
+        "mobilesdk_app_id": "1:1034741062753:android:e47e8752020921b8981e20",
         "android_client_info": {
-          "package_name": "com.ventimetriquadri.app"
+          "package_name": "com.application.ventimetriquadri"
         }
       },
       "oauth_client": [

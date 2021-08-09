@@ -12,9 +12,9 @@ import 'package:venti_metri/model/events_models/bar_position_class.dart';
 import 'package:venti_metri/model/events_models/event_class.dart';
 import 'package:venti_metri/model/events_models/product_datasource.dart';
 import 'package:venti_metri/model/events_models/product_event.dart';
+import 'package:venti_metri/model/timeslot.dart';
 import 'package:venti_metri/screens/event/utils_event/utils_event.dart';
 import 'package:venti_metri/utils/utils.dart';
-
 import 'event_manager_screen.dart';
 
 class AddEventScreen extends StatefulWidget {
@@ -33,12 +33,20 @@ class _AddEventScreenState extends State<AddEventScreen> {
   final DatePickerController _dateController = DatePickerController();
   final ScrollController _scrollViewController = ScrollController();
   var uuid = Uuid();
+
   int _counterBar = 1;
   int _counterChampagnerie = 0;
   List<String> _alreadyUsedBarChampPositionList = <String>[];
   DateTime _currentSelectedDate;
+
   TextEditingController _eventNameController = TextEditingController();
   TextEditingController _passwordEventController = TextEditingController();
+  TextEditingController _locationController = TextEditingController();
+
+  List<TimeSlotPickup> _startTimeSlots = TimeSlotPickup.getPartySlots();
+  List<DropdownMenuItem<TimeSlotPickup>> _dropdownTimeSlotPickup;
+  TimeSlotPickup _selectedTimeSlotPikup;
+
   Map<String, EventClass> _alreadyUsedPasswordMap;
   bool _isCreaSerataNotPressed = true;
 
@@ -72,7 +80,22 @@ class _AddEventScreenState extends State<AddEventScreen> {
     _productsBarList = <Product>[];
     _productsChampagnerieList = <Product>[];
 
+    _dropdownTimeSlotPickup = buildDropdownSlotPickup(_startTimeSlots);
+    _selectedTimeSlotPikup = _dropdownTimeSlotPickup[0].value;
     initProductsList();
+  }
+
+  List<DropdownMenuItem<TimeSlotPickup>> buildDropdownSlotPickup(List slots) {
+    List<DropdownMenuItem<TimeSlotPickup>> items = [];
+    for (TimeSlotPickup slotItem in slots) {
+      items.add(
+        DropdownMenuItem(
+          value: slotItem,
+          child: Center(child: Text(slotItem.slot, style: TextStyle(color: Colors.black, fontSize: 16.0, fontFamily: 'LoraFont'),)),
+        ),
+      );
+    }
+    return items;
   }
 
   @override
@@ -136,6 +159,26 @@ class _AddEventScreenState extends State<AddEventScreen> {
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: TextField(
+                        style: TextStyle(color: Colors.white),
+                        controller: _locationController,
+                        keyboardType: TextInputType.text,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(),
+                          /*icon: Icon(Icons.line_style),*/
+                          labelText: 'Location',
+                          labelStyle: TextStyle(color: Colors.white),
+                          focusedBorder: OutlineInputBorder (
+                            borderSide: BorderSide(color: Colors.white, width: 2.0),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.white, width: 2.0),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: TextField(
                         onChanged: (currentText){
                           print(_alreadyUsedBarChampPositionList.toString());
                           if(currentText.length == 4 && _alreadyUsedPasswordMap.keys.contains(currentText)){
@@ -168,6 +211,29 @@ class _AddEventScreenState extends State<AddEventScreen> {
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderSide: BorderSide(color: Colors.white, width: 2.0),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 3.0),
+                      child: Center(
+                        child: Card(
+                          borderOnForeground: true,
+                          elevation: 1.0,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Center(
+                                child: DropdownButton(
+                                  isExpanded: true,
+                                  value: _selectedTimeSlotPikup,
+                                  items: _dropdownTimeSlotPickup,
+                                  onChanged: onChangeDropTimeSlotPickup,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
@@ -314,6 +380,12 @@ class _AddEventScreenState extends State<AddEventScreen> {
                                     duration: Duration(milliseconds: 1000),
                                     backgroundColor: Colors.redAccent,
                                     content: Text('Inserire il nome Evento')));
+                              }else if(_locationController.text == ''){
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(SnackBar(
+                                    duration: Duration(milliseconds: 1000),
+                                    backgroundColor: Colors.redAccent,
+                                    content: Text('Inserire la location')));
                               }else if(_passwordEventController.text == ''){
                                 ScaffoldMessenger.of(context)
                                     .showSnackBar(SnackBar(
@@ -338,6 +410,12 @@ class _AddEventScreenState extends State<AddEventScreen> {
                                     duration: Duration(milliseconds: 1000),
                                     backgroundColor: Colors.redAccent,
                                     content: Text('Selezionare una data valida')));
+                              }else if(_selectedTimeSlotPikup.slot == 'Start Time'){
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(SnackBar(
+                                    duration: Duration(milliseconds: 1000),
+                                    backgroundColor: Colors.redAccent,
+                                    content: Text('Start Time mancante')));
                               }else{
                                 try{
                                 setState((){
@@ -456,7 +534,9 @@ class _AddEventScreenState extends State<AddEventScreen> {
                                     title: _eventNameController.value.text,
                                     productChampagnerieList: champProdIdsList,
                                     expencesBarProductList: _expencesBarSchemasList,
-                                  expencesChampagnerieProductList: _expencesChampagnerieSchemasList
+                                    expencesChampagnerieProductList: _expencesChampagnerieSchemasList,
+                                    address: _locationController.value.text,
+                                    startTime: _selectedTimeSlotPikup.slot
                                 );
 
                                 await _crudModelEventSchema.addEventObject(eventClass);
@@ -554,5 +634,11 @@ class _AddEventScreenState extends State<AddEventScreen> {
     });
 
     return list;
+  }
+
+  onChangeDropTimeSlotPickup(TimeSlotPickup currentPickupSlot) {
+    setState(() {
+      _selectedTimeSlotPikup = currentPickupSlot;
+    });
   }
 }

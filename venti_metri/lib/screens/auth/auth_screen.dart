@@ -7,6 +7,7 @@ import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:venti_metri/dao/crud_model.dart';
 import 'package:venti_metri/model/events_models/bar_position_class.dart';
 import 'package:venti_metri/model/events_models/event_class.dart';
+import 'package:venti_metri/screens/administration_page.dart';
 import 'package:venti_metri/screens/auth/utilities/constants.dart';
 import 'package:venti_metri/screens/event/single_bar_champ_page_manager_screen.dart';
 import 'package:venti_metri/screens/event/single_event_manager_screen.dart';
@@ -332,7 +333,7 @@ class _LoginAuthScreenState extends State<LoginAuthScreen> {
                 final user = await _auth.signInWithEmailAndPassword(email: _mailController.value.text, password: _accessPasswordController.value.text);
 
                 if(user != null){
-                  Navigator.pushNamed(context, BranchChooseScreen.id);
+                  Navigator.pushNamed(context, AdministrationScreen.id);
                   ScaffoldMessenger.of(context)
                       .showSnackBar(SnackBar(
                       duration: Duration(milliseconds: 700),
@@ -481,7 +482,7 @@ class _LoginAuthScreenState extends State<LoginAuthScreen> {
               try{
                 final newUser = await _auth.createUserWithEmailAndPassword(email: _mailController.value.text, password: _choosePasswordController.value.text);
                 if(newUser != null){
-                  Navigator.pushNamed(context, BranchChooseScreen.id);
+                  Navigator.pushNamed(context, AdministrationScreen.id);
                   ScaffoldMessenger.of(context)
                       .showSnackBar(SnackBar(
                       duration: Duration(milliseconds: 700),
@@ -852,7 +853,7 @@ class _LoginAuthScreenState extends State<LoginAuthScreen> {
 
         if(user != null){
           print('Email logged in : ' + user.email);
-          Navigator.pushNamed(context, BranchChooseScreen.id);
+          Navigator.pushNamed(context, AdministrationScreen.id);
           ScaffoldMessenger.of(context)
               .showSnackBar(SnackBar(
               duration: Duration(milliseconds: 700),

@@ -14,6 +14,8 @@ class EventClass {
   final List<dynamic> productChampagnerieList;
   final List<dynamic> expencesBarProductList;
   final List<dynamic> expencesChampagnerieProductList;
+  final String address;
+  final String startTime;
 
   const EventClass({
     @required this.docId,
@@ -26,7 +28,9 @@ class EventClass {
     @required this.productBarList,
     @required this.productChampagnerieList,
     @required this.expencesBarProductList,
-    @required this.expencesChampagnerieProductList
+    @required this.expencesChampagnerieProductList,
+    @required this.address,
+    @required this.startTime
   });
 
   Map<String, dynamic> toJson() => {
@@ -40,7 +44,9 @@ class EventClass {
     'productBarList': productBarList,
     'productChampagnerieList': productChampagnerieList,
     'expencesBarProductList': expencesBarProductList,
-    'expencesChampagnerieProductList': expencesChampagnerieProductList
+    'expencesChampagnerieProductList': expencesChampagnerieProductList,
+    'address': address,
+    'startTime': startTime,
   };
 
   @override
@@ -61,6 +67,8 @@ class EventClass {
         productChampagnerieList: cartMap['productChampagnerieList'] as List,
         expencesBarProductList: cartMap['expencesBarProductList'] as List,
         expencesChampagnerieProductList: cartMap['expencesChampagnerieProductList'] as List,
+        address: cartMap['address'],
+        startTime: cartMap['startTime']
     );
   }
 }

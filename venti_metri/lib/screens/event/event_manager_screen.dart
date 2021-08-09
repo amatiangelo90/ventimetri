@@ -4,6 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:venti_metri/dao/crud_model.dart';
 import 'package:venti_metri/model/events_models/event_class.dart';
+import 'package:venti_metri/screens/administration_page.dart';
 import 'package:venti_metri/screens/event/single_event_manager_screen.dart';
 import 'package:venti_metri/screens/event/products_manager_page.dart';
 import 'package:venti_metri/screens/event/utils_event/utils_event.dart';
@@ -79,7 +80,7 @@ class _PartyScreenManagerState extends State<PartyScreenManager> {
           leading: IconButton(
             icon: Icon(Icons.home, color: Colors.white, size: 25,),
             onPressed: () {
-              Navigator.pushNamed(context, BranchChooseScreen.id);
+              Navigator.pushNamed(context, AdministrationScreen.id);
             },
           ),
           actions: [

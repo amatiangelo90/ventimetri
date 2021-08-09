@@ -15,6 +15,7 @@ import 'package:venti_metri/screens/event/single_bar_champ_page_manager_screen.d
 import 'package:venti_metri/screens/event/utils_event/utils_event.dart';
 import 'package:venti_metri/utils/utils.dart';
 
+import 'bar_champ_details_page.dart';
 import 'event_manager_screen.dart';
 
 class SingleEventManagerScreen extends StatefulWidget {
@@ -237,18 +238,6 @@ class _SingleEventManagerScreenState extends State<SingleEventManagerScreen> {
         SizedBox(height: 5,),
         Column(
           children: [
-            SizedBox(height: 3,),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: buildRecaTableForAllEvent(),
-              ),
-            ),
-          ],
-        ),
-        SizedBox(height: 5,),
-        Column(
-          children: [
             Center(
               child: Text('Postazioni Bar - n° ${barPositionList.length}', style: TextStyle(fontSize: 17, color: Colors.white, fontFamily: 'LoraFont')),
             ),
@@ -277,67 +266,6 @@ class _SingleEventManagerScreenState extends State<SingleEventManagerScreen> {
           ],
         ),
         Container(
-            child: FutureBuilder(
-              initialData: <Widget>[Column(
-                children: [
-                  Center(child: CircularProgressIndicator(
-                    color: VENTI_METRI_PINK,
-                  )),
-                  SizedBox(),
-                  Center(child: Text('Caricamento dati per tabella resoconto..',
-                    style: TextStyle(fontSize: 16.0, color: Colors.black, fontFamily: 'LoraFont'),
-                  ),),
-                ],
-              )],
-              future: buildRecapTableBarChampConsumption(barPositionList, true, false),
-              builder: (context, snapshot){
-                if(snapshot.hasData){
-                  return Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: ListView(
-                      primary: false,
-                      shrinkWrap: true,
-                      children: snapshot.data,
-                    ),
-                  );
-                }else{
-                  return CircularProgressIndicator();
-                }
-              },
-            )
-        ),
-        Container(
-            child: FutureBuilder(
-              initialData: <Widget>[Column(
-                children: [
-                  Center(child: CircularProgressIndicator(
-                    color: VENTI_METRI_PINK,
-                  )),
-                  SizedBox(),
-                  Center(child: Text('Caricamento dati per tabella resoconto..',
-                    style: TextStyle(fontSize: 16.0, color: Colors.black, fontFamily: 'LoraFont'),
-                  ),),
-                ],
-              )],
-              future: buildRecapTableBarChampConsumption(champagneriePositionList, false, true),
-              builder: (context, snapshot){
-                if(snapshot.hasData){
-                  return Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: ListView(
-                      primary: false,
-                      shrinkWrap: true,
-                      children: snapshot.data,
-                    ),
-                  );
-                }else{
-                  return CircularProgressIndicator();
-                }
-              },
-            )
-        ),
-        SizedBox(height: 25,),
-        Container(
           height: 60,
           width: double.infinity,
           child: RaisedButton(
@@ -365,66 +293,87 @@ class _SingleEventManagerScreenState extends State<SingleEventManagerScreen> {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(30.0),
             ),
+            color: Colors.green,
+            elevation: 19.0,
+            child: Text('Dettaglio Bar/Champagnerie', style: TextStyle(fontSize: 18.0,color: Colors.white, fontFamily: 'LoraFont'),),
+            onPressed: (){
+              Navigator.push(context,
+                MaterialPageRoute(builder: (context) => BarChampDetailsPage(
+                  barPositionList: barPositionList,
+                  champagneriePositionList: champagneriePositionList,
+                  eventClass: _eventClass,),),);
+            },
+          ),
+        ),
+        SizedBox(height: 25,),
+        Container(
+          height: 60,
+          width: double.infinity,
+          child: RaisedButton(
+            padding: EdgeInsets.all(10.0),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(30.0),
+            ),
             color: Colors.redAccent,
             elevation: 19.0,
             child: Text('Cancella Evento', style: TextStyle(fontSize: 18.0,color: Colors.white, fontFamily: 'LoraFont'),),
-              onPressed: () async {
-                return await showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: const Text("Conferma", style: TextStyle(color: Colors.white, fontSize: 19.0, fontFamily: 'LoraFont'),),
-                      content: Text("Eliminare l'evento ${_eventClass.title}?", style: TextStyle(color: VENTI_METRI_BLUE, fontSize: 16.0, fontFamily: 'LoraFont'),),
-                      actions: <Widget>[
-                        FlatButton(
-                            onPressed: (){
+            onPressed: () async {
+              return await showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Text("Conferma", style: TextStyle(color: Colors.white, fontSize: 19.0, fontFamily: 'LoraFont'),),
+                    content: Text("Eliminare l'evento ${_eventClass.title}?", style: TextStyle(color: VENTI_METRI_BLUE, fontSize: 16.0, fontFamily: 'LoraFont'),),
+                    actions: <Widget>[
+                      FlatButton(
+                          onPressed: (){
 
-                              _eventClass.expencesBarProductList.forEach((element) {
-                                crudModelBarProductsExpences = CRUDModel(element);
-                                crudModelBarProductsExpences.deleteCollection(element);
-                              });
+                            _eventClass.expencesBarProductList.forEach((element) {
+                              crudModelBarProductsExpences = CRUDModel(element);
+                              crudModelBarProductsExpences.deleteCollection(element);
+                            });
 
-                              _eventClass.expencesChampagnerieProductList.forEach((element) {
-                                crudModelChampagnerieProductsExpences = CRUDModel(element);
-                                crudModelChampagnerieProductsExpences.deleteCollection(element);
-                              });
+                            _eventClass.expencesChampagnerieProductList.forEach((element) {
+                              crudModelChampagnerieProductsExpences = CRUDModel(element);
+                              crudModelChampagnerieProductsExpences.deleteCollection(element);
+                            });
 
-                              _eventClass.listBarPositionIds.forEach((element) {
-                                crudModelBarPosition.removeDocumentById(element);
-                              });
-                              _eventClass.listChampagneriePositionIds.forEach((element) {
-                                crudModelChampagnerie.removeDocumentById(element);
-                              });
+                            _eventClass.listBarPositionIds.forEach((element) {
+                              crudModelBarPosition.removeDocumentById(element);
+                            });
+                            _eventClass.listChampagneriePositionIds.forEach((element) {
+                              crudModelChampagnerie.removeDocumentById(element);
+                            });
 
-                              crudModelBarProducts = CRUDModel(BAR_LIST_PRODUCT_SCHEMA + getAppIxFromNameEvent(_eventClass.title));
+                            crudModelBarProducts = CRUDModel(BAR_LIST_PRODUCT_SCHEMA + getAppIxFromNameEvent(_eventClass.title));
 
-                              _eventClass.productBarList.forEach((element) {
-                                crudModelBarProducts.removeDocumentById(element);
-                              });
+                            _eventClass.productBarList.forEach((element) {
+                              crudModelBarProducts.removeDocumentById(element);
+                            });
 
-                              crudModelChampagnerieProducts = CRUDModel(CHAMPAGNERIE_LIST_PRODUCT_SCHEMA + getAppIxFromNameEvent(_eventClass.title));
-                              _eventClass.productChampagnerieList.forEach((element) {
-                                crudModelChampagnerieProducts.removeDocumentById(element);
-                              });
+                            crudModelChampagnerieProducts = CRUDModel(CHAMPAGNERIE_LIST_PRODUCT_SCHEMA + getAppIxFromNameEvent(_eventClass.title));
+                            _eventClass.productChampagnerieList.forEach((element) {
+                              crudModelChampagnerieProducts.removeDocumentById(element);
+                            });
 
-                              crudModelEventSchema.removeDocumentById(_eventClass.docId);
+                            crudModelEventSchema.removeDocumentById(_eventClass.docId);
 
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(SnackBar(
-                                  backgroundColor: Colors.orange,
-                                  content: Text('Evento ${_eventClass.title} eliminato!')));
-                              Navigator.pushNamed(context, PartyScreenManager.id);
-                            },
-                            child: const Text("Elimina")
-                        ),
-                        FlatButton(
-                          onPressed: () => Navigator.of(context).pop(false),
-                          child: const Text("Indietro"),
-                        ),
-                      ],
-                    );
-                  },
-                );
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(SnackBar(
+                                backgroundColor: Colors.orange,
+                                content: Text('Evento ${_eventClass.title} eliminato!')));
+                            Navigator.pushNamed(context, PartyScreenManager.id);
+                          },
+                          child: const Text("Elimina")
+                      ),
+                      FlatButton(
+                        onPressed: () => Navigator.of(context).pop(false),
+                        child: const Text("Indietro"),
+                      ),
+                    ],
+                  );
+                },
+              );
             },
           ),
         ),
@@ -669,140 +618,9 @@ class _SingleEventManagerScreenState extends State<SingleEventManagerScreen> {
     });
     return items;
   }
-
   void refreshPage() {
     this.widget.function();
     setState(() {});
-  }
-
-  //RECAP
-  Future<List<Widget>> buildRecapTableBarChampConsumption(List<BarPositionClass> barChampagneriePositionList,
-      bool barRecap,
-      bool champRecap) async{
-
-    String currentSchema;
-
-    if(barRecap){
-      currentSchema = BAR_LIST_PRODUCT_SCHEMA;
-    } else if(champRecap){
-      currentSchema = CHAMPAGNERIE_LIST_PRODUCT_SCHEMA;
-    }
-    List<Widget> listOut = <Widget>[];
-
-    if(barChampagneriePositionList != null){
-      barChampagneriePositionList.forEach((element) async {
-        print('Schema to retrieve bar/champagnerie product ' + currentSchema + element.passwordEvent.toString() + element.passwordBarChampPosition.toString());
-        CRUDModel currentCrudModel = CRUDModel(currentSchema + element.passwordEvent.toString() + element.passwordBarChampPosition.toString());
-        List<Product> currentProductList = await currentCrudModel.fetchProducts();
-        listOut.add(
-          Padding(
-            padding: const EdgeInsets.fromLTRB(0, 5, 0, 8),
-            child: Card(
-              color: barRecap ? VENTI_METRI_MONOPOLI : VENTI_METRI_LOCOROTONDO,
-              child: Center(
-                child: Column(
-                  children: [
-                    Text('${element.name}', style: TextStyle(fontSize: 17, color: barRecap ? Colors.white : VENTI_METRI_BLUE, fontFamily: 'LoraFont')),
-                    element.ownerBar != '' ? Text('Responsabile : ${element.ownerBar}', style: TextStyle(fontSize: 17, color: barRecap ? Colors.white : VENTI_METRI_BLUE, fontFamily: 'LoraFont')) : SizedBox(height: 0,),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        );
-        listOut.add(
-            buildTableWithCurrentBarChampagnerieProductElements(currentProductList)
-        );
-      });
-    }
-
-    return listOut;
-  }
-
-  Widget buildTableWithCurrentBarChampagnerieProductElements(List<Product> currentProductList) {
-
-
-    return Table(
-        border: TableBorder(horizontalInside: BorderSide(width: 0.5, color: Colors.black12, style: BorderStyle.solid)),
-        children: buildTableRowByCurrentProductList(currentProductList),
-    );
-  }
-
-  buildTableRowByCurrentProductList(List<Product> currentProductList) {
-    List<TableRow> _tableRow = <TableRow>[];
-    double _currentTotal = 0.0;
-
-    if(loggedInUser != null){
-      _tableRow.add(
-        TableRow(children :[
-          Text('Prodotto', style: TextStyle(fontSize: 11, color: Colors.orange, fontFamily: 'LoraFont')),
-          Center(child: Text('Prezzo(€)', style: TextStyle(fontSize: 11, color: Colors.orange, fontFamily: 'LoraFont'))),
-          Center(child: Text('Carico', style: TextStyle(fontSize: 11, color: Colors.orange, fontFamily: 'LoraFont'))),
-          Center(child: Text('Scarico', style: TextStyle(fontSize: 11, color: Colors.orange, fontFamily: 'LoraFont'))),
-          Center(child: Text('Residuo', style: TextStyle(fontSize: 11, color: Colors.orange, fontFamily: 'LoraFont'))),
-          Center(child: Text('Costi(€)', style: TextStyle(fontSize: 11, color: Colors.orange, fontFamily: 'LoraFont'))),
-        ]),
-      );
-      currentProductList.forEach((element) {
-        _currentTotal = _currentTotal + ((element.stock - element.consumed) * element.price);
-
-        _tableRow.add(
-          TableRow(
-              children :[
-            Text(element.name, style: TextStyle(fontSize: 10, color: Colors.white, fontFamily: 'LoraFont')),
-            Center(child: Text(element.price.toStringAsFixed(2), style: TextStyle(fontSize: 15, color: Colors.white, fontFamily: 'LoraFont'))),
-            Center(child: Text(element.stock.toStringAsFixed(2), style: TextStyle(fontSize: 15, color: Colors.white, fontFamily: 'LoraFont'))),
-            Center(child: Text(element.consumed.toStringAsFixed(2), style: TextStyle(fontSize: 15, color: Colors.white, fontFamily: 'LoraFont'))),
-            Center(child: Text((element.stock - element.consumed).toStringAsFixed(2), style: TextStyle(fontSize: 15, color: Colors.white, fontFamily: 'LoraFont'))),
-            Center(child: Text(((element.stock - element.consumed) * element.price).toStringAsFixed(2), style: TextStyle(fontSize: 13, color: Colors.green, fontFamily: 'LoraFont'))),
-          ]),
-        );
-      });
-      _tableRow.add(
-        TableRow(
-
-            children :[
-          Padding(
-            padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
-            child: Text('Totale', style: TextStyle(fontSize: 16, color: Colors.blueAccent, fontFamily: 'LoraFont')),
-          ),
-          Center(child: Text('', style: TextStyle(fontSize: 11, color: Colors.redAccent, fontFamily: 'LoraFont'))),
-          Center(child: Text('', style: TextStyle(fontSize: 11, color: Colors.redAccent, fontFamily: 'LoraFont'))),
-          Center(child: Text('', style: TextStyle(fontSize: 11, color: Colors.redAccent, fontFamily: 'LoraFont'))),
-          Center(child: Text('', style: TextStyle(fontSize: 11, color: Colors.redAccent, fontFamily: 'LoraFont'))),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
-            child: Center(child: Text(_currentTotal.toStringAsFixed(2), style: TextStyle(fontSize: 13, color: Colors.blueAccent, fontFamily: 'LoraFont'))),
-          ),
-        ]),
-      );
-    }else{
-      _tableRow.add(
-        TableRow(children :[
-          Text('Prodotto', style: TextStyle(fontSize: 15, color: Colors.orange, fontFamily: 'LoraFont')),
-          Center(child: Text('Carico', style: TextStyle(fontSize: 15, color: Colors.orange, fontFamily: 'LoraFont'))),
-          Center(child: Text('Scarico', style: TextStyle(fontSize: 15, color: Colors.orange, fontFamily: 'LoraFont'))),
-          Center(child: Text('Rimanenza', style: TextStyle(fontSize: 15, color: Colors.orange, fontFamily: 'LoraFont'))),
-        ]),
-      );
-      currentProductList.forEach((element) {
-        _tableRow.add(
-          TableRow(children :[
-            Text(element.name, style: TextStyle(fontSize: 15, color: Colors.white, fontFamily: 'LoraFont')),
-            Center(child: Text(element.stock.toString(), style: TextStyle(fontSize: 15, color: Colors.white, fontFamily: 'LoraFont'))),
-            Center(child: Text(element.consumed.toString(), style: TextStyle(fontSize: 15, color: Colors.white, fontFamily: 'LoraFont'))),
-            Center(child: Text((element.stock - element.consumed).toStringAsFixed(2), style: TextStyle(fontSize: 15, color: Colors.white, fontFamily: 'LoraFont'))),
-          ]),
-        );
-      });
-    }
-
-    return _tableRow;
-  }
-
-  buildRecaTableForAllEvent() {
-    List<Widget> items = <Widget>[];
-    return items;
   }
 }
 

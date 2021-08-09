@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -9,6 +11,7 @@ import 'package:venti_metri/model/events_models/bar_position_class.dart';
 import 'package:venti_metri/model/events_models/event_class.dart';
 import 'package:venti_metri/model/events_models/product_event.dart';
 import 'package:venti_metri/model/expence_class.dart';
+import 'package:venti_metri/model/recap_table.dart';
 import 'package:venti_metri/screens/event/utils_event/utils_event.dart';
 import 'package:venti_metri/utils/utils.dart';
 
@@ -41,21 +44,43 @@ class _RecapEventPageState extends State<RecapEventPage> {
   TextEditingController _priceController = TextEditingController();
   TextEditingController _amountController = TextEditingController();
 
+  List<RecapTableObject> recapTableList = <RecapTableObject>[];
+
+  bool _showBarData = false;
+
   var uuid = Uuid();
   CRUDModel crudModelExpences;
-
+  FirebaseAuth _auth;
   User loggedInUser;
+
+  void getCurrentUser() async {
+    try{
+      final user = await _auth.currentUser;
+      if(user != null){
+        setState(() {
+          loggedInUser = user;
+        });
+        print('Email logged in : ' + loggedInUser.email);
+      }else{
+        print('No user authenticated');
+      }
+    }catch(e){
+      print('Exception : ' + e);
+    }
+  }
 
   @override
   void initState() {
     super.initState();
+    _auth = FirebaseAuth.instance;
+    getCurrentUser();
     _currentEventclass = this.widget.eventClass;
     _currentBarList = this.widget.barPositionList;
     _currentChampagnerieList = this.widget.champPositionList;
     _insertExpencesBottonPressed = false;
     crudModelExpences = CRUDModel(EXPENCES_EVENT_SCHEMA + getAppIxFromNameEvent(_currentEventclass.title));
     initMaps();
-
+    initRecList();
   }
 
 
@@ -68,6 +93,19 @@ class _RecapEventPageState extends State<RecapEventPage> {
           centerTitle: true,
           actions: [
             Padding(
+              padding: const EdgeInsets.fromLTRB(0, 8, 5, 4),
+              child: IconButton(onPressed: (){
+                setState((){
+                  if(_showBarData){
+                    _showBarData = false;
+                  }else{
+                    _showBarData = true;
+                  }
+                });
+
+              }, icon: Icon(_showBarData ? Icons.remove_red_eye : Icons.remove_red_eye_outlined)),
+            ),
+            Padding(
               padding: const EdgeInsets.fromLTRB(0, 8, 10, 4),
               child: IconButton(onPressed: (){
                 setState(() {
@@ -76,10 +114,10 @@ class _RecapEventPageState extends State<RecapEventPage> {
                   }else{
                     _insertExpencesBottonPressed = true;
                   }
-
                 });
               }, icon: Icon(_insertExpencesBottonPressed ? Icons.close : Icons.add_rounded, size: 30,)),
             ),
+
             Padding(
               padding: const EdgeInsets.fromLTRB(0, 8, 10, 4),
               child: IconButton(onPressed: (){
@@ -99,7 +137,7 @@ class _RecapEventPageState extends State<RecapEventPage> {
                 )),
                 const SizedBox(),
                 const Center(child: Text('Caricamento dati..',
-                  style: TextStyle(fontSize: 16.0, color: Colors.black, fontFamily: 'LoraFont'),
+                  style: TextStyle(fontSize: 16.0, color: Colors.white, fontFamily: 'LoraFont'),
                 ),),
               ],
             )],
@@ -126,7 +164,6 @@ class _RecapEventPageState extends State<RecapEventPage> {
 
 
   Future buildWidgetListExpences() async {
-
     List<Widget> listOut = <Widget>[
       Container(
           width: double.infinity,
@@ -141,14 +178,22 @@ class _RecapEventPageState extends State<RecapEventPage> {
     expenceList.forEach((element) {
       _total = _total + (double.parse(element.amount) * double.parse(element.details));
     });
-    currentBarMapData.keys.forEach((element) {
-      _total = _total + currentBarMapData[element];
-    });
 
-    currentChampMapData.keys.forEach((element) {
-      _total = _total + currentChampMapData[element];
-    });
-
+    print('#######################');
+    print('');
+    print('currentBarMapData' + currentBarMapData.toString());
+    print('');
+    print('currentChampMapData' + currentChampMapData.toString());
+    print('');
+    print('#######################');
+    if(_showBarData){
+      currentBarMapData.keys.forEach((element) {
+        _total = _total + currentBarMapData[element];
+      });
+      currentChampMapData.keys.forEach((element) {
+        _total = _total + currentChampMapData[element];
+      });
+    }
 
     if(_insertExpencesBottonPressed){
 
@@ -468,92 +513,60 @@ class _RecapEventPageState extends State<RecapEventPage> {
       );
     });
 
-    try{
-      currentBarMapData.keys.forEach((currentBarChampagnerie) {
-        listOut.add(
-          Card(
-            color: VENTI_METRI_BLUE,
-            child: ExpansionTile(
-              trailing: SizedBox.shrink(),
-              initiallyExpanded: false,
-              maintainState: false,
-              title: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Expanded(flex: 2,child: Text(currentBarChampagnerie, style: TextStyle(fontSize: 13,color: Colors.white),)),
-                  Expanded(flex: 1,child: Text('1', style: TextStyle(fontSize: 13,color: Colors.blueGrey.shade300),)),
-                  Expanded(flex: 1,child: Text(currentBarMapData[currentBarChampagnerie].toStringAsFixed(2), style: TextStyle(fontSize: 13,color: Colors.blueGrey.shade300),)),
-                  Expanded(flex: 0,child: Text(currentBarMapData[currentBarChampagnerie].toStringAsFixed(2), style: TextStyle(fontSize: 13,color: Colors.greenAccent),)),
-                ],
+    if(_showBarData){
+      try{
+        currentBarMapData.keys.forEach((currentBarChampagnerie) {
+          listOut.add(
+            Card(
+              color: VENTI_METRI_BLUE,
+              child: ExpansionTile(
+                trailing: SizedBox.shrink(),
+                initiallyExpanded: false,
+                maintainState: false,
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Expanded(flex: 2,child: Text(currentBarChampagnerie, style: TextStyle(fontSize: 13,color: Colors.white),)),
+                    Expanded(flex: 1,child: Text('1', style: TextStyle(fontSize: 13,color: Colors.blueGrey.shade300),)),
+                    Expanded(flex: 1,child: Text(currentBarMapData[currentBarChampagnerie].toStringAsFixed(2), style: TextStyle(fontSize: 13,color: Colors.blueGrey.shade300),)),
+                    Expanded(flex: 0,child: Text(currentBarMapData[currentBarChampagnerie].toStringAsFixed(2), style: TextStyle(fontSize: 13,color: Colors.greenAccent),)),
+                  ],
+                ),
+                children: buildRecapTableBarChampConsumption(recapTableList, currentBarChampagnerie),
               ),
-              children: [
-              Container(
-                  child: FutureBuilder(
-                    initialData: <Widget>[Column(
-                      children: [
-                        Center(child: CircularProgressIndicator(
-                          color: VENTI_METRI_LOCOROTONDO,
-                        )),
-                        SizedBox(height: 4,),
-                        Center(child: Text('Caricamento dati per tabella resoconto..',
-                          style: TextStyle(fontSize: 14.0, color: Colors.white, fontFamily: 'LoraFont'),
-                        ),),
-                      ],
-                    )],
-                    future: buildCurrentBarRecapTable(currentBarChampagnerie),
-                    builder: (context, snapshot){
-                      if(snapshot.hasData){
-                        return Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: ListView(
-                            primary: false,
-                            shrinkWrap: true,
-                            children: snapshot.data,
-                          ),
-                        );
-                      }else{
-                        return CircularProgressIndicator();
-                      }
-                    },
-                  )
-              ),
-              ],
             ),
-          ),
-        );
-      });
-    }catch(e){
-      print('Error : ' + e);
-    }
-
-
-    try{
-      currentChampMapData.keys.forEach((element) {
-        listOut.add(
-          Card(
-            color: VENTI_METRI_BLUE,
-            child: ExpansionTile(
-              trailing: SizedBox.shrink(),
-              initiallyExpanded: false,
-              maintainState: false,
-              title: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Expanded(flex: 2,child: Text(element, style: TextStyle(fontSize: 13,color: Colors.white),)),
-                  Expanded(flex: 1,child: Text('1', style: TextStyle(fontSize: 13,color: Colors.blueGrey.shade300),)),
-                  Expanded(flex: 1,child: Text(currentChampMapData[element].toStringAsFixed(2), style: TextStyle(fontSize: 13,color: Colors.blueGrey.shade300),)),
-                  Expanded(flex: 0,child: Text(currentChampMapData[element].toStringAsFixed(2), style: TextStyle(fontSize: 13,color: Colors.greenAccent),)),
-                ],
+          );
+        });
+      }catch(e){
+        print('Error : ' + e);
+      }
+      try{
+        currentChampMapData.keys.forEach((currentChampagnerie) {
+          listOut.add(
+            Card(
+              color: VENTI_METRI_BLUE,
+              child: ExpansionTile(
+                trailing: SizedBox.shrink(),
+                initiallyExpanded: false,
+                maintainState: false,
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Expanded(flex: 2,child: Text(currentChampagnerie, style: TextStyle(fontSize: 13,color: Colors.white),)),
+                    Expanded(flex: 1,child: Text('1', style: TextStyle(fontSize: 13,color: Colors.blueGrey.shade300),)),
+                    Expanded(flex: 1,child: Text(currentChampMapData[currentChampagnerie].toStringAsFixed(2), style: TextStyle(fontSize: 13,color: Colors.blueGrey.shade300),)),
+                    Expanded(flex: 0,child: Text(currentChampMapData[currentChampagnerie].toStringAsFixed(2), style: TextStyle(fontSize: 13,color: Colors.greenAccent),)),
+                  ],
+                ),
+                children: buildRecapTableBarChampConsumption(recapTableList, currentChampagnerie),
               ),
-              //children: buildCurrentChampagnerieRecapTable(element),
             ),
-          ),
-        );
-      });
-    }catch(e){
-      print('Error : ' + e);
+          );
+        });
+      }catch(e){
+        print('Error : ' + e);
+      }
     }
-
 
     listOut.add(
       ExpansionTile(
@@ -579,7 +592,7 @@ class _RecapEventPageState extends State<RecapEventPage> {
 
     double sum = 0.0;
     fetchProducts.forEach((element) {
-      sum = sum + (element.stock - element.consumed);
+      sum = sum + (element.stock - element.consumed) * element.price;
     });
 
     return sum;
@@ -588,8 +601,6 @@ class _RecapEventPageState extends State<RecapEventPage> {
   }
 
   void initMaps() {
-
-
     _currentBarList.forEach((currentBarPositionObject) async {
       CRUDModel currentBarSchema = CRUDModel(BAR_LIST_PRODUCT_SCHEMA
           + currentBarPositionObject.passwordEvent.toString()
@@ -599,7 +610,6 @@ class _RecapEventPageState extends State<RecapEventPage> {
       currentBarMapData[currentBarPositionObject.name] = getExpencesByListProducts(fetchProducts);
 
     });
-
     _currentChampagnerieList.forEach((currentChampPositionObject) async {
       CRUDModel currentBarSchema = CRUDModel(CHAMPAGNERIE_LIST_PRODUCT_SCHEMA
           + currentChampPositionObject.passwordEvent.toString()
@@ -608,7 +618,6 @@ class _RecapEventPageState extends State<RecapEventPage> {
       var fetchProducts = await currentBarSchema.fetchProducts();
       currentChampMapData[currentChampPositionObject.name] = getExpencesByListProducts(fetchProducts);
     });
-
   }
 
   void refresh() {
@@ -616,8 +625,14 @@ class _RecapEventPageState extends State<RecapEventPage> {
     });
   }
 
-  //RECAP
-  Future<List<Widget>> buildRecapTableBarChampConsumption(BarPositionClass currentBarChampagneriePos,
+  Future<void> initRecList() async {
+    await initListRecap(this.widget.barPositionList, true, false);
+    sleep(Duration(seconds:1));
+    await initListRecap(this.widget.champPositionList, false, true);
+    sleep(Duration(seconds:1));
+  }
+
+  Future<void> initListRecap(List<BarPositionClass> barChampagneriePositionList,
       bool barRecap,
       bool champRecap) async{
 
@@ -628,22 +643,44 @@ class _RecapEventPageState extends State<RecapEventPage> {
     } else if(champRecap){
       currentSchema = CHAMPAGNERIE_LIST_PRODUCT_SCHEMA;
     }
-    List<Widget> listOut = <Widget>[];
 
-    if(currentBarChampagneriePos != null){
-        print('Schema to retrieve bar/champagnerie product ' + currentSchema + currentBarChampagneriePos.passwordEvent.toString() + currentBarChampagneriePos.passwordBarChampPosition.toString());
-        CRUDModel currentCrudModel = CRUDModel(currentSchema + currentBarChampagneriePos.passwordEvent.toString() + currentBarChampagneriePos.passwordBarChampPosition.toString());
+    if(barChampagneriePositionList != null){
+      barChampagneriePositionList.forEach((element) async {
+        print('Schema to retrieve bar/champagnerie product ' + currentSchema + element.passwordEvent.toString() + element.passwordBarChampPosition.toString());
+        CRUDModel currentCrudModel = CRUDModel(currentSchema + element.passwordEvent.toString() + element.passwordBarChampPosition.toString());
         List<Product> currentProductList = await currentCrudModel.fetchProducts();
+        recapTableList.add(
+            RecapTableObject(barChampName: element.name,
+                barOwner: element.ownerBar,
+                barChampPassword: element.passwordBarChampPosition,
+                isBarPosition: barRecap,
+                isChampPosition: champRecap,
+                listProduct: currentProductList));
+      });
+    }
+    return recapTableList;
+  }
+
+  buildRecapTableBarChampConsumption(List<RecapTableObject> recapTableList,
+      String currentBarChampagnerie) {
+
+    print('Build Recap table');
+    print('currentBarChampagnerie:  ' + currentBarChampagnerie);
+    print('recapTableList' + recapTableList.toString());
+
+    List<Widget> listOut = <Widget>[];
+    recapTableList.forEach((recObject) {
+      if(recObject.barChampName == currentBarChampagnerie){
         listOut.add(
           Padding(
             padding: const EdgeInsets.fromLTRB(0, 5, 0, 8),
             child: Card(
-              color: barRecap ? VENTI_METRI_MONOPOLI : VENTI_METRI_LOCOROTONDO,
+              color: recObject.isBarPosition ? VENTI_METRI_MONOPOLI : VENTI_METRI_LOCOROTONDO,
               child: Center(
                 child: Column(
                   children: [
-                    Text('${currentBarChampagneriePos.name}', style: TextStyle(fontSize: 17, color: barRecap ? Colors.white : VENTI_METRI_BLUE, fontFamily: 'LoraFont')),
-                    currentBarChampagneriePos.ownerBar != '' ? Text('Responsabile : ${currentBarChampagneriePos.ownerBar}', style: TextStyle(fontSize: 17, color: barRecap ? Colors.white : VENTI_METRI_BLUE, fontFamily: 'LoraFont')) : SizedBox(height: 0,),
+                    Text('${recObject.barChampName}', style: TextStyle(fontSize: 17, color: recObject.isBarPosition ? Colors.white : VENTI_METRI_BLUE, fontFamily: 'LoraFont')),
+                    recObject.barOwner != '' ? Text('Responsabile : ${recObject.barOwner}', style: TextStyle(fontSize: 17, color: recObject.isBarPosition ? Colors.white : VENTI_METRI_BLUE, fontFamily: 'LoraFont')) : SizedBox(height: 0,),
                   ],
                 ),
               ),
@@ -651,18 +688,16 @@ class _RecapEventPageState extends State<RecapEventPage> {
           ),
         );
         listOut.add(
-            buildTableWithCurrentBarChampagnerieProductElements(currentProductList)
+            buildTableWithCurrentBarChampagnerieProductElements(recObject.listProduct)
         );
-    }
+      }
+    });
 
-    print('SDSDSDDQDFQSD');
-    print('List: ' + listOut.toString());
     return listOut;
   }
 
   Widget buildTableWithCurrentBarChampagnerieProductElements(List<Product> currentProductList) {
 
-    print("XXXXXX");
     return Table(
       border: TableBorder(horizontalInside: BorderSide(width: 0.5, color: Colors.black12, style: BorderStyle.solid)),
       children: buildTableRowByCurrentProductList(currentProductList),
@@ -699,9 +734,9 @@ class _RecapEventPageState extends State<RecapEventPage> {
               ]),
         );
       });
+
       _tableRow.add(
         TableRow(
-
             children :[
               Padding(
                 padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
@@ -737,26 +772,8 @@ class _RecapEventPageState extends State<RecapEventPage> {
         );
       });
     }
+
     return _tableRow;
   }
 
-  buildCurrentBarRecapTable(String currentBarChampagnerie) {
-    print('123123123123123123123');
-    _currentBarList.forEach((element) {
-      print(element.name);
-      print(currentBarChampagnerie);
-      if(element.name == currentBarChampagnerie){
-        return buildRecapTableBarChampConsumption(element, true, false);
-      }
-    });
-  }
-
-  buildCurrentChampagnerieRecapTable(String currentBarChampagnerie) {
-    print('123123123rerferf123123123123');
-    _currentBarList.forEach((element) {
-      if(element.name == currentBarChampagnerie){
-        return buildRecapTableBarChampConsumption(element, false, true);
-      }
-    });
-  }
 }

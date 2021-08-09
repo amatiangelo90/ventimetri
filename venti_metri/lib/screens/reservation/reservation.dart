@@ -143,7 +143,7 @@ class _TableReservationScreenState extends State<TableReservationScreen> {
                               children: [
                                 Text('20m2', style: TextStyle(color: Colors.white, fontSize: 15.0, fontFamily: 'LoraFont'),),
                                 Text('', style: TextStyle(color: Colors.white, fontSize: 15.0, fontFamily: 'LoraFont'),),
-                                Text('Cisternino (BR) - Cap 72014', style: TextStyle(color: Colors.white, fontSize: 15.0, fontFamily: 'LoraFont'),),
+                                Text('Cisternino - Locorotondo - Monopoli', style: TextStyle(color: Colors.white, fontSize: 15.0, fontFamily: 'LoraFont'),),
                               ],
                             ),
                           ),
@@ -200,9 +200,9 @@ class _TableReservationScreenState extends State<TableReservationScreen> {
                             children: <Widget>[
                               DatePicker(
                                 DateTime.now(),
-                                dateTextStyle: TextStyle(color: Colors.black, fontSize: 16.0, fontFamily: 'LoraFont'),
-                                dayTextStyle: TextStyle(color: Colors.black, fontSize: 14.0, fontFamily: 'LoraFont'),
-                                monthTextStyle: TextStyle(color: Colors.black, fontSize: 12.0, fontFamily: 'LoraFont'),
+                                dateTextStyle: TextStyle(color: Colors.white, fontSize: 16.0, fontFamily: 'LoraFont'),
+                                dayTextStyle: TextStyle(color: Colors.white, fontSize: 14.0, fontFamily: 'LoraFont'),
+                                monthTextStyle: TextStyle(color: Colors.white, fontSize: 12.0, fontFamily: 'LoraFont'),
                                 selectionColor: VENTI_METRI_BLUE,
                                 deactivatedColor: Colors.grey,
                                 selectedTextColor: Colors.white,
@@ -349,7 +349,7 @@ class _TableReservationScreenState extends State<TableReservationScreen> {
                                 },
                               );
                             }else {
-                              HttpService.sendMessage('393803268119',
+                              HttpService.sendMessage(number20m2,
                                   buildMessageReservation(
                                       _nameController.value.text,
                                       getCurrentDateTime(),

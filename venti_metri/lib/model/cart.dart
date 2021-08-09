@@ -1,10 +1,10 @@
 
 
-import 'package:venti_metri/model/events_models/product_event.dart';
+import 'product_restaurant.dart';
 
 class Cart{
 
-  Product product;
+  ProductRestaurant product;
   int numberOfItem;
   List<String> changes;
 

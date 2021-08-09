@@ -22,9 +22,11 @@ enum ExpenceInOut {
   Profit
 }
 
+const String number20m2 = '393803268119';
+const PICKUP_TYPE = 'Asporto';
 const String SINGLE = 'Spese';
 const String DAILY = 'Incasso Giornaliero';
-
+const EMPTY_STRING = '';
 const String WEEKLY = 'Settimanale';
 const String MONTHLY = 'Mensile';
 

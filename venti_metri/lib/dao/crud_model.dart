@@ -6,6 +6,7 @@ import 'package:venti_metri/model/cart.dart';
 import 'package:venti_metri/model/events_models/bar_position_class.dart';
 import 'package:venti_metri/model/events_models/event_class.dart';
 import 'package:venti_metri/model/events_models/product_event.dart';
+import 'package:venti_metri/model/product_restaurant.dart';
 import 'package:venti_metri/model/exception_event.dart';
 import 'package:venti_metri/model/expence_class.dart';
 import 'package:venti_metri/model/order_store.dart';
@@ -54,6 +55,19 @@ class CRUDModel {
     return productList;
   }
 
+  Future<List<ProductRestaurant>> fetchRestaurantProducts() async {
+    var result = await _dao.getAllProductOrderByName();
+    List<ProductRestaurant> productList;
+
+    result.docs.forEach((element) {
+      print(element.data());
+    });
+    productList =
+        result.docs.map((doc) => ProductRestaurant.fromMap(doc.data(), doc.id)).toList();
+
+    return productList;
+  }
+
   Future<List<EventClass>> fetchEvents() async {
     List<EventClass> eventsList;
     var result = await _dao.getAllData();
@@ -61,6 +75,19 @@ class CRUDModel {
         .map((doc) => EventClass.fromMap(doc.data(), doc.id))
         .toList();
     return eventsList;
+  }
+
+  Future<List<ProductRestaurant>> fetchWine() async {
+
+    List<ProductRestaurant> products = <ProductRestaurant>[];
+
+    var result = await _dao.getWineCollectionOrderedByType();
+
+    products = result.docs
+        .map((doc) => ProductRestaurant.fromMap(doc.data(), doc.id))
+        .toList();
+
+    return products;
   }
 
   Future<List<ExpenceClass>> fetchExpencesById(String id) async {
@@ -227,7 +254,6 @@ class CRUDModel {
   }
 
   List buildListCart(List element) {
-
     try{
       List<Cart> listCart = <Cart>[];
       element.forEach((currentItem) {
@@ -239,8 +265,9 @@ class CRUDModel {
         currentItem = currentItem.toString().replaceAll(' numberOfItem', 'numberOfItem');
         currentItem = currentItem.toString().replaceAll(' changes', 'changes');
         Map valueMap = json.decode(currentItem);
+
         listCart.add(Cart(
-            product : Product(),
+            product : ProductRestaurant('', valueMap['product'], '', ["-"], ["-"], 0.0, 0, ["-"], '', 'true'),
             numberOfItem: int.parse(valueMap['numberOfItem'].toString().replaceAll(" ", "")),
             changes: null
         ));
@@ -252,6 +279,21 @@ class CRUDModel {
       throw Exception(e);
     }
 
+  }
+
+  Future addProduct(ProductRestaurant data) async{
+    await _dao.addDocument(data.toJson());
+    return ;
+  }
+
+  Future updateOrder(OrderStore orderStore, String id) async{
+    await _dao.updateDocument(orderStore.toJson(), id) ;
+    return ;
+  }
+
+  Future updateProduct(ProductRestaurant data, String id) async{
+    await _dao.updateDocument(data.toJson(), id) ;
+    return ;
   }
 
 }

@@ -7,10 +7,11 @@ import 'package:venti_metri/screens/event/event_manager_screen.dart';
 import 'package:venti_metri/screens/venti_m_q_dashboard.dart';
 import 'package:venti_metri/utils/utils.dart';
 
+import 'administration_page.dart';
 import 'auth/auth_screen.dart';
 
 class BranchChooseScreen extends StatefulWidget {
-  static String id = 'choose';
+  static String id = 'branch';
   @override
   _BranchChooseScreenState createState() => _BranchChooseScreenState();
 }
@@ -47,9 +48,15 @@ class _BranchChooseScreenState extends State<BranchChooseScreen> {
       child: Scaffold(
         backgroundColor: Colors.blueGrey.shade800,
         appBar: AppBar(
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: Colors.white),
+            onPressed: () => {
+              Navigator.pushNamed(context, AdministrationScreen.id)
+            },
+          ),
           automaticallyImplyLeading: false,
           backgroundColor: Colors.blueGrey.shade800,
-          title: Center(child: Text('20m² - Drink & Enjoy', style: TextStyle(color: Colors.white, fontSize: 20, fontFamily: 'LoraFont'),)),
+          title: Center(child: Text('20m² - Gestione Sedi', style: TextStyle(color: Colors.white, fontSize: 20, fontFamily: 'LoraFont'),)),
           centerTitle: true,
           actions: [
             IconButton(icon: Icon(Icons.exit_to_app ,size: 30.0, color: Colors.white,), onPressed: (){
@@ -209,48 +216,6 @@ class _BranchChooseScreenState extends State<BranchChooseScreen> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Text('Monopoli', style: TextStyle(color: Colors.white, fontSize: 30),),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              Expanded(
-                flex: 2,
-                child: Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Container(
-                    color: Colors.white,
-                    child: GestureDetector(
-                      onTap: () {
-                        ScaffoldMessenger.of(context)
-                            .showSnackBar(SnackBar(backgroundColor: Colors.green.shade500,
-                            content: Text('Accesso al calendario eventi in corso..')));
-                        Navigator.pushNamed(context, PartyScreenManager.id);
-                      },
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(4.0),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                image: DecorationImage(
-                                  image: AssetImage('images/discoteche.jpg'),
-                                  fit: BoxFit.cover,
-                                  colorFilter: ColorFilter.mode(Colors.black, BlendMode.dst),
-                                ),
-                              ),
-                              child: Center(
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text('Serate', style: TextStyle(color: Colors.white, fontSize: 30),),
                                   ],
                                 ),
                               ),
